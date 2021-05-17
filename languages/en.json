@@ -4,7 +4,8 @@
       "code": "Code: ",
       "message": "Message: ",
       "text": "Error: ",
-      "noRecords": "Unable to locate your record in local device storage. Either: 1) Create a new record and merge once online, or 2) Get online and try your search again."
+      "noRecords": "Unable to locate your record in local device storage. Either: 1) Create a new record and merge once online, or 2) Get online and try your search again.",
+      "recordData": "Unable to retrieve the required data. Please reload this record before trying again."
     },
     "success": {
       "save": "Data saved successfully!"
@@ -49,6 +50,10 @@
     "chooseOption": "Choose an option",
     "confirm": "Confirm"
   },
+  "modal": {
+    "action": "Action Required",
+    "alert": "Alert"
+  },
   "loginScreen": {
     "domain": {
       "label": "URL",
@@ -87,26 +92,26 @@
     "storybook": "Storybook",
     "logout": "Sign Out",
     "helpSupport": "Help / Support",
-    "rememberPassword": "Remember Password",
+    "autoLogin": "Auto-Login",
+    "rememberLoginDetails": "Remember Login Details",
     "rememberPasswordActive": "Keep logged in enabled",
     "rememberPasswordInactive": "Keep logged in disabled",
     "remove": "Remove",
     "set": "Set",
-    "pinCode": "PIN code",
+    "pinCode": "Security PIN",
     "enterPin": "Enter PIN",
     "setPin": "Set new PIN",
     "incorrectPin": "Incorrect PIN",
     "savedPinCode": "PIN code saved successfully!.",
     "removedPinCode": "PIN code removed successfully!.",
     "close": "Close",
-    "confirmPin": "Confirm the new PIN"
+    "confirmPin": "Confirm PIN"
   },
   "contactDetailScreen": {
     "addNewContact": "Add New Contact",
     "subAssignThisContact": "Sub-assign this contact",
     "mobile": "Phone",
     "selectSources": "Select sources",
-    "selectLocations": "Select locations",
     "connections": "Connections",
     "addGroup": "Add Group",
     "addConnection": "Add Connection",
@@ -124,7 +129,7 @@
     },
     "noContactCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
     "noContactCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment.",
-    "importContact": "importContact",
+    "importContact": "Import Phone Contact",
     "contactSharedWith": "This contact is shared with",
     "ageNotSet": "No age set"
   },
@@ -139,7 +144,6 @@
     "noGroupCommentPlacheHolder": "There are not any group comments currently available.",
     "noGroupCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
     "noGroupCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
-    "selectLocations": "Select locations",
     "noMembersMessage": "No members. Tap here or on Edit to add some members to this group.",
     "groupName": {
       "label": "Group Name",
@@ -167,7 +171,7 @@
     "new": "New",
     "unRead": "Unread",
     "all": "All",
-    "markAll": "Mark All",
+    "markAll": "Mark All\nAs Read",
     "dontHaveNotificationsUnread": "No unread notifications",
     "dontHaveNotifications": "No notifications"
   },
@@ -177,8 +181,9 @@
     "noGroupPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
   },
   "appRestart": {
+    "modalTitle": "Restart App?",
     "message": "The application will be restarted to apply the following configuration:",
-    "button": "Ok",
+    "button": "OK",
     "textDirection": "Text direction",
     "selectedLanguage": "Selected language"
   }

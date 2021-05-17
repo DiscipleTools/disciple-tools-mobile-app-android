@@ -1,6 +1,6 @@
-import * as actions from '../actions/users.actions';
-import sharedTools from '../../shared';
 import { REHYDRATE } from 'redux-persist/lib/constants';
+import * as actions from '../actions/users.actions';
+import utils from 'utils';
 
 const initialState = {
   error: null,
@@ -101,7 +101,7 @@ export default function usersReducer(state = initialState, action) {
         contactFilters = {
           ...contactFilters,
           filters: contactFilters.filters.filter((filter) => {
-            return sharedTools.contactsByFilter(contactList, filter.query).length > 0;
+            return utils.contactsByFilter(contactList, filter.query).length > 0;
           }),
         };
       }
@@ -178,7 +178,7 @@ export default function usersReducer(state = initialState, action) {
         groupFilters = {
           ...groupFilters,
           filters: groupFilters.filters.filter((filter) => {
-            return sharedTools.groupsByFilter(groupList, filter.query).length > 0;
+            return utils.groupsByFilter(groupList, filter.query).length > 0;
           }),
         };
       }

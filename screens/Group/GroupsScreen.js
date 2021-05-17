@@ -1,57 +1,66 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import { View, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Text } from 'react-native';
-import { Fab, Container } from 'native-base';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Toast from 'react-native-easy-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { Fab, Container, Icon } from 'native-base';
 import PropTypes from 'prop-types';
-import SearchBar from '../../components/SearchBar';
 
-import Colors from '../../constants/Colors';
-import {
-  getAll /*, searchGroupsByText*/,
-  updatePrevious,
-} from '../../store/actions/groups.actions';
-import i18n from '../../languages';
-import sharedTools from '../../shared';
+import { getAll, getGroupSettings, updatePrevious } from 'store/actions/groups.actions';
+import { getGroupFilters } from 'store/actions/users.actions';
+
+import Colors from 'constants/Colors';
+import i18n from 'languages';
+import { showToast } from 'helpers';
+
+import utils from 'utils';
+
+import FilterList from 'components/FilterList';
+import ActionModal from 'components/ActionModal';
+import OfflineBar from 'components/OfflineBar';
 
 import { styles } from './GroupsScreen.styles';
 
-let toastError,
-  statusCircleSize = 15; //,
-//searchBarRef;
+const GroupsScreen = ({ navigation }) => {
+  const statusCircleSize = 15;
 
-class GroupsScreen extends React.Component {
-  state = {
+  const dispatch = useDispatch();
+
+  const userData = useSelector((state) => state.userReducer.userData);
+  const groups = useSelector((state) => state.groupsReducer.groups);
+  const loading = useSelector((state) => state.groupsReducer.loading);
+  const error = useSelector((state) => state.groupsReducer.error);
+  const groupSettings = useSelector((state) => state.groupsReducer.settings);
+  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
+  const groupFilters = useSelector((state) => state.usersReducer.groupFilters);
+  const totalGroups = useSelector((state) => state.groupsReducer.total);
+  const filteredGroups = useSelector((state) => state.groupsReducer.filteredGroups);
+  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+
+  const [state, setState] = useState({
     dataSourceGroups: [],
     //dataSourceGroupsFiltered: [],
     offset: 0,
-    limit: sharedTools.paginationLimit,
+    limit: utils.paginationLimit,
     sort: '-last_modified',
     filtered: false,
     filterOption: null,
     filterText: null,
     fixFABIndex: false,
     //isConnected: false,
-  };
+  });
 
-  static navigationOptions = {
-    title: i18n.t('global.groups'),
-    headerStyle: {
-      backgroundColor: Colors.tintColor,
-    },
-    headerTintColor: '#FFFFFF',
-    headerTitleStyle: {
-      fontWeight: 'bold',
-    },
-  };
+  useEffect(() => {
+    dispatch(getGroupSettings());
+    dispatch(getGroupFilters());
+    dispatch(getAll(state.offset, state.limit, state.sort));
+  }, []);
 
+  /*
   componentDidMount() {
     // Recieve custom filters (tag) as param
-    const { params } = this.props.navigation.state;
+    const { params } = navigation.state;
     if (params) {
       const { customFilter } = params;
-      this.selectOptionFilter(customFilter);
+      selectOptionFilter(customFilter);
     }
   }
 
@@ -79,8 +88,8 @@ class GroupsScreen extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { error, filteredGroups, isConnected } = this.props;
-    const { filtered } = this.state;
+    const { error, filteredGroups, isConnected } = 
+    const { filtered } = state;
 
     if (
       filteredGroups &&
@@ -89,17 +98,10 @@ class GroupsScreen extends React.Component {
       filtered &&
       !isConnected
     ) {
-      toastError.show(
-        <View>
-          <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
-            {i18n.t('global.error.text')}
-          </Text>
-          <Text style={{ color: Colors.errorText }}>{i18n.t('global.error.noRecords')}</Text>
-        </View>,
-        6000,
-      );
+      helpers.showToast(i18n.t('global.error.noRecords'),true);
     }
     if (prevProps.error !== error && error) {
+      helpers.showToast(i18n.t('global.error.noRecords'),true);
       toastError.show(
         <View>
           <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
@@ -115,14 +117,15 @@ class GroupsScreen extends React.Component {
       );
     }
   }
+  */
 
-  renderFooter = () => {
+  const renderFooter = () => {
     return (
       <View style={styles.loadMoreFooterText}>
-        {this.props.isConnected && this.state.offset + this.state.limit < this.props.totalGroups && (
+        {isConnected && state.offset + state.limit < totalGroups && (
           <TouchableOpacity
             onPress={() => {
-              this.onRefresh(true);
+              onRefresh(true);
             }}>
             <Text style={styles.loadMoreFooterText}>{i18n.t('notificationsScreen.loadMore')}</Text>
           </TouchableOpacity>
@@ -131,9 +134,9 @@ class GroupsScreen extends React.Component {
     );
   };
 
-  renderRow = (group) => (
+  const renderRow = (group) => (
     <TouchableOpacity
-      onPress={() => this.goToGroupDetailScreen(group)}
+      onPress={() => goToGroupDetailScreen(group)}
       style={styles.flatListItem}
       key={group.ID}>
       <View style={{ flexDirection: 'row', height: '100%' }}>
@@ -151,18 +154,17 @@ class GroupsScreen extends React.Component {
                   textAlign: 'left',
                 },
               ]}>
-              {this.props.groupSettings.fields.group_status.values[group.group_status]
-                ? this.props.groupSettings.fields.group_status.values[group.group_status].label
+              {groupSettings.fields.group_status.values[group.group_status]
+                ? groupSettings.fields.group_status.values[group.group_status].label
                 : ''}
-              {this.props.groupSettings.fields.group_status.values[group.group_status] &&
-              this.props.groupSettings.fields.group_type.values[group.group_type]
+              {groupSettings.fields.group_status.values[group.group_status] &&
+              groupSettings.fields.group_type.values[group.group_type]
                 ? ' • '
                 : ''}
-              {this.props.groupSettings.fields.group_type.values[group.group_type]
-                ? this.props.groupSettings.fields.group_type.values[group.group_type].label
+              {groupSettings.fields.group_type.values[group.group_type]
+                ? groupSettings.fields.group_type.values[group.group_type].label
                 : ''}
-              {this.props.groupSettings.fields.group_type.values[group.group_type] &&
-              group.member_count
+              {groupSettings.fields.group_type.values[group.group_type] && group.member_count
                 ? ' • '
                 : ''}
               {group.member_count ? group.member_count : ''}
@@ -178,14 +180,14 @@ class GroupsScreen extends React.Component {
               marginTop: 'auto',
               marginBottom: 'auto',
             },
-            this.props.isRTL ? { marginRight: 5 } : { marginLeft: 5 },
+            isRTL ? { marginRight: 5 } : { marginLeft: 5 },
           ]}>
           <View
             style={{
               width: statusCircleSize,
               height: statusCircleSize,
               borderRadius: statusCircleSize / 2,
-              backgroundColor: sharedTools.getSelectorColor(group.group_status),
+              backgroundColor: utils.getSelectorColor(group.group_status),
               marginTop: 'auto',
               marginBottom: 'auto',
             }}></View>
@@ -194,7 +196,7 @@ class GroupsScreen extends React.Component {
     </TouchableOpacity>
   );
 
-  flatListItemSeparator = () => (
+  const flatListItemSeparator = () => (
     <View
       style={{
         height: 1,
@@ -204,179 +206,190 @@ class GroupsScreen extends React.Component {
     />
   );
 
-  onRefresh = (increasePagination = false, returnFromDetail = false) => {
+  const onRefresh = (increasePagination = false, returnFromDetail = false) => {
     let newState = {
-      offset: increasePagination ? this.state.offset + this.state.limit : 0,
+      offset: increasePagination ? state.offset + state.limit : 0,
     };
-    this.setState(
+    setState(
       (prevState) => {
         return returnFromDetail ? prevState : newState;
       },
       () => {
         let filter = {};
         // Add pagination on ONLINE mode
-        if (this.props.isConnected) {
+        if (isConnected) {
           filter = {
-            offset: this.state.offset,
-            limit: this.state.limit,
-            sort: this.state.sort,
+            offset: state.offset,
+            limit: state.limit,
+            sort: state.sort,
           };
         }
-        if (this.state.filtered) {
+        if (state.filtered) {
           filter = {
             ...filter,
             filtered: true,
           };
-          if (this.state.filterOption) {
+          if (state.filterOption) {
             filter = {
               ...filter,
-              ...this.state.filterOption,
+              ...state.filterOption,
               filterOption: true,
             };
-          } else if (this.state.filterText) {
+          } else if (state.filterText) {
             filter = {
               ...filter,
-              name: this.state.filterText,
+              name: state.filterText,
               sort: 'name',
               filterText: true,
             };
           }
         }
-        this.props.getAllGroups(this.props.userData.domain, this.props.userData.token, filter);
+        //getAllGroups(userData.domain, userData.token, filter);
+        dispatch(getAll(domain, token, offset, limit, sort));
       },
     );
   };
 
-  goToGroupDetailScreen = (groupData = null) => {
+  const goToGroupDetailScreen = (groupData = null) => {
     if (groupData) {
-      this.props.updatePrevious([
-        {
-          groupId: parseInt(groupData.ID),
-          onlyView: true,
-          groupName: groupData.title,
-        },
-      ]);
+      console.log('*** IF GROUP DATA ***');
+      dispatch(
+        updatePrevious([
+          {
+            groupId: parseInt(groupData.ID),
+            onlyView: true,
+            groupName: groupData.title,
+          },
+        ]),
+      );
       // Detail
-      this.props.navigation.navigate('GroupDetail', {
+      navigation.navigate('GroupDetails', {
         groupId: groupData.ID,
         onlyView: true,
         groupName: groupData.title,
-        onGoBack: () => this.onRefresh(false, true),
       });
+      //onGoBack: () => onRefresh(false, true),
     } else {
-      this.props.updatePrevious([]);
+      console.log('*** ELSE GROUP DATA = null  ***');
+      dispatch(updatePrevious([]));
       // Create
-      this.props.navigation.navigate('GroupDetail', {
+      navigation.navigate('GroupDetails', {
         onlyView: true,
-        onGoBack: () => this.onRefresh(false, true),
+        onGoBack: () => onRefresh(false, true),
       });
     }
   };
 
-  selectOptionFilter = (selectedFilter) => {
-    this.setState(
+  const selectOptionFilter = (selectedFilter) => {
+    setState(
       {
         filtered: true,
         filterText: null,
         filterOption: selectedFilter,
       },
       () => {
-        this.onRefresh(false);
+        onRefresh(false);
       },
     );
   };
 
-  filterByText = sharedTools.debounce((queryText) => {
+  const filterByText = utils.debounce((queryText) => {
     if (queryText.length > 0) {
-      this.setState(
+      setState(
         {
           filtered: true,
           filterText: queryText,
           filterOption: null,
         },
         () => {
-          this.onRefresh(false);
+          onRefresh(false);
         },
       );
     } else {
-      this.setState(
+      setState(
         {
           filtered: false,
           filterText: null,
           filterOption: null,
         },
         () => {
-          this.onRefresh();
+          onRefresh();
         },
       );
     }
   }, 750);
 
-  onLayout = (fabIndexFix) => {
-    if (fabIndexFix !== this.state.fixFABIndex) {
-      this.setState({
+  const onLayout = (fabIndexFix) => {
+    if (fabIndexFix !== state.fixFABIndex) {
+      setState({
         fixFABIndex: fabIndexFix,
       });
     }
   };
 
-  offlineBarRender = () => (
-    <View style={[styles.offlineBar]}>
-      <Text style={[styles.offlineBarText]}>{i18n.t('global.offline')}</Text>
-    </View>
-  );
-
-  render() {
+  // TODO: why this FAB uses Native Base but Contacts does not?
+  const FAB = () => {
     return (
-      <Container>
-        <View style={{ flex: 1 }}>
-          {!this.props.isConnected && this.offlineBarRender()}
-          <SearchBar
-            filterConfig={this.props.groupFilters}
-            onSelectFilter={this.selectOptionFilter}
-            onTextFilter={this.filterByText}
-            onClearTextFilter={this.filterByText}
-            onLayout={this.onLayout}
-            count={
-              this.state.dataSourceGroups.length % 100 === 0
-                ? `${this.state.dataSourceGroups.length}+`
-                : this.state.dataSourceGroups.length
-            }
-          />
-          <FlatList
-            data={this.state.dataSourceGroups}
-            renderItem={(item) => this.renderRow(item.item)}
-            ItemSeparatorComponent={this.flatListItemSeparator}
-            keyboardShouldPersistTaps="always"
-            refreshControl={
-              <RefreshControl refreshing={this.props.loading} onRefresh={this.onRefresh} />
-            }
-            ListFooterComponent={this.renderFooter}
-            keyExtractor={(item) => item.ID.toString()}
-            style={{ backgroundColor: Colors.mainBackgroundColor }}
-          />
-          <Fab
-            style={[
-              { backgroundColor: Colors.tintColor },
-              this.state.fixFABIndex ? { zIndex: -1 } : {},
-            ]}
-            position="bottomRight"
-            onPress={() => this.goToGroupDetailScreen()}>
-            <Icon name="md-add" />
-          </Fab>
-          <Toast
-            ref={(toast) => {
-              toastError = toast;
-            }}
-            style={{ backgroundColor: Colors.errorBackground }}
-            positionValue={290}
-          />
-        </View>
-      </Container>
+      <Fab
+        style={[{ backgroundColor: Colors.tintColor }, state.fixFABIndex ? { zIndex: -1 } : {}]}
+        position="bottomRight"
+        onPress={() => goToGroupDetailScreen()}>
+        <Icon name="md-add" />
+      </Fab>
     );
-  }
-}
+  };
 
+  return (
+    <Container>
+      <View style={{ flex: 1 }}>
+        {!isConnected && <OfflineBar />}
+        {/*
+        <SearchBar
+          filterConfig={groupFilters}
+          onSelectFilter={selectOptionFilter}
+          onTextFilter={filterByText}
+          onClearTextFilter={filterByText}
+          onLayout={onLayout}
+          count={
+            state.dataSourceGroups.length % 100 === 0
+              ? `${state.dataSourceGroups.length}+`
+              : state.dataSourceGroups.length
+          }
+        />
+        <FlatList
+          data={state.dataSourceGroups}
+          renderItem={(item) => renderRow(item.item)}
+          ItemSeparatorComponent={flatListItemSeparator}
+          keyboardShouldPersistTaps="always"
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
+          ListFooterComponent={renderFooter}
+          keyExtractor={(item) => item.ID.toString()}
+          style={{ backgroundColor: Colors.mainBackgroundColor }}
+        />
+        */}
+        <FilterList
+          settings={groupSettings}
+          filterConfig={groupFilters}
+          onSelectFilter={selectOptionFilter}
+          onTextFilter={filterByText}
+          onClearTextFilter={filterByText}
+          onLayout={onLayout}
+          //count={
+          //  state.dataSourceGroups.length % 100 === 0
+          //    ? `${state.dataSourceGroups.length}+`
+          //    : state.dataSourceGroups.length
+          //}
+          //data={groups}
+          data={null}
+          renderRow={renderRow}
+        />
+        <FAB />
+      </View>
+    </Container>
+  );
+};
+
+/*
 GroupsScreen.propTypes = {
   isConnected: PropTypes.bool,
   navigation: PropTypes.shape({
@@ -388,13 +401,11 @@ GroupsScreen.propTypes = {
     token: PropTypes.string,
   }).isRequired,
   getAllGroups: PropTypes.func.isRequired,
-  /* eslint-disable */
   groups: PropTypes.arrayOf(
     PropTypes.shape({
       key: PropTypes.number,
     }),
   ),
-  /* eslint-enable */
   error: PropTypes.shape({
     code: PropTypes.any,
     message: PropTypes.string,
@@ -416,25 +427,5 @@ GroupsScreen.defaultProps = {
   groupSettings: null,
   isConnected: null,
 };
-
-const mapStateToProps = (state) => ({
-  userData: state.userReducer.userData,
-  groups: state.groupsReducer.groups,
-  loading: state.groupsReducer.loading,
-  error: state.groupsReducer.error,
-  groupSettings: state.groupsReducer.settings,
-  isConnected: state.networkConnectivityReducer.isConnected,
-  groupFilters: state.usersReducer.groupFilters,
-  totalGroups: state.groupsReducer.total,
-  filteredGroups: state.groupsReducer.filteredGroups,
-});
-const mapDispatchToProps = (dispatch) => ({
-  getAllGroups: (domain, token, offset, limit, sort) => {
-    dispatch(getAll(domain, token, offset, limit, sort));
-  },
-  updatePrevious: (previousGroups) => {
-    dispatch(updatePrevious(previousGroups));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(GroupsScreen);
+*/
+export default GroupsScreen;

@@ -1,46 +1,31 @@
-import * as actions from '../actions/i18n.actions';
+import * as actions from 'store/actions/i18n.actions';
+
+import * as Updates from 'expo-updates';
+
+import i18n from 'languages';
 
 const initialState = {
-  canceledLocaleChange: false,
-  previousLocale: null,
-  previousIsRTL: false,
   locale: null,
-  isRTL: false,
+  isRTL: null,
 };
 
 export default function i18nReducer(state = initialState, action) {
-  let newState = {
-    ...state,
-    canceledLocaleChange: false,
-  };
   switch (action.type) {
-    case actions.I18N_SETLANGUAGE: {
-      if (action.locale !== state.locale) {
-        return {
-          ...newState,
-          previousLocale: state.locale,
-          previousIsRTL: state.isRTL,
-          locale: action.locale,
-          isRTL: action.isRTL,
-        };
-      } else {
-        return newState;
+    case actions.I18N_SET_LOCALE:
+      const localeObj = i18n.setLocale(action.locale);
+      if (localeObj.rtl !== state.isRTL) {
+        // TODO: move to Saga with delay and then Reduce ON_SUCCESS?
+        // NOTE: This is obviously less than ideal bc we are guessing about how long to give Redux Persist time to write global state to AsyncStorage (so it is available upon App Restart). Unfotunately, 'try/finally' does not work bc the delay is not long enough.  It is for the same reason that we do not move this to a Saga, bc we need to ensure that the Redux State reduces and persists prior to App Restart.
+        setTimeout(() => {
+          Updates.reloadAsync();
+        }, 1000);
       }
-    }
-    case actions.I18N_CANCEL_SET_LANGUAGE: {
       return {
-        ...newState,
-        canceledLocaleChange: true,
-        previousLocale: null,
-        previousIsRTL: false,
-        locale: state.previousLocale,
-        isRTL: state.previousIsRTL,
+        ...state,
+        locale: localeObj.code,
+        isRTL: localeObj.rtl,
       };
-    }
-    case actions.I18N_SET_CANCEL_FALSE: {
-      return newState;
-    }
     default:
-      return newState;
+      return state;
   }
 }

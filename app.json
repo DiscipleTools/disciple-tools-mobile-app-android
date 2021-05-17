@@ -4,7 +4,7 @@
     "slug": "discipletoolsapp",
     "privacy": "public",
     "platforms": ["ios", "android"],
-    "version": "1.9.3",
+    "version": "1.10.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -24,7 +24,7 @@
       "package": "tools.disciple.app",
       "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true,
-      "versionCode": 193
+      "versionCode": 1100
     },
     "description": ""
   }

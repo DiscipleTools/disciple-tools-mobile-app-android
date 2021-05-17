@@ -1,86 +1,56 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { Input, Item } from 'native-base';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Platform,
   ScrollView,
   View,
-  StyleSheet,
   Text,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
-import Colors from '../constants/Colors';
-import i18n from '../languages';
-import Accordion from 'react-native-collapsible/Accordion';
 import PropTypes from 'prop-types';
+// component library (native base)
+import { Accordion, Icon, Input, Item } from 'native-base';
+import { useSelector } from 'react-redux';
+// helpers/utils
+import Colors from 'constants/Colors';
+import i18n from 'languages';
+import utils from 'utils';
+// custom components
+// third-party components
+// NOTE: this is used to pass a custom component/icon as checkbox to preserve a standard look-and-feel across platform (which is not currently supported by native base)
 import { CheckBox } from 'react-native-elements';
-import { Header } from 'react-navigation-stack';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { connect } from 'react-redux';
+// styles/assets
+import { styles } from './SearchBar.styles';
+import { MaterialIcons } from '@expo/vector-icons';
 
-const styles = StyleSheet.create({
-  searchBarContainer: {
-    borderBottomWidth: 1,
-    backgroundColor: Colors.tabBar,
-    borderBottomColor: '#FFF',
-  },
-  searchBarScrollView: {
-    paddingBottom: 10,
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingTop: 9,
-    minHeight: 60,
-  },
-  searchBarItem: {
-    borderColor: '#DDDDDD',
-    borderRadius: 3,
-    borderWidth: 10,
-  },
-  searchBarIcons: {
-    fontSize: 20,
-    color: 'gray',
-    padding: 10,
-  },
-  searchBarInput: {
-    color: 'gray',
-    height: 41,
-    fontSize: 18,
-  },
-  chip: {
-    borderColor: '#c2e0ff',
-    borderWidth: 1,
-    backgroundColor: '#ecf5fc',
-    borderRadius: 2,
-    padding: 4,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-});
+const SearchBar = ({ settings }) => {
+  //console.log("*** SearchBar Component - settings: ***");
+  //console.log(JSON.stringify(settings));
 
-const windowHeight = Dimensions.get('window').height,
-  headerHeight = Header.HEIGHT;
+  const userData = useSelector((state) => state.userReducer.userData);
+  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
 
-let initialState = {
-  search: '',
-  filter: {
-    toggle: false,
-    ID: '',
-    query: {},
-    name: '',
-  },
-  sections: [],
-  activeSections: [],
-  count: null,
-};
-
-class SearchBar extends React.Component {
-  state = {
-    ...initialState,
+  const initialState = {
+    search: '',
+    filter: {
+      toggle: false,
+      ID: '',
+      query: {},
+      name: '',
+    },
+    filterConfig: {
+      tabs: [],
+      filters: [],
+    },
+    sections: [],
+    activeSections: [],
+    count: null,
   };
+  const [state, setState] = useState(initialState);
+  const [showFiltersPanel, setShowFiltersPanel] = useState(false);
 
-  filterByText = (text) => {
-    this.setState(
+  const filterByText = (text) => {
+    setState(
       {
         search: text,
         activeSections: initialState.activeSections,
@@ -94,16 +64,37 @@ class SearchBar extends React.Component {
         },
       },
       () => {
-        this.props.onTextFilter(text);
+        onTextFilter(text);
       },
     );
   };
 
-  filterByOption = (filterId, filterQuery, filterName) => {
+  const filterByOption = (filterId, filterQuery, filterName) => {
+    console.log('*** FILTER BY OPTION ***');
+    console.log(JSON.stringify(filterQuery));
+    // TODO: move the mapping to the Saga
+    const origRes = utils.mapFilterOnQueryParams(filterQuery, userData);
+    console.log(origRes);
+    /*
+      {
+        filtered: true,
+        filterText: null,
+        filterOption: selectedFilter,
+      },
+Q: How to differentiate Notifications from Contacts
+use 'post_title'
+{"id":"321","user_id":"1","source_user_id":"0","post_id":"109","secondary_item_id":"0","notification_name":"requires_update","notification_action":"alert","notification_note":"@zzadmin, an update is requested on <a href=\"http://192.168.1.7/contacts/109\">Farzin Shariati</a>.","date_notified":"2020-12-06 03:35:10","is_new":"0","field_key":"","field_value":"","post_title":"Farzin Shariati","pretty_time":["4 months ago","12/06/2020"]}
+*** RENDER ROW ***
+{"id":"322","user_id":"1","source_user_id":"0","post_id":"106","secondary_item_id":"0","notification_name":"requires_update","notification_action":"alert","notification_note":"@zzadmin, an update is requested on <a href=\"http://192.168.1.7/contacts/106\">Elias Alvarado</a>.","date_notified":"2020-12-06 03:35:10","is_new":"0","field_key":"","field_value":"","post_title":"Elias Alvarado","pretty_time":["4 months ago","12/06/2020"]}
+
+*/
+    //const recursRes = utils.recursivelyMapFilterOnQueryParams(filterQuery,'',userData);
+    //console.log(recursRes);
+    /*
     // Set 'last_modified' sort by default on OFFLINE mode or filter does not have sort
     if (
-      (this.props.isConnected && !Object.prototype.hasOwnProperty.call(filterQuery, 'sort')) ||
-      !this.props.isConnected
+      (isConnected && !Object.prototype.hasOwnProperty.call(filterQuery, 'sort')) ||
+      !isConnected
     ) {
       if (!Object.prototype.hasOwnProperty.call(filterQuery, 'sort')) {
         filterQuery = {
@@ -112,7 +103,7 @@ class SearchBar extends React.Component {
         };
       }
     }
-    this.setState(
+    setState(
       {
         filter: {
           ID: filterId,
@@ -127,96 +118,179 @@ class SearchBar extends React.Component {
         search: initialState.search,
       },
       () => {
-        this.props.onSelectFilter({
+        onSelectFilter({
           ...filterQuery,
         });
       },
     );
+    */
   };
 
-  clearTextFilter = () => {
-    this.setState(
+  const clearTextFilter = () => {
+    setState(
       {
         search: initialState.search,
       },
       () => {
-        this.props.onClearTextFilter('');
+        onClearTextFilter('');
       },
     );
   };
 
-  resetFilters = () => {
-    this.setState(
+  const resetFilters = () => {
+    setState(
       (prevState) => ({
         ...initialState,
         sections: [...prevState.sections],
       }),
       () => {
-        this.props.onClearTextFilter('');
+        onClearTextFilter('');
       },
     );
   };
 
   // Function used to update render on Contact/Group screens when current filter its active
-  refreshFilter = () => {
-    if (this.state.search.length > 0) {
-      this.filterByText(this.state.search);
-    } else if (this.state.filter.ID.length > 0) {
-      this.filterByOption(this.state.filter.ID, this.state.filter.query, this.state.filter.name);
+  const refreshFilter = () => {
+    if (state.search && state.search.length > 0) {
+      filterByText(state.search);
+    } else if (state.filter.ID.length > 0) {
+      filterByOption(state.filter.ID, state.filter.query, state.filter.name);
     }
   };
 
-  renderSectionHeader = (section, index, isActive, sections) => {
+  const updateSections = (activeSections) => {
+    setState({ activeSections });
+  };
+
+  let fieldName = null;
+  if (state.filter && state.filter.query && state.filter.query.sort) {
+    // TODO: something better than this call method?
+    if (
+      settings &&
+      Object.prototype.hasOwnProperty.call(
+        settings.fields,
+        state.filter.query.sort.replace('-', ''),
+      )
+    ) {
+      fieldName =
+        i18n.t('global.sortBy') +
+        ': ' +
+        settings.fields[state.filter.query.sort.replace('-', '')].name;
+    }
+  }
+
+  // TODO: if selected, dynamically update the title property and include group by?
+  // or are the 'chips' good enough?
+  // enable multiple selections: 'by type'='unread' AND 'by user'='Farzin Shariati'
+  // TODO: Q: what is 'query' doing? is this the URL mapping?
+  const dataArray = [
+    {
+      title: 'By Type',
+      count: 2,
+      content: [
+        {
+          ID: 0,
+          name: 'All',
+          count: 2,
+          query: '',
+        },
+        {
+          ID: 1,
+          name: 'Read',
+          count: 1,
+          query: '',
+        },
+        {
+          ID: 2,
+          name: 'Unread',
+          count: 1,
+          query: '',
+        },
+      ],
+    },
+    {
+      title: 'By User',
+      count: 2,
+      content: [
+        {
+          ID: 0,
+          name: 'Farzin Shariati',
+          count: 1,
+          query: '',
+        },
+        {
+          ID: 1,
+          name: 'Elias Alvarado',
+          count: 1,
+          query: '',
+        },
+      ],
+    },
+  ];
+
+  const renderHeader = (item, expanded) => {
     return (
       <View
         style={[
           {
-            backgroundColor: isActive ? Colors.primary : '#FFFFFF',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: 10,
+            backgroundColor: expanded ? Colors.primary : '#FFFFFF',
             height: 50,
             paddingLeft: 15,
             paddingRight: 15,
-            flexDirection: 'row',
             borderWidth: 1,
             borderColor: Colors.grayLight,
           },
         ]}>
         <Text
           style={{
-            color: isActive ? '#FFFFFF' : Colors.primary,
+            color: expanded ? '#FFFFFF' : Colors.primary,
             marginTop: 'auto',
             marginBottom: 'auto',
             fontWeight: 'bold',
           }}>
-          {section.label}
+          {item.title}
         </Text>
-        {section.count ? (
-          <Text
-            style={{
-              color: isActive ? '#FFFFFF' : Colors.primary,
-              marginTop: 'auto',
-              marginBottom: 'auto',
-            }}>
-            {` (${section.count})`}
-          </Text>
-        ) : null}
         <Text
           style={{
-            color: isActive ? '#FFFFFF' : Colors.primary,
+            color: expanded ? '#FFFFFF' : Colors.primary,
+            marginTop: 'auto',
+            marginBottom: 'auto',
+            marginRight: 'auto',
+          }}>
+          {item.count ? (
+            <Text
+              style={{
+                color: expanded ? '#FFFFFF' : Colors.primary,
+                marginTop: 'auto',
+                marginBottom: 'auto',
+              }}>
+              {` (${item.count})`}
+            </Text>
+          ) : null}
+        </Text>
+        <Text
+          style={{
+            color: expanded ? '#FFFFFF' : Colors.primary,
             marginTop: 'auto',
             marginBottom: 'auto',
             marginLeft: 'auto',
           }}>
-          {isActive ? '-' : '+'}
+          {expanded ? '-' : '+'}
         </Text>
       </View>
     );
   };
 
-  renderSectionContent = (section, index, isActive, sections) => {
-    let content = this.props.filterConfig.filters.filter((filter) => filter.tab === section.key);
+  const renderContent = (item, expanded) => {
+    //let content = state.filterConfig.filters.filter((filter) => filter.tab === section.key);
+    const content = item.content;
     return (
       <View
-        key={index}
+        key={item}
         style={{
           borderWidth: 1,
           borderColor: Colors.grayLight,
@@ -228,7 +302,9 @@ class SearchBar extends React.Component {
               key={filter.ID}
               activeOpacity={0.5}
               onPress={() => {
-                this.filterByOption(filter.ID, filter.query, filter.name);
+                //console.log(`*** FILTER BY OPTON: ${ JSON.stringify(filter) }***`);
+                filterByOption(filter.ID, filter.query, filter.name);
+                //setShowFiltersPanel(false);
               }}>
               <View
                 style={{
@@ -237,8 +313,8 @@ class SearchBar extends React.Component {
                   paddingLeft: filter.subfilter ? 20 : 0,
                 }}>
                 <CheckBox
-                  Component={TouchableWithoutFeedback}
-                  checked={filter.ID === this.state.filter.ID}
+                  //checked={filter.ID === state.filter.ID}
+                  checked={false}
                   checkedIcon="dot-circle-o"
                   uncheckedIcon="circle-o"
                   containerStyle={{
@@ -269,137 +345,76 @@ class SearchBar extends React.Component {
     );
   };
 
-  showFiltersPanel = () => {
-    this.setState((previousState) => ({
-      filter: {
-        ...previousState.filter,
-        toggle: !previousState.filter.toggle,
-      },
-    }));
-  };
-
-  updateSections = (activeSections) => {
-    this.setState({ activeSections });
-  };
-
-  render() {
-    let fieldName = null;
-    if (this.state.filter.query.sort) {
-      if (
-        Object.prototype.hasOwnProperty.call(
-          this.props.contactSettings.fields,
-          this.state.filter.query.sort.replace('-', ''),
-        )
-      ) {
-        fieldName =
-          i18n.t('global.sortBy') +
-          ': ' +
-          this.props.contactSettings.fields[this.state.filter.query.sort.replace('-', '')].name;
-      } else if (
-        Object.prototype.hasOwnProperty.call(
-          this.props.groupSettings.fields,
-          this.state.filter.query.sort.replace('-', ''),
-        )
-      ) {
-        fieldName =
-          i18n.t('global.sortBy') +
-          ': ' +
-          this.props.groupSettings.fields[this.state.filter.query.sort.replace('-', '')].name;
-      }
-    }
-
-    return (
-      <View
-        style={[
-          styles.searchBarContainer,
-          Platform.OS == 'ios'
-            ? { borderBottomColor: Colors.grayLight, borderBottomWidth: 1 }
-            : { elevation: 5 },
-          {},
-        ]}
-        onLayout={(event) => {
-          let viewHeight = event.nativeEvent.layout.height;
-          // headerHeight * 2 because headerHeight + bottomBarNavigation height
-          this.props.onLayout(
-            windowHeight - (viewHeight + headerHeight * 2) < 100 && Platform.OS == 'android',
-          );
-        }}>
-        <ScrollView style={styles.searchBarScrollView}>
-          <Item regular style={styles.searchBarItem}>
-            <MaterialIcons name="search" style={styles.searchBarIcons} />
-            <Input
-              placeholder={i18n.t('global.search')}
-              onChangeText={this.filterByText}
-              autoCorrect={false}
-              value={this.state.search}
-              style={styles.searchBarInput}
-            />
-            {this.state.search.length > 0 ? (
-              <MaterialIcons
-                name="clear"
-                style={[styles.searchBarIcons, { marginRight: 10 }]}
-                onPress={this.clearTextFilter}
-              />
-            ) : null}
+  return (
+    <View
+      style={[
+        styles.searchBarContainer,
+        Platform.OS == 'ios'
+          ? { borderBottomColor: Colors.grayLight, borderBottomWidth: 1 }
+          : { elevation: 5 },
+        {},
+      ]}>
+      <ScrollView style={styles.searchBarScrollView}>
+        <Item regular style={styles.searchBarItem}>
+          <MaterialIcons name="search" style={styles.searchBarIcons} />
+          <Input
+            placeholder={i18n.t('global.search')}
+            onChangeText={filterByText}
+            autoCorrect={false}
+            value={state.search}
+            style={styles.searchBarInput}
+          />
+          {state.search && state.search.length > 0 ? (
             <MaterialIcons
-              name="filter-list"
-              style={styles.searchBarIcons}
-              onPress={() => this.showFiltersPanel()}
+              name="clear"
+              style={[styles.searchBarIcons, { marginRight: 10 }]}
+              onPress={clearTextFilter}
             />
-          </Item>
-          {!this.state.filter.toggle &&
-            (this.state.search.length > 0 || this.state.filter.name.length > 0) && (
-              <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
-                {this.state.search.length > 0 && (
-                  <Text style={styles.chip}>{this.state.search}</Text>
-                )}
-                {this.state.filter.name.length > 0 && (
-                  <Text style={styles.chip}>
-                    {this.state.filter.name} ({this.props.count}){' '}
-                  </Text>
-                )}
-                {fieldName && <Text style={styles.chip}>{fieldName}</Text>}
-              </View>
-            )}
-          {this.state.filter.toggle ? (
-            <View style={{ marginTop: 20, marginBottom: 20 }}>
-              <Accordion
-                activeSections={this.state.activeSections}
-                sections={this.props.filterConfig.tabs}
-                renderHeader={this.renderSectionHeader}
-                renderContent={this.renderSectionContent}
-                onChange={this.updateSections}
-              />
-            </View>
           ) : null}
-        </ScrollView>
-      </View>
-    );
-  }
-}
-
-SearchBar.propTypes = {
-  filterConfig: PropTypes.shape({
-    tabs: PropTypes.arrayOf(PropTypes.object).isRequired,
-    filters: PropTypes.arrayOf(PropTypes.object).isRequired,
-  }),
-  onSelectFilter: PropTypes.func,
-  onTextFilter: PropTypes.func,
-  onClearTextFilter: PropTypes.func,
-  onLayout: PropTypes.func,
+          <MaterialIcons
+            name="filter-list"
+            style={styles.searchBarIcons}
+            onPress={() => {
+              setShowFiltersPanel(!showFiltersPanel);
+            }}
+          />
+        </Item>
+        {/*state.filter && state.filter.toggle && state.filterConfig ? (*/}
+        {showFiltersPanel && (
+          <View style={{ marginTop: 20, marginBottom: 20 }}>
+            <Accordion
+              dataArray={dataArray}
+              animation={true}
+              expanded={true}
+              renderHeader={renderHeader}
+              renderContent={renderContent}
+              //activeSections={state.activeSections}
+              //sections={state.filterConfig.tabs}
+              //onChange={updateSections}
+            />
+          </View>
+        )}
+        {state.filter &&
+          !state.filter.toggle &&
+          ((state.search && state.search.length > 0) || state.filter.name.length > 0) && (
+            <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+              {state.search && state.search.length > 0 && (
+                <Text style={styles.chip}>{state.search}</Text>
+              )}
+              {state.filter.name.length > 0 && <Text style={styles.chip}>{state.filter.name}</Text>}
+              {fieldName && <Text style={styles.chip}>{fieldName}</Text>}
+            </View>
+          )}
+      </ScrollView>
+    </View>
+  );
 };
-
-SearchBar.defaultProps = {
+/* TODO
+SearchBar.propTypes = {
   filterConfig: {
     tabs: [],
     filters: [],
   },
 };
-
-const mapStateToProps = (state) => ({
-  contactSettings: state.contactsReducer.settings,
-  groupSettings: state.groupsReducer.settings,
-  isConnected: state.networkConnectivityReducer.isConnected,
-});
-
-export default connect(mapStateToProps)(SearchBar);
+*/
+export default SearchBar;

@@ -1,21 +1,28 @@
 import { put, take, all, takeLatest, takeEvery, select } from 'redux-saga/effects';
-import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
-import * as actions from '../actions/groups.actions';
-import sharedTools from '../../shared/index';
 
-export function* getAll({ domain, token, filter }) {
+import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
+
+import * as SecureStore from 'expo-secure-store';
+
+import * as actions from '../actions/groups.actions';
+
+import utils from 'utils';
+
+export function* getAll({ filter }) {
+  yield put({ type: actions.GROUPS_GETALL_START });
+  const userData = yield select((state) => state.userReducer.userData);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   let newFilter = {
     ...filter,
   };
   delete newFilter.filtered;
   delete newFilter.filterOption;
   delete newFilter.filterText;
-  const userData = yield select((state) => state.userReducer.userData);
-  yield put({ type: actions.GROUPS_GETALL_START });
   yield put({
     type: 'REQUEST',
     payload: {
-      url: `https://${domain}/wp-json/dt-posts/v2/groups${sharedTools.recursivelyMapFilterOnQueryParams(
+      url: `https://${domain}/wp-json/dt-posts/v2/groups${utils.recursivelyMapFilterOnQueryParams(
         newFilter,
         '',
         '',
@@ -72,11 +79,11 @@ export function* getAll({ domain, token, filter }) {
   }
 }
 
-export function* saveGroup({ domain, token, groupData }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* saveGroup({ groupData }) {
   yield put({ type: actions.GROUPS_SAVE_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   const group = groupData;
   let groupId = '';
   // Add ID to URL only on D.B. IDs
@@ -163,9 +170,10 @@ export function* saveGroup({ domain, token, groupData }) {
   }
 }
 
-export function* getById({ domain, token, groupId }) {
+export function* getById({ groupId }) {
   yield put({ type: actions.GROUPS_GETBYID_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -210,9 +218,11 @@ export function* getById({ domain, token, groupId }) {
   }
 }
 
-export function* getCommentsByGroup({ domain, token, groupId, pagination }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+export function* getCommentsByGroup({ groupId, pagination }) {
   yield put({ type: actions.GROUPS_GET_COMMENTS_START });
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   try {
     yield put({
       type: 'REQUEST',
@@ -261,11 +271,11 @@ export function* getCommentsByGroup({ domain, token, groupId, pagination }) {
   }
 }
 
-export function* saveComment({ domain, token, groupId, commentData }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* saveComment({ groupId, commentData }) {
   yield put({ type: actions.GROUPS_SAVE_COMMENT_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -333,9 +343,10 @@ export function* saveComment({ domain, token, groupId, commentData }) {
   }
 }
 
-export function* getLocations({ domain, token }) {
+export function* getLocations() {
   yield put({ type: actions.GROUPS_GET_LOCATIONS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -350,16 +361,19 @@ export function* getLocations({ domain, token }) {
       action: actions.GROUPS_GET_LOCATIONS_RESPONSE,
     },
   });
-
   try {
     let response = yield take(actions.GROUPS_GET_LOCATIONS_RESPONSE);
     response = response.payload;
     const jsonData = response.data;
     if (response.status === 200) {
+      // TODO: safeguards around this
+      yield ExpoFileSystemStorage.setItem('locationsList', JSON.stringify(jsonData.location_grid));
+      /* NOTE: we do not want to reduce this (thus storing to AsyncStorage) AND perform getItem/setItem
       yield put({
         type: actions.GROUPS_GET_LOCATIONS_SUCCESS,
         geonames: jsonData.location_grid,
       });
+      */
     } else {
       yield put({
         type: actions.GROUPS_GET_LOCATIONS_FAILURE,
@@ -380,9 +394,10 @@ export function* getLocations({ domain, token }) {
   }
 }
 
-export function* getPeopleGroups({ domain, token }) {
+export function* getPeopleGroups() {
   yield put({ type: actions.GROUPS_GET_PEOPLE_GROUPS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -403,10 +418,14 @@ export function* getPeopleGroups({ domain, token }) {
     response = response.payload;
     const jsonData = response.data;
     if (response.status === 200) {
+      // TODO: safeguards around this
+      yield ExpoFileSystemStorage.setItem('peopleGroups', JSON.stringify(jsonData.posts));
+      /*
       yield put({
         type: actions.GROUPS_GET_PEOPLE_GROUPS_SUCCESS,
         peopleGroups: jsonData.posts,
       });
+      */
     } else {
       yield put({
         type: actions.GROUPS_GET_PEOPLE_GROUPS_FAILURE,
@@ -427,9 +446,10 @@ export function* getPeopleGroups({ domain, token }) {
   }
 }
 
-export function* getActivitiesByGroup({ domain, token, groupId, pagination }) {
+export function* getActivitiesByGroup({ groupId, pagination }) {
   yield put({ type: actions.GROUPS_GET_ACTIVITIES_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -479,9 +499,10 @@ export function* getActivitiesByGroup({ domain, token, groupId, pagination }) {
   }
 }
 
-export function* getSettings({ domain, token }) {
+export function* getSettings() {
   yield put({ type: actions.GROUPS_GET_SETTINGS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -526,8 +547,10 @@ export function* getSettings({ domain, token }) {
   }
 }
 
-export function* searchLocations({ domain, token, queryText }) {
+export function* searchLocations({ queryText }) {
   yield put({ type: actions.GROUPS_GET_LOCATIONS_START });
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -574,7 +597,10 @@ export function* searchLocations({ domain, token, queryText }) {
   }
 }
 
-export function* getLocationListLastModifiedDate({ domain, token }) {
+export function* getLocationListLastModifiedDate() {
+  // TODO: add START?
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -618,11 +644,11 @@ export function* getLocationListLastModifiedDate({ domain, token }) {
   }
 }
 
-export function* deleteComment({ domain, token, groupId, commentId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* deleteComment({ groupId, commentId }) {
   yield put({ type: actions.GROUPS_DELETE_COMMENT_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -677,11 +703,11 @@ export function* deleteComment({ domain, token, groupId, commentId }) {
   }
 }
 
-export function* getShareSettings({ domain, token, groupId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* getShareSettings({ groupId }) {
   yield put({ type: actions.GROUPS_GET_SHARE_SETTINGS_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -728,11 +754,11 @@ export function* getShareSettings({ domain, token, groupId }) {
   }
 }
 
-export function* addUserToShare({ domain, token, groupId, userId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* addUserToShare({ groupId, userId }) {
   yield put({ type: actions.GROUPS_ADD_USER_SHARE_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -789,11 +815,11 @@ export function* addUserToShare({ domain, token, groupId, userId }) {
   }
 }
 
-export function* removeSharedUser({ domain, token, groupId, userId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* removeSharedUser({ groupId, userId }) {
   yield put({ type: actions.GROUPS_REMOVE_SHARED_USER_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {

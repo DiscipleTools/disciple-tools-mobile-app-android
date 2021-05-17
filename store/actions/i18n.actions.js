@@ -1,29 +1,14 @@
 /*
  * Action Types
  */
-export const I18N_SETLANGUAGE = 'I18N_SETLANGUAGE';
-export const I18N_CANCEL_SET_LANGUAGE = 'I18N_CANCEL_SET_LANGUAGE';
-export const I18N_SET_CANCEL_FALSE = 'I18N_SET_CANCEL_FALSE';
+export const I18N_SET_LOCALE = 'I18N_SET_LOCALE';
 
 /*
  * Action Creators
  */
-export function setLanguage(locale, isRTL) {
+export function setLocale(locale) {
   return {
-    type: I18N_SETLANGUAGE,
+    type: I18N_SET_LOCALE,
     locale,
-    isRTL,
-  };
-}
-
-export function cancelSetLanguage() {
-  return {
-    type: I18N_CANCEL_SET_LANGUAGE,
-  };
-}
-
-export function setCancelFalse() {
-  return {
-    type: I18N_SET_CANCEL_FALSE,
   };
 }

@@ -1,9 +1,13 @@
 import { put, take, all, takeEvery, select } from 'redux-saga/effects';
+
+import * as SecureStore from 'expo-secure-store';
+
 import * as actions from '../actions/users.actions';
 
-export function* getUsers({ domain, token }) {
+export function* getUsers() {
   yield put({ type: actions.GET_USERS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -24,12 +28,10 @@ export function* getUsers({ domain, token }) {
     response = response.payload;
     const jsonData = response.data;
     if (response.status === 200) {
-      if (jsonData) {
-        yield put({
-          type: actions.GET_USERS_SUCCESS,
-          users: jsonData,
-        });
-      }
+      yield put({
+        type: actions.GET_USERS_SUCCESS,
+        users: jsonData,
+      });
     } else {
       yield put({
         type: actions.GET_USERS_FAILURE,
@@ -50,13 +52,13 @@ export function* getUsers({ domain, token }) {
   }
 }
 
-export function* getContactFilters({ domain, token }) {
+export function* getContactFilters() {
+  yield put({ type: actions.GET_CONTACT_FILTERS_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
   const contactList = yield select((state) => state.contactsReducer.contacts);
   const userData = yield select((state) => state.userReducer.userData);
-
-  yield put({ type: actions.GET_CONTACT_FILTERS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -106,13 +108,13 @@ export function* getContactFilters({ domain, token }) {
   }
 }
 
-export function* getGroupFilters({ domain, token }) {
+export function* getGroupFilters() {
+  yield put({ type: actions.GET_GROUP_FILTERS_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
   const groupList = yield select((state) => state.groupsReducer.groups);
   const userData = yield select((state) => state.userReducer.userData);
-
-  yield put({ type: actions.GET_GROUP_FILTERS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {

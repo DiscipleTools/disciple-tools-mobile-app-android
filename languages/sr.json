@@ -3,8 +3,8 @@
     "error": {
       "code": "Шифра: ",
       "message": "Порука: ",
-      "text": "текст",
-      "noRecords": "ноРецордс"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Подаци су успешно сачувани!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "Напишите свој коментар или белешку овде",
     "requiredField": "Обавезно поље",
     "edit": "Уредити",
+    "delete": "Избриши",
     "cancel": "Поништити, отказати",
     "save": "сачувати",
     "online": "Онлине",
@@ -30,24 +31,22 @@
     "close": "Близу",
     "editComment": "Уредити",
     "deleteComment": "Избриши",
-    "delete": "избрисати",
-    "sortBy": "Сортирај по",
-    "reset": "ресетовати",
-    "apply": "применити",
-    "showing": "показивање",
-    "comments": "коментари",
-    "activity": "активност",
-    "submit": "прихвати",
-    "share": "Објави",
-    "viewOnMobileWeb": "виевОнМобилеВеб",
-    "shareSettings": "схареСеттингс",
-    "searchUsers": "сеарцхУсерс",
-    "noFilters": "ноФилтерс",
-    "searchContacts": "сеарцхЦонтацтс",
-    "selectLocations": "селецтЛоцатионс",
-    "other": "друго",
-    "chooseOption": "цхоосеОптион",
-    "confirm": "Потврди"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "Изаберите Лоцатионс",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "Непознато корисничко име. Проверите поново или испробајте своју адресу е-поште.",
       "incorrectPassword": "Лозинка коју сте унели за корисничко име је нетачна",
-      "configurationNeededOn": "цонфигуратионНеедедОн",
-      "mobileAppPluginRequiredOne": "мобилеАппПлугинРекуиредОне",
-      "mobileAppPluginRequiredTwo": "мобилеАппПлугинРекуиредТво"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "ПИН код је успешно сачуван",
     "removedPinCode": "ПИН код је успешно уклоњен",
     "close": "Близу",
-    "confirmPin": "цонфирмПин"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "Додај нови контакт",
     "subAssignThisContact": "Пододелите овај контакт",
     "mobile": "Телефон",
-    "selectLocations": "Изаберите Лоцатионс",
     "selectSources": "Изаберите изворе",
     "connections": "Везе",
     "addGroup": "Додај групу",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "Можда је дошло до проблема при преузимању са ваше веб локације. Превуците надоле да бисте покушали да освежите и покушајте поново.",
     "noContactCommentPlacheHolderOffline": "Тренутно сте ван мреже. Уверите се да сте повезани на ВиФи или мобилне податке како бисте освежили и добили коментар на контакт.",
-    "importContact": "импортЦонтацт",
-    "contactSharedWith": "цонтацтСхаредВитх",
-    "ageNotSet": "агеНотСет"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "Додај нову групу",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "Тренутно нема доступних коментара групе.",
     "noGroupCommentPlacheHolder1": "Можда је дошло до проблема при преузимању са ваше веб локације. Превуците надоле да бисте покушали да освежите и покушајте поново.",
     "noGroupCommentPlacheHolderOffline": "Тренутно сте ван мреже. Уверите се да сте повезани на ВиФи или мобилне податке како бисте освежили и добили коментар групе.",
-    "selectLocations": "Изаберите Лоцатионс",
     "noMembersMessage": "Нема чланова. Додирните овде или на Уреди да бисте додали неке чланове у ову групу.",
     "groupName": {
       "label": "Назив групе",
       "error": "Име је обавезно"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "Састанак заказан",
       "quick_button_meeting_postponed": "Састанак одложен",
       "quick_button_meeting_complete": "Састанак завршен"
     },
-    "memberCount": "мемберЦоунт",
-    "memberList": "мемберЛист",
     "attendance": {
-      "header": "заглавље",
-      "didAttendComment": "дидАттендЦоммент",
-      "didNotAttendComment": "дидНотАттендЦоммент",
-      "groupCommentLabel": "гроупЦомментЛабел",
-      "groupComment": "гроупЦоммент"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "гроупСхаредВитх"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "Обавештења",

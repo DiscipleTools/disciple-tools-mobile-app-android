@@ -3,8 +3,8 @@
     "error": {
       "code": "কোড: ",
       "message": "বার্তা: ",
-      "text": "পাঠ্য",
-      "noRecords": "noRecords"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "ডেটা সাফল্যের সাথে সংরক্ষিত হয়েছে!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "আপনার মন্তব্য বা নোট এখানে লিখুন",
     "requiredField": "প্রয়োজনীয় ক্ষেত্র",
     "edit": "সম্পাদন করা",
+    "delete": "মুছে ফেলা",
     "cancel": "বাতিল",
     "save": "সংরক্ষণ করুন",
     "online": "অনলাইন",
@@ -30,24 +31,22 @@
     "close": "ঘনিষ্ঠ",
     "editComment": "সম্পাদনা করুন",
     "deleteComment": "মুছে ফেলা",
-    "delete": "মুছে ফেলা",
-    "sortBy": "ক্রমানুসার",
-    "reset": "রিসেট",
-    "apply": "প্রয়োগ",
-    "showing": "দেখাচ্ছে",
-    "comments": "মন্তব্য",
-    "activity": "ক্রিয়াকলাপ",
-    "submit": "জমা দিন",
-    "share": "ভাগ",
-    "viewOnMobileWeb": "ভিউনমোবাইলওয়েব",
-    "shareSettings": "ভাগ করুন",
-    "searchUsers": "অনুসন্ধান ব্যবহারকারীরা",
-    "noFilters": "noFilters",
-    "searchContacts": "অনুসন্ধান যোগাযোগ",
-    "selectLocations": "নির্বাচন করুন",
-    "other": "অন্যান্য",
-    "chooseOption": "অপশন",
-    "confirm": "নিশ্চিত করুন"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "অবস্থান নির্বাচন করুন",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "অজানা ব্যবহারকারীর নাম। আবার চেক করুন বা আপনার ইমেল ঠিকানা চেষ্টা করুন।",
       "incorrectPassword": "আপনি ব্যবহারকারীর জন্য প্রবেশ করা পাসওয়ার্ডটি ভুল",
-      "configurationNeededOn": "কনফিগারেশননিডঅন",
-      "mobileAppPluginRequiredOne": "মোবাইল অ্যাপ্লিকেশন প্লাগইন প্রয়োজনীয়",
-      "mobileAppPluginRequiredTwo": "মোবাইল অ্যাপ্লিকেশন প্লাগইন প্রয়োজনীয় দুটি"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "পিন কোড সাফল্যের সাথে সংরক্ষিত হয়েছে",
     "removedPinCode": "পিন কোড সফলভাবে সরানো হয়েছে",
     "close": "বন্ধ",
-    "confirmPin": "কনফার্মপিন"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "নতুন পরিচিতি যোগ করুন",
     "subAssignThisContact": "এই যোগাযোগটি সাব-এসাইন করুন",
     "mobile": "মোবাইল",
-    "selectLocations": "অবস্থান নির্বাচন করুন",
     "selectSources": "উত্স নির্বাচন করুন",
     "connections": "সংযোগ",
     "addGroup": "গ্রুপ যুক্ত করুন",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "আপনার সাইট থেকে এগুলি পেতে কোনও সমস্যা হতে পারে। রিফ্রেশ করার চেষ্টা করতে নীচে টানুন এবং আবার চেষ্টা করুন।",
     "noContactCommentPlacheHolderOffline": "আপনি বর্তমানে অফলাইন আপনার যোগাযোগের মন্তব্যটি রিফ্রেশ করার জন্য এবং আপনি ওয়াইফাই বা মোবাইল ডেটার সাথে সংযুক্ত আছেন তা নিশ্চিত করুন।",
-    "importContact": "আমদানি যোগাযোগ",
-    "contactSharedWith": "যোগাযোগ",
-    "ageNotSet": "বয়সনোটসেট"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "নতুন গ্রুপ যুক্ত করুন",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "বর্তমানে কোনও গ্রুপ মন্তব্য উপলব্ধ নেই।",
     "noGroupCommentPlacheHolder1": "আপনার সাইট থেকে এগুলি পেতে কোনও সমস্যা হতে পারে। রিফ্রেশ করার চেষ্টা করতে নীচে টানুন এবং আবার চেষ্টা করুন।",
     "noGroupCommentPlacheHolderOffline": "আপনি বর্তমানে অফলাইন আপনার গ্রুপ মন্তব্যটি রিফ্রেশ করার জন্য আপনি ওয়াইফাই বা মোবাইল ডেটাতে সংযুক্ত আছেন তা নিশ্চিত করুন।",
-    "selectLocations": "অবস্থান নির্বাচন করুন",
     "noMembersMessage": "noMembersMessage",
     "groupName": {
       "label": "দলের নাম",
       "error": "নাম প্রয়োজন"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "সভা নির্ধারিত",
       "quick_button_meeting_postponed": "সভা স্থগিত",
       "quick_button_meeting_complete": "সভা সম্পূর্ণ"
     },
-    "memberCount": "সদস্য সংখ্যা",
-    "memberList": "সদস্য তালিকা",
     "attendance": {
-      "header": "শিরোনাম",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "গ্রুপকমেন্টল্যাবেল",
-      "groupComment": "গ্রুপ কমেন্ট"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "গ্রুপ শেয়ার"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "বিজ্ঞপ্তিগুলি",

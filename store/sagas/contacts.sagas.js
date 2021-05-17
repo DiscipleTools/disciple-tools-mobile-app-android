@@ -1,21 +1,27 @@
 import { put, take, takeEvery, takeLatest, all, select } from 'redux-saga/effects';
-import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
-import * as actions from '../actions/contacts.actions';
-import sharedTools from '../../shared/index';
 
-export function* getAll({ domain, token, filter }) {
+import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
+import * as SecureStore from 'expo-secure-store';
+
+import * as actions from '../actions/contacts.actions';
+
+import utils from 'utils';
+
+export function* getAll({ filter }) {
+  yield put({ type: actions.CONTACTS_GETALL_START });
+  const userData = yield select((state) => state.userReducer.userData);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   let newFilter = {
     ...filter,
   };
   delete newFilter.filtered;
   delete newFilter.filterOption;
   delete newFilter.filterText;
-  const userData = yield select((state) => state.userReducer.userData);
-  yield put({ type: actions.CONTACTS_GETALL_START });
   yield put({
     type: 'REQUEST',
     payload: {
-      url: `https://${domain}/wp-json/dt-posts/v2/contacts${sharedTools.recursivelyMapFilterOnQueryParams(
+      url: `https://${domain}/wp-json/dt-posts/v2/contacts${utils.recursivelyMapFilterOnQueryParams(
         newFilter,
         '',
         '',
@@ -80,11 +86,11 @@ export function* getAll({ domain, token, filter }) {
   }
 }
 
-export function* save({ domain, token, contactData }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* save({ contactData }) {
   yield put({ type: actions.CONTACTS_SAVE_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   const contact = contactData;
   if (contact.initial_comment) {
     delete contact.initial_comment;
@@ -172,8 +178,10 @@ export function* save({ domain, token, contactData }) {
   }
 }
 
-export function* getById({ domain, token, contactId }) {
+export function* getById({ contactId }) {
   yield put({ type: actions.CONTACTS_GETBYID_START });
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -217,11 +225,11 @@ export function* getById({ domain, token, contactId }) {
   }
 }
 
-export function* saveComment({ domain, token, contactId, commentData }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* saveComment({ contactId, commentData }) {
   yield put({ type: actions.CONTACTS_SAVE_COMMENT_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -289,9 +297,11 @@ export function* saveComment({ domain, token, contactId, commentData }) {
   }
 }
 
-export function* getCommentsByContact({ domain, token, contactId, pagination }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+export function* getCommentsByContact({ contactId, pagination }) {
   yield put({ type: actions.CONTACTS_GET_COMMENTS_START });
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   try {
     yield put({
       type: 'REQUEST',
@@ -340,8 +350,10 @@ export function* getCommentsByContact({ domain, token, contactId, pagination }) 
   }
 }
 
-export function* getActivitiesByContact({ domain, token, contactId, pagination }) {
+export function* getActivitiesByContact({ contactId, pagination }) {
   yield put({ type: actions.CONTACTS_GET_ACTIVITIES_START });
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   if (isNaN(contactId)) {
     yield put({
       type: actions.CONTACTS_GET_ACTIVITIES_SUCCESS,
@@ -398,9 +410,10 @@ export function* getActivitiesByContact({ domain, token, contactId, pagination }
   }
 }
 
-export function* getSettings({ domain, token }) {
+export function* getSettings() {
   yield put({ type: actions.CONTACTS_GET_SETTINGS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -445,11 +458,11 @@ export function* getSettings({ domain, token }) {
   }
 }
 
-export function* deleteComment({ domain, token, contactId, commentId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* deleteComment({ contactId, commentId }) {
   yield put({ type: actions.CONTACTS_DELETE_COMMENT_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -504,11 +517,11 @@ export function* deleteComment({ domain, token, contactId, commentId }) {
   }
 }
 
-export function* getShareSettings({ domain, token, contactId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* getShareSettings({ contactId }) {
   yield put({ type: actions.CONTACTS_GET_SHARE_SETTINGS_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -555,11 +568,11 @@ export function* getShareSettings({ domain, token, contactId }) {
   }
 }
 
-export function* addUserToShare({ domain, token, contactId, userId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* addUserToShare({ contactId, userId }) {
   yield put({ type: actions.CONTACTS_ADD_USER_SHARE_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -616,11 +629,11 @@ export function* addUserToShare({ domain, token, contactId, userId }) {
   }
 }
 
-export function* removeSharedUser({ domain, token, contactId, userId }) {
-  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
-
+export function* removeSharedUser({ contactId, userId }) {
   yield put({ type: actions.CONTACTS_REMOVE_SHARED_USER_START });
-
+  const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -678,9 +691,10 @@ export function* removeSharedUser({ domain, token, contactId, userId }) {
   }
 }
 
-export function* getTags({ domain, token }) {
+export function* getTags() {
   yield put({ type: actions.CONTACTS_GET_TAGS_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {

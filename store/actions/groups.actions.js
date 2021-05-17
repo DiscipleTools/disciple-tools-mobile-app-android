@@ -101,33 +101,25 @@ export const GROUPS_REMOVE_SHARED_USER_FAILURE = 'GROUPS_REMOVE_SHARED_USER_FAIL
 
 /**
  *
- * @param {*} domain
- * @param {*} token
  * @param {*} filter { offset: number, limit: number, sort: string, name?: string, ...optionFilter }
  */
-export function getAll(domain, token, filter) {
+export function getAll(filter) {
   return {
     type: GROUPS_GETALL,
-    domain,
-    token,
     filter,
   };
 }
 
-export function saveGroup(domain, token, groupData) {
+export function saveGroup(groupData) {
   return {
     type: GROUPS_SAVE,
-    domain,
-    token,
     groupData,
   };
 }
 
-export function getById(domain, token, groupId) {
+export function getById(groupId) {
   return {
     type: GROUPS_GETBYID,
-    domain,
-    token,
     groupId,
   };
 }
@@ -138,82 +130,64 @@ export function getByIdEnd() {
   };
 }
 
-export function getCommentsByGroup(domain, token, groupId, pagination) {
+export function getCommentsByGroup(groupId, pagination) {
   return {
     type: GROUPS_GET_COMMENTS,
-    domain,
-    token,
     groupId,
     pagination,
   };
 }
 
-export function saveComment(domain, token, groupId, commentData) {
+export function saveComment(groupId, commentData) {
   return {
     type: GROUPS_SAVE_COMMENT,
-    domain,
-    token,
     groupId,
     commentData,
   };
 }
 
-export function getLocations(domain, token) {
+export function getLocations() {
   return {
     type: GROUPS_GET_LOCATIONS,
-    domain,
-    token,
   };
 }
 
-export function getPeopleGroups(domain, token) {
+export function getPeopleGroups() {
   return {
     type: GROUPS_GET_PEOPLE_GROUPS,
-    domain,
-    token,
   };
 }
 
-export function getActivitiesByGroup(domain, token, groupId, pagination) {
+export function getActivitiesByGroup(groupId, pagination) {
   return {
     type: GROUPS_GET_ACTIVITIES,
-    domain,
-    token,
     groupId,
     pagination,
   };
 }
 
-export function getGroupSettings(domain, token) {
+export function getGroupSettings() {
   return {
     type: GROUPS_GET_SETTINGS,
-    domain,
-    token,
   };
 }
 
-export function searchLocations(domain, token, queryText) {
+export function searchLocations(queryText) {
   return {
     type: GROUPS_LOCATIONS_SEARCH,
-    domain,
-    token,
     queryText,
   };
 }
 
-export function getLocationListLastModifiedDate(domain, token) {
+export function getLocationListLastModifiedDate() {
   return {
     type: GROUPS_LOCATIONS_MODIFIED_DATE,
-    domain,
-    token,
   };
 }
 
-export function deleteComment(domain, token, groupId, commentId) {
+export function deleteComment(groupId, commentId) {
   return {
     type: GROUPS_DELETE_COMMENT,
-    domain,
-    token,
     groupId,
     commentId,
   };
@@ -232,30 +206,24 @@ export function updatePrevious(previousGroups) {
   };
 }
 
-export function getShareSettings(domain, token, groupId) {
+export function getShareSettings(groupId) {
   return {
     type: GROUPS_GET_SHARE_SETTINGS,
-    domain,
-    token,
     groupId,
   };
 }
 
-export function addUserToShare(domain, token, groupId, userId) {
+export function addUserToShare(groupId, userId) {
   return {
     type: GROUPS_ADD_USER_SHARE,
-    domain,
-    token,
     groupId,
     userId,
   };
 }
 
-export function removeUserToShare(domain, token, groupId, userId) {
+export function removeUserToShare(groupId, userId) {
   return {
     type: GROUPS_REMOVE_SHARED_USER,
-    domain,
-    token,
     groupId,
     userId,
   };

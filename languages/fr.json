@@ -3,8 +3,8 @@
     "error": {
       "code": "Code: ",
       "message": "Message: ",
-      "text": "texte",
-      "noRecords": "pas d'enregistrements"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Les données ont bien été enregistrées!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "Écrivez votre commentaire ou note ici",
     "requiredField": "champs requis",
     "edit": "modifier",
+    "delete": "Supprimer",
     "cancel": "Annuler",
     "save": "sauver",
     "online": "En ligne",
@@ -30,24 +31,22 @@
     "close": "proche",
     "editComment": "Éditer",
     "deleteComment": "Supprimer",
-    "delete": "effacer",
-    "sortBy": "Trier par",
-    "reset": "réinitialiser",
-    "apply": "appliquer",
-    "showing": "montrant",
-    "comments": "commentaires",
-    "activity": "activité",
-    "submit": "nous faire parvenir",
-    "share": "partager",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "paramètres de partage",
-    "searchUsers": "rechercheUtilisateurs",
-    "noFilters": "noFilters",
-    "searchContacts": "rechercher des contacts",
-    "selectLocations": "selectLocations",
-    "other": "autre",
-    "chooseOption": "choisirOption",
-    "confirm": "confirmer"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "Sélectionnez des emplacements",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "Nom d'utilisateur inconnu. Vérifiez à nouveau ou essayez votre adresse e-mail.",
       "incorrectPassword": "Le mot de passe que vous avez entré pour le nom d'utilisateur est incorrect",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "Code PIN enregistré avec succès",
     "removedPinCode": "Code PIN supprimé avec succès",
     "close": "Fermer",
-    "confirmPin": "confirmerPin"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "Ajouter un nouveau contact",
     "subAssignThisContact": "Sous-affecter ce contact",
     "mobile": "Mobile",
-    "selectLocations": "Sélectionnez des emplacements",
     "selectSources": "Sélectionnez les sources",
     "connections": "Les liaisons",
     "addGroup": "Ajouter un groupe",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
     "noContactCommentPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de vous rafraîchir et d'obtenir votre commentaire de contact.",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "Ajouter un nouveau groupe",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "Aucun commentaire de groupe n'est actuellement disponible.",
     "noGroupCommentPlacheHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
     "noGroupCommentPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de vous rafraîchir et d'obtenir les commentaires de votre groupe.",
-    "selectLocations": "Sélectionner des emplacements",
     "noMembersMessage": "Aucun membre. Appuyez ici ou sur Modifier pour ajouter des membres à ce groupe.",
     "groupName": {
       "label": "Nom de groupe",
       "error": "Nom obligatoire"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "Réunion programmée",
       "quick_button_meeting_postponed": "Réunion reportée",
       "quick_button_meeting_complete": "Réunion terminée"
     },
-    "memberCount": "memberCount",
-    "memberList": "liste des membres",
     "attendance": {
-      "header": "entête",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupeCommentaire"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "Notifications",
@@ -177,6 +173,7 @@
     "noGroupPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de rafraîchir et d'obtenir vos groupes."
   },
   "appRestart": {
+    "modalTitle": "Redémarrer l'app?",
     "message": "L'application sera redémarrée pour appliquer la configuration suivante:",
     "button": "D'accord",
     "textDirection": "Direction du texte",

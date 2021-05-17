@@ -3,8 +3,8 @@
     "error": {
       "code": "کد: ",
       "message": "پیام: ",
-      "text": "متن",
-      "noRecords": "noRecords"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "داده با موفقیت ذخیره شد!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "نظر یا یادداشت خود را اینجا بنویسید",
     "requiredField": "زمینه مورد نیاز",
     "edit": "ویرایش کنید",
+    "delete": "حذف",
     "cancel": "لغو",
     "save": "صرفه جویی",
     "online": "برخط",
@@ -30,24 +31,22 @@
     "close": "نزدیک",
     "editComment": "ویرایش کنید",
     "deleteComment": "حذف",
-    "delete": "حذف",
-    "sortBy": "مرتب سازی بر اساس",
-    "reset": "تنظیم مجدد",
-    "apply": "درخواست دادن",
-    "showing": "نشان دادن",
-    "comments": "نظرات",
-    "activity": "فعالیت",
-    "submit": "ارسال",
-    "share": "اشتراک گذاری",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "تنظیمات اشتراک",
-    "searchUsers": "کاربران جستجو",
-    "noFilters": "بدون فیلتر",
-    "searchContacts": "جستجوی تماس ها",
-    "selectLocations": "مکانها را انتخاب کنید",
-    "other": "دیگر",
-    "chooseOption": "گزینه را انتخاب کنید",
-    "confirm": "تایید"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "مکان ها را انتخاب کنید",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "نام کاربری ناشناخته دوباره بررسی کنید یا آدرس ایمیل خود را امتحان کنید.",
       "incorrectPassword": "گذرواژه‌ای که برای نام کاربری خود وارد کردید اشتباه است",
-      "configurationNeededOn": "پیکربندیNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginR RequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "کد پین با موفقیت ذخیره شد",
     "removedPinCode": "کد پین با موفقیت حذف شد",
     "close": "نزدیک",
-    "confirmPin": "تأیید پین"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "مخاطب جدید اضافه کنید",
     "subAssignThisContact": "این مخاطب را اختصاص دهید",
     "mobile": "سیار",
-    "selectLocations": "مکان ها را انتخاب کنید",
     "selectSources": "منابع را انتخاب کنید",
     "connections": "اتصالات",
     "addGroup": "افزودن گروه",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "ممکن است مشکلی در گرفتن آنها از سایت شما وجود داشته باشد. پایین بکشید تا سعی کنید تازه کنید و دوباره امتحان کنید.",
     "noContactCommentPlacheHolderOffline": "شما در حال حاضر آفلاین هستید. اطمینان حاصل کنید که برای تازه کردن و گرفتن نظر مخاطب خود به داده های wifi یا تلفن همراه وصل شده اید.",
-    "importContact": "واردات تماس بگیرید",
-    "contactSharedWith": "تماس با ما به اشتراک گذاشته شود",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "گروه جدید را اضافه کنید",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "هیچ نظر گروهی در حال حاضر موجود نیست",
     "noGroupCommentPlacheHolder1": "ممکن است مشکلی در گرفتن آنها از سایت شما وجود داشته باشد. پایین بکشید تا سعی کنید تازه کنید و دوباره امتحان کنید.",
     "noGroupCommentPlacheHolderOffline": "شما در حال حاضر آفلاین هستید. اطمینان حاصل کنید که به منظور تازه کردن و اظهار نظر گروه خود ، به داده های wifi یا تلفن همراه وصل شده اید.",
-    "selectLocations": "مکان ها را انتخاب کنید",
     "noMembersMessage": "هیچ عضو برای افزودن برخی از اعضا به این گروه ، اینجا یا بر روی ویرایش ضربه بزنید.",
     "groupName": {
       "label": "اسم گروه",
       "error": "نام لازم است"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "جلسه برنامه ریزی شده",
       "quick_button_meeting_postponed": "جلسه به تعویق افتاد",
       "quick_button_meeting_complete": "جلسه کامل است"
     },
-    "memberCount": "عضو",
-    "memberList": "عضو لیست",
     "attendance": {
-      "header": "سرتیتر",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "گروه"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "اطلاعیه",
@@ -177,6 +173,7 @@
     "noGroupPlacheHolderOffline": "شما در حال حاضر آفلاین هستید. برای اطمینان از گروه های خود ، اطمینان حاصل کنید که به داده های wifi یا تلفن همراه وصل شده اید."
   },
   "appRestart": {
+    "modalTitle": "برنامه را دوباره راه اندازی کنید؟",
     "message": "برنامه برای اجرای پیکربندی زیر مجدداً راه اندازی می شود:",
     "button": "خوب",
     "textDirection": "جهت متن",

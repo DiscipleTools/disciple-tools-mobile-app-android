@@ -35,48 +35,38 @@ export const NOTIFICATIONS_MARK_ALL_AS_READ_FAILURE = 'NOTIFICATIONS_MARK_ALL_AS
 /*
  * Action Creators
  */
-export function getAll(domain, token, allNotifications, offset, limit) {
+export function getAll(allNotifications, offset, limit) {
   return {
     type: NOTIFICATIONS_BY_USER,
-    domain,
-    token,
     allNotifications,
     offset,
     limit,
   };
 }
 
-export function getNotificationsCount(domain, token) {
+export function getNotificationsCount() {
   return {
     type: NOTIFICATIONS_COUNT_BY_USER,
-    domain,
-    token,
   };
 }
 
-export function markViewed(domain, token, notificationId) {
+export function markViewed(notificationId) {
   return {
     type: NOTIFICATIONS_MARK_AS_VIEWED,
-    domain,
-    token,
     notificationId,
   };
 }
 
-export function markUnread(domain, token, notificationId) {
+export function markUnread(notificationId) {
   return {
     type: NOTIFICATIONS_MARK_AS_UNREAD,
-    domain,
-    token,
     notificationId,
   };
 }
 
-export function markAllAsRead(domain, token, userID) {
+export function markAllAsRead(userID) {
   return {
     type: NOTIFICATIONS_MARK_ALL_AS_READ,
-    domain,
-    token,
     userID,
   };
 }

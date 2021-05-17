@@ -3,8 +3,8 @@
     "error": {
       "code": "码： ",
       "message": "信息： ",
-      "text": "文本",
-      "noRecords": "noRecords"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "数据保存成功！"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "在这里写下您的评论或注释",
     "requiredField": "必填项目",
     "edit": "编辑",
+    "delete": "删除",
     "cancel": "取消",
     "save": "保存",
     "online": "线上",
@@ -30,24 +31,22 @@
     "close": "关",
     "editComment": "编辑",
     "deleteComment": "删除",
-    "delete": "删除",
-    "sortBy": "排序方式",
-    "reset": "重启",
-    "apply": "申请",
-    "showing": "显示",
-    "comments": "注释",
-    "activity": "活动",
-    "submit": "提交",
-    "share": "分享",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "共享设置",
-    "searchUsers": "searchUsers",
-    "noFilters": "noFilters",
-    "searchContacts": "搜索联系人",
-    "selectLocations": "selectLocations",
-    "other": "其他",
-    "chooseOption": "选择选项",
-    "confirm": "确认"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "选择地点",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "未知的用户名。再次检查或尝试您的电子邮件地址。",
       "incorrectPassword": "您输入的用户名密码不正确",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "PIN码已成功保存",
     "removedPinCode": "PIN码已成功删除",
     "close": "关",
-    "confirmPin": "ConfirmPin"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "新增联络人",
     "subAssignThisContact": "分配此联系人",
     "mobile": "移动",
-    "selectLocations": "选择地点",
     "selectSources": "选择来源",
     "connections": "连接数",
     "addGroup": "新增群组",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "从您的网站获取它们可能存在问题。向下拖动以尝试刷新，然后重试。",
     "noContactCommentPlacheHolderOffline": "您目前离线。确保您已连接到wifi或移动数据，以便刷新并获取联系评论。",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "新增群组",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "当前没有任何组注释。",
     "noGroupCommentPlacheHolder1": "从您的网站获取它们可能存在问题。向下拖动以尝试刷新，然后重试。",
     "noGroupCommentPlacheHolderOffline": "您目前离线。确保您已连接到wifi或移动数据，以便刷新并获取群组评论。",
-    "selectLocations": "选择地点",
     "noMembersMessage": "没有成员。 单击此处或单击“更改”以将一些成员添加到该组。",
     "groupName": {
       "label": "组的名字",
       "error": "名称为必填项"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "会议预定",
       "quick_button_meeting_postponed": "会议推迟",
       "quick_button_meeting_complete": "会议完成"
     },
-    "memberCount": "memberCount",
-    "memberList": "成员列表",
     "attendance": {
-      "header": "标头",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "通知事项",

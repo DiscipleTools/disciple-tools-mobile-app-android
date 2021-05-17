@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   flatListItem: {
-    height: 55,
+    height: 40 /* this needs auto sizing */,
     margin: 20,
     marginTop: 10,
     paddingBottom: 10,

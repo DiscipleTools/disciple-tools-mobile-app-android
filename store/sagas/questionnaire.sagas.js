@@ -1,9 +1,13 @@
 import { put, take, all, takeEvery } from 'redux-saga/effects';
+
+import * as SecureStore from 'expo-secure-store';
+
 import * as actions from '../actions/questionnaire.actions';
 
-export function* getActiveQuestionnaires({ domain, token }) {
+export function* getActiveQuestionnaires() {
   yield put({ type: actions.GET_QUESTIONNAIRES_ACTIVE_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -50,9 +54,10 @@ export function* getActiveQuestionnaires({ domain, token }) {
   }
 }
 
-export function* getQuestionnaireById({ domain, token, id }) {
+export function* getQuestionnaireById({ id }) {
   yield put({ type: actions.GET_QUESTIONNAIRE_BY_ID_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -99,9 +104,10 @@ export function* getQuestionnaireById({ domain, token, id }) {
   }
 }
 
-export function* submitQuestionnaire({ domain, token, questionnaire }) {
+export function* submitQuestionnaire({ questionnaire }) {
   yield put({ type: actions.SUBMIT_QUESTIONNAIRE_START });
-
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {

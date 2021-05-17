@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect, useSelector, useDispatch } from 'react-redux';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   BackHandler,
   RefreshControl,
@@ -41,16 +42,18 @@ const propTypes = {
 
 import { styles } from './AttendanceScreen.styles';
 
-const Attendance = ({ navigation }) => {
+const Attendance = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const dispatch = useDispatch();
-  const q_id = navigation.getParam('q_id');
-  const userData = navigation.getParam('userData');
-  const groupData = navigation.getParam('group');
-  const domain = userData.domain;
-  const token = userData.token;
-  const user_id = userData.id;
-  const group_id = groupData.ID;
-  const group_name = groupData.title;
+  const q_id = route.params?.q_id ?? null;
+  const userData = route.params?.userData ?? null;
+  const groupData = route.params?.group ?? null;
+  const domain = userData?.domain ?? null;
+  const token = userData?.token ?? null;
+  const user_id = userData?.id ?? null;
+  const group_id = groupData?.ID ?? null;
+  const group_name = groupData?.title ?? null;
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
   const [groupComment, setGroupComment] = useState('');

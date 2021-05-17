@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import {
   ScrollView,
   Text,
@@ -15,35 +15,43 @@ import {
   BackHandler,
   ActivityIndicator,
   KeyboardAvoidingView,
+  useWindowDimensions,
 } from 'react-native';
-
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
 import PropTypes from 'prop-types';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Label, Input, Icon, Picker, DatePicker, Textarea, Button } from 'native-base';
-import Toast from 'react-native-easy-toast';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import { Chip, Selectize } from 'react-native-material-selectize';
+// TODO: replace with Native Base FAB?
 import ActionButton from 'react-native-action-button';
+
+import { Chip, Selectize } from 'react-native-material-selectize';
 import { TabView, TabBar } from 'react-native-tab-view';
-import { NavigationActions, StackActions } from 'react-navigation';
+//import { NavigationActions, StackActions } from 'react-navigation';
 import MentionsTextInput from 'react-native-mentions';
 import ParsedText from 'react-native-parsed-text';
+// TODO: re-implement?
 //import * as Sentry from 'sentry-expo';
-import { BlurView } from 'expo-blur';
 import { CheckBox } from 'react-native-elements';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import Menu, { MenuItem } from 'react-native-material-menu';
 
-import sharedTools from '../../shared';
+import CustomView from 'components/CustomView';
+import ActionModal from 'components/ActionModal';
+import OfflineBar from 'components/OfflineBar';
+import HeaderLeft from 'components/HeaderLeft';
+import HeaderRight from 'components/HeaderRight';
+import KebabMenu from 'components/KebabMenu';
 import {
   save,
   getCommentsByContact,
   saveComment,
+  getActivitiesByContact,
+  getAll,
   getById,
   getByIdEnd,
-  getActivitiesByContact,
+  getContactSettings,
   saveEnd,
   deleteComment,
   loadingFalse,
@@ -51,44 +59,31 @@ import {
   getShareSettings,
   addUserToShare,
   removeUserToShare,
-} from '../../store/actions/contacts.actions';
+} from 'store/actions/contacts.actions';
+import { getContactFilters } from 'store/actions/users.actions';
 import {
   updatePrevious as updatePreviousGroups,
   searchLocations,
-} from '../../store/actions/groups.actions';
-import Colors from '../../constants/Colors';
-import statusIcon from '../../assets/icons/status.png';
-import hasBibleIcon from '../../assets/icons/book-bookmark.png';
-import readingBibleIcon from '../../assets/icons/word.png';
-import statesBeliefIcon from '../../assets/icons/language.png';
-import canShareGospelIcon from '../../assets/icons/b-chat.png';
-import sharingTheGospelIcon from '../../assets/icons/evangelism.png';
-import baptizedIcon from '../../assets/icons/baptism.png';
-import baptizingIcon from '../../assets/icons/water-aerobics.png';
-import inChurchIcon from '../../assets/icons/group.png';
-import dtIcon from '../../assets/images/dt-icon.png';
-import startingChurchesIcon from '../../assets/icons/group-starting.png';
-import i18n from '../../languages';
+} from 'store/actions/groups.actions';
 
-let toastSuccess;
-let toastError;
-const windowWidth = Dimensions.get('window').width;
-const milestonesGridSize = windowWidth + 5;
-const windowHeight = Dimensions.get('window').height;
-let keyboardDidShowListener, keyboardDidHideListener, focusListener, hardwareBackPressListener;
-const isIOS = Platform.OS === 'ios';
-const defaultFaithMilestones = [
-  'milestone_has_bible',
-  'milestone_reading_bible',
-  'milestone_belief',
-  'milestone_can_share',
-  'milestone_sharing',
-  'milestone_baptized',
-  'milestone_baptizing',
-  'milestone_in_group',
-  'milestone_planting',
-];
-let self;
+import i18n from 'languages';
+
+import utils from 'utils';
+import { isIOS, getRoutes, renderCreationFields, showToast } from 'helpers';
+import Colors from 'constants/Colors';
+import {
+  hasBibleIcon,
+  statusIcon,
+  readingBibleIcon,
+  statesBeliefIcon,
+  canShareGospelIcon,
+  sharingTheGospelIcon,
+  baptizedIcon,
+  baptizingIcon,
+  inChurchIcon,
+  dtIcon,
+  startingChurchesIcon,
+} from 'constants/Icons';
 import { styles } from './ContactDetailScreen.styles';
 
 const initialState = {
@@ -134,7 +129,7 @@ const initialState = {
   executingBack: false,
   keyword: '',
   suggestedUsers: [],
-  height: sharedTools.commentFieldMinHeight,
+  height: utils.commentFieldMinHeight,
   sources: [],
   nonExistingSources: [],
   unmodifiedSources: [],
@@ -173,145 +168,107 @@ const initialState = {
   },
 };
 
-const safeFind = (found, prop) => {
-  if (typeof found === 'undefined') return '';
-  return found[prop];
-};
+// TODO: create a Module component and just pass it in the relevant Settings, etc...
+const ContactDetailScreen = ({ navigation, route }) => {
+  const kebabMenuRef = useRef();
+  const dispatch = useDispatch();
 
-class ContactDetailScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    self = this;
-  }
+  let keyboardDidShowListener, keyboardDidHideListener, focusListener, hardwareBackPressListener;
 
-  static navigationOptions = ({ navigation }) => {
-    const { params } = navigation.state;
-    let navigationTitle = Object.prototype.hasOwnProperty.call(params, 'contactName')
-      ? params.contactName
-      : i18n.t('contactDetailScreen.addNewContact');
-    let headerRight = () => (
-      <Row onPress={params.onSaveContact}>
-        <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-          {i18n.t('global.save')}
-        </Text>
-        <Icon
-          type="Feather"
-          name="check"
-          style={[
-            { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
-            self && self.props.isRTL ? { paddingLeft: 16 } : { paddingRight: 16 },
-          ]}
+  const layout = useWindowDimensions();
+  const windowWidth = layout.width;
+  const milestonesGridSize = windowWidth + 5;
+  const windowHeight = layout.height;
+
+  const userData = useSelector((state) => state.userReducer.userData);
+  const userReducerError = useSelector((state) => state.userReducer.error);
+  const contact = useSelector((state) => state.contactsReducer.contact);
+  const comments = useSelector((state) => state.contactsReducer.comments);
+  const totalComments = useSelector((state) => state.contactsReducer.totalComments);
+  const loadingComments = useSelector((state) => state.contactsReducer.loadingComments);
+  const activities = useSelector((state) => state.contactsReducer.activities);
+  const totalActivities = useSelector((state) => state.contactsReducer.totalActivities);
+  const loadingActivities = useSelector((state) => state.contactsReducer.loadingActivities);
+  const newComment = useSelector((state) => state.contactsReducer.newComment);
+  const contactsReducerError = useSelector((state) => state.contactsReducer.error);
+  const loading = useSelector((state) => state.contactsReducer.loading);
+  const saved = useSelector((state) => state.contactsReducer.saved);
+  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
+  const contactSettings = useSelector((state) => state.contactsReducer.settings);
+  const foundGeonames = useSelector((state) => state.groupsReducer.foundGeonames);
+  const groupsList = useSelector((state) => state.groupsReducer.groups);
+  const contactsList = useSelector((state) => state.contactsReducer.contacts);
+  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
+  const previousContacts = useSelector((state) => state.contactsReducer.previousContacts);
+  const previousGroups = useSelector((state) => state.groupsReducer.previousGroups);
+  const loadingShare = useSelector((state) => state.contactsReducer.loadingShare);
+  const shareSettings = useSelector((state) => state.contactsReducer.shareSettings);
+  const savedShare = useSelector((state) => state.contactsReducer.savedShare);
+  const tags = useSelector((state) => state.contactsReducer.tags);
+
+  const [state, setState] = useState({
+    ...initialState,
+    tabViewConfig: {
+      ...initialState.tabViewConfig,
+      routes: getRoutes(contactSettings),
+    },
+  });
+
+  const kebabMenuItems = [
+    {
+      label: i18n.t('global.share'),
+      callback: () => toggleShareView(),
+    },
+    {
+      label: i18n.t('global.viewOnMobileWeb'),
+      callback: () => {
+        const domain = userData?.domain;
+        const id = contact?.ID;
+        if (domain && id) {
+          Linking.openURL(`https://${domain}/contacts/${id}/`);
+        } else {
+          showToast(i18n.t('global.error.recordData'), true);
+        }
+      },
+    },
+  ];
+
+  useLayoutEffect(() => {
+    const title = route.params?.contactName ?? i18n.t('contactDetailScreen.addNewContact');
+    navigation.setOptions({
+      title,
+      headerLeft: (props) => (
+        <HeaderLeft
+          {...props}
+          onPress={() => {
+            console.log('*** HEADER LEFT WAS PRESSED ***');
+            /*
+              //backButtonTap();
+              //onDisableEdit();
+            */
+          }}
         />
-      </Row>
-    );
-    let headerLeft;
-
-    if (params) {
-      if (params.onEnableEdit && params.contactId && params.onlyView) {
-        headerRight = () => (
-          <Row>
-            <Row onPress={params.onEnableEdit}>
-              <Text
-                style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-                {i18n.t('global.edit')}
-              </Text>
-              <Icon
-                type="MaterialCommunityIcons"
-                name="pencil"
-                style={{
-                  color: Colors.headerTintColor,
-                  marginTop: 'auto',
-                  marginBottom: 'auto',
-                  fontSize: 24,
-                }}
-              />
-            </Row>
-            <Row
-              onPress={() => {
-                params.toggleMenu(true, this.menuRef);
-              }}>
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                }}>
-                <Menu
-                  ref={(menu) => {
-                    if (menu) {
-                      this.menuRef = menu;
-                    }
-                  }}
-                  button={
-                    <Icon
-                      type="Entypo"
-                      name="dots-three-vertical"
-                      style={{
-                        color: Colors.headerTintColor,
-                        fontSize: 20,
-                      }}
-                    />
-                  }>
-                  <MenuItem
-                    onPress={() => {
-                      params.toggleMenu(false, this.menuRef);
-                      params.toggleShareView();
-                    }}>
-                    {i18n.t('global.share')}
-                  </MenuItem>
-                  <MenuItem
-                    onPress={() => {
-                      params.onViewOnMobileWeb();
-                    }}>
-                    {i18n.t('global.viewOnMobileWeb')}
-                  </MenuItem>
-                </Menu>
-              </View>
-            </Row>
-          </Row>
-        );
-      }
-      if (params.onlyView) {
-        headerLeft = () => (
-          <Icon
-            type="Feather"
-            name="arrow-left"
-            onPress={params.backButtonTap}
-            style={{ paddingLeft: 16, color: Colors.headerTintColor, paddingRight: 16 }}
-          />
-        );
-      } else {
-        headerLeft = () => (
-          <Row onPress={params.onDisableEdit}>
-            <Icon
-              type="AntDesign"
-              name="close"
-              style={[
-                { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
-                self && self.props.isRTL ? { paddingRight: 16 } : { paddingLeft: 16 },
-              ]}
-            />
-            <Text
-              style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-              {i18n.t('global.cancel')}
-            </Text>
-          </Row>
-        );
-      }
-    }
-    return {
-      title: navigationTitle,
-      headerLeft,
-      headerRight,
+      ),
+      headerRight: (props) => (
+        <HeaderRight
+          menu=<KebabMenu menuRef={kebabMenuRef} menuItems={kebabMenuItems} />
+          menuRef={kebabMenuRef}
+          {...props}
+          onPress={() => {
+            console.log('*** HEADER RIGHT WAS PRESSED ***');
+            //onEnableEdit();
+            //saveContact();
+          }}
+        />
+      ),
       headerStyle: {
         backgroundColor: Colors.tintColor,
       },
       headerTintColor: Colors.headerTintColor,
       headerTitleStyle: {
         fontWeight: 'bold',
-        width: params.onlyView
+        width: route.params?.onlyView
           ? Platform.select({
               android: 180,
               ios: 140,
@@ -320,110 +277,75 @@ class ContactDetailScreen extends React.Component {
               android: 180,
               ios: 140,
             }),
-        marginLeft: params.onlyView ? undefined : 25,
+        marginLeft: route.params?.onlyView ?? 25,
       },
-    };
-  };
+    });
+  }, [navigation]);
 
-  state = {
-    ...initialState,
-    tabViewConfig: {
-      ...initialState.tabViewConfig,
-      routes: this.getRoutesWithRender(),
-    },
-  };
+  /*
+  useEffect(() => {
+    const contactId = route?.params?.contactId ?? null;
+    console.log(`**** CONTACT ID: ${ contactId } ****`);
+    dispatch(getById(contactId));
+  }, []);
 
-  getRoutesWithRender() {
-    return [
-      ...this.props.contactSettings.tiles.map((tile) => {
-        return {
-          key: tile.name,
-          title: tile.label,
-          render: () => {
-            return this.renderCustomView(tile.fields);
-          },
-        };
-      }),
-      {
-        key: 'comments',
-        title: i18n.t('global.commentsActivity'),
-        render: () => {
-          return this.commentsView();
-        },
-      },
-    ];
-  }
 
-  renderCreationFields() {
-    let creationFields = [];
-    this.props.contactSettings.tiles.forEach((tile) => {
-      let creationFieldsByTile = tile.fields.filter(
-        (field) =>
-          Object.prototype.hasOwnProperty.call(field, 'in_create_form') &&
-          field.in_create_form === true,
-      );
-      if (creationFieldsByTile.length > 0) {
-        creationFields.push(...creationFieldsByTile);
+  useEffect(() => {
+    console.log("*** CONTACT DETAILS LOADED ***");
+    const routes = getRoutes(contactSettings);
+    console.log(routes);
+    setState({
+      ...state,
+      tabViewConfig: {
+        ...state.tabViewConfig,
+        routes,
       }
     });
-    return creationFields;
-  }
+  }, []);
+  */
 
-  componentDidMount() {
-    const { navigation } = this.props;
-    this.onLoad();
-
-    let params = {
-      onEnableEdit: this.onEnableEdit.bind(this),
-      onDisableEdit: this.onDisableEdit.bind(this),
-      onSaveContact: this.onSaveContact.bind(this),
-      backButtonTap: this.backButtonTap.bind(this),
-      toggleMenu: this.toggleMenu.bind(this),
-      toggleShareView: this.toggleShareView.bind(this),
-      onViewOnMobileWeb: this.onViewOnMobileWeb.bind(this),
-    };
+  // componentDidMount
+  useEffect(() => {
+    /* TODO:
+    onLoad();
     // Add afterBack param to execute 'parents' functions (ContactsView, NotificationsView)
     if (!navigation.state.params.afterBack) {
       params = {
         ...params,
-        afterBack: this.afterBack.bind(this),
+        afterBack: afterBack.bind(this),
       };
     }
     navigation.setParams(params);
-
-    keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this.keyboardDidShow.bind(this),
-    );
-    keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      this.keyboardDidHide.bind(this),
-    );
-    focusListener = navigation.addListener('didFocus', () => {
+    */
+    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    navigation.addListener('didFocus', () => {
       //Focus on 'detail mode' (going back or open detail view)
-      if (this.contactIsCreated()) {
-        this.props.loadingFalse();
-        this.onRefresh(this.props.navigation.state.params.contactId, true);
+      console.log('*** DID FOCUS ***');
+      /* TODO
+      if (contactIsCreated()) {
+        dispatch(loadingFalse());
+        onRefresh(navigation.state.params.contactId, true);
       }
+      */
     });
-    // Android bottom back button listener
-    hardwareBackPressListener = BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.state.params.backButtonTap();
-      return true;
+    // Android hardware back press listener
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      console.log('*** ANDROID HARDWARE BACK PRESS ***');
+      // TODO
+      //navigation.state.params.backButtonTap();
+      //return true;
     });
-  }
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      navigation.removeListener('didFocus');
+      backHandler.remove();
+    };
+  }, []);
 
-  componentDidCatch(error, errorInfo) {
-    //Sentry.captureException(errorInfo);
-  }
-
-  componentWillUnmount() {
-    keyboardDidShowListener.remove();
-    keyboardDidHideListener.remove();
-    focusListener.remove();
-    hardwareBackPressListener.remove();
-  }
-
+  /*
   static getDerivedStateFromProps(nextProps, prevState) {
     const {
       contact,
@@ -462,7 +384,7 @@ class ContactDetailScreen extends React.Component {
       if (newState.contact.overall_status) {
         newState = {
           ...newState,
-          overallStatusBackgroundColor: sharedTools.getSelectorColor(
+          overallStatusBackgroundColor: utils.getSelectorColor(
             newState.contact.overall_status,
           ),
         };
@@ -558,7 +480,7 @@ class ContactDetailScreen extends React.Component {
             (user) => user.value === subassignedContact.value,
           );
           if (!foundSubassigned) {
-            // Add non existent contact subassigned in subassigned list (user does not have access permission to this contacts)
+            // Add non existent contact subassigned in subassigned list (user does not have access permission to contacts)
             newState = {
               ...newState,
               subAssignedContacts: [
@@ -591,7 +513,7 @@ class ContactDetailScreen extends React.Component {
             (user) => user.value === relationContact.value,
           );
           if (!foundRelation) {
-            // Add non existent contact relation in relation list (user does not have access permission to this contacts)
+            // Add non existent contact relation in relation list (user does not have access permission to contacts)
             newState = {
               ...newState,
               relationContacts: [
@@ -624,7 +546,7 @@ class ContactDetailScreen extends React.Component {
             (user) => user.value === baptizedByContact.value,
           );
           if (!foundBaptized) {
-            // Add non existent contact relation in relation list (user does not have access permission to this contacts)
+            // Add non existent contact relation in relation list (user does not have access permission to contacts)
             newState = {
               ...newState,
               baptizedByContacts: [
@@ -657,7 +579,7 @@ class ContactDetailScreen extends React.Component {
             (user) => user.value === baptizedContact.value,
           );
           if (!foundBaptized) {
-            // Add non existent contact baptized to list (user does not have access permission to this contacts)
+            // Add non existent contact baptized to list (user does not have access permission to contacts)
             newState = {
               ...newState,
               baptizedContacts: [
@@ -690,7 +612,7 @@ class ContactDetailScreen extends React.Component {
             (user) => user.value === coachedByContact.value,
           );
           if (!foundcoachedBy) {
-            // Add non existent contact coachedBy to list (user does not have access permission to this contacts)
+            // Add non existent contact coachedBy to list (user does not have access permission to contacts)
             newState = {
               ...newState,
               coachedByContacts: [
@@ -723,7 +645,7 @@ class ContactDetailScreen extends React.Component {
             (user) => user.value === coachedContact.value,
           );
           if (!foundCoached) {
-            // Add non existent contact coached to list (user does not have access permission to this contacts)
+            // Add non existent contact coached to list (user does not have access permission to contacts)
             newState = {
               ...newState,
               coachedContacts: [
@@ -754,7 +676,7 @@ class ContactDetailScreen extends React.Component {
         newState.contact.groups.values.forEach((groupConnection) => {
           const foundGroup = newState.groups.find((group) => group.value === groupConnection.value);
           if (!foundGroup) {
-            // Add non existent group to list (user does not have access permission to this groups)
+            // Add non existent group to list (user does not have access permission to groups)
             newState = {
               ...newState,
               connectionGroups: [
@@ -786,7 +708,7 @@ class ContactDetailScreen extends React.Component {
           (user) => user.key === newState.contact.assigned_to.key,
         );
         if (!foundAssigned) {
-          // Add non existent group to list (user does not have access permission to this groups)
+          // Add non existent group to list (user does not have access permission to groups)
           newState = {
             ...newState,
             assignedToContacts: [
@@ -892,7 +814,18 @@ class ContactDetailScreen extends React.Component {
 
     return newState;
   }
+  */
 
+  // componentDidUpdate
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (didMountRef.current) {
+      // TODO
+      console.log('*** COMPONENT DID UPDATE ***');
+    } else didMountRef.current = true;
+  });
+
+  /*
   componentDidUpdate(prevProps) {
     const {
       userReducerError,
@@ -902,15 +835,15 @@ class ContactDetailScreen extends React.Component {
       contactsReducerError,
       saved,
       savedShare,
-    } = this.props;
+    } = 
 
     // NEW COMMENT
     if (newComment && prevProps.newComment !== newComment) {
       // Only do scroll when element its rendered
-      if (this.commentsFlatListRef) {
-        this.commentsFlatListRef.scrollToOffset({ animated: true, offset: 0 });
+      if (commentsFlatListRef) {
+        commentsFlatListRef.scrollToOffset({ animated: true, offset: 0 });
       }
-      this.setComment('');
+      setComment('');
     }
 
     // CONTACT SAVE / GET BY ID
@@ -921,32 +854,32 @@ class ContactDetailScreen extends React.Component {
       // Same offline contact created in DB (AutoID to DBID)
       if (
         (Object.prototype.hasOwnProperty.call(contact, 'ID') &&
-          !Object.prototype.hasOwnProperty.call(this.state.contact, 'ID')) ||
+          !Object.prototype.hasOwnProperty.call(state.contact, 'ID')) ||
         (Object.prototype.hasOwnProperty.call(contact, 'ID') &&
-          contact.ID.toString() === this.state.contact.ID.toString()) ||
+          contact.ID.toString() === state.contact.ID.toString()) ||
         (Object.prototype.hasOwnProperty.call(contact, 'oldID') &&
-          contact.oldID === this.state.contact.ID.toString())
+          contact.oldID === state.contact.ID.toString())
       ) {
-        // Highlight Updates -> Compare this.state.contact with contact and show differences
+        // Highlight Updates -> Compare state.contact with contact and show differences
         navigation.setParams({ contactName: contact.name, contactId: contact.ID });
-        if (this.state.comment && this.state.comment.length > 0) {
-          this.onSaveComment();
+        if (state.comment && state.comment.length > 0) {
+          onSaveComment();
         }
-        this.getContactByIdEnd();
+        dispatch(getByIdEnd());
         // Add contact to 'previousContacts' array on creation
         if (
-          !this.props.previousContacts.find(
+          !previousContacts.find(
             (previousContact) => previousContact.contactId === parseInt(contact.ID),
           )
         ) {
-          this.props.updatePrevious([
-            ...this.props.previousContacts,
+          dispatch(updatePrevious([
+            ...previousContacts,
             {
               contactId: parseInt(contact.ID),
               onlyView: true,
               contactName: contact.name,
             },
-          ]);
+          ]));
         }
       }
     }
@@ -958,27 +891,27 @@ class ContactDetailScreen extends React.Component {
       // Same contact updated (offline/online)
       // Same offline contact created in DB (AutoID to DBID)
       if (
-        (typeof contact.ID !== 'undefined' && typeof this.state.contact.ID === 'undefined') ||
-        (contact.ID && contact.ID.toString() === this.state.contact.ID.toString()) ||
-        (contact.oldID && contact.oldID === this.state.contact.ID.toString())
+        (typeof contact.ID !== 'undefined' && typeof state.contact.ID === 'undefined') ||
+        (contact.ID && contact.ID.toString() === state.contact.ID.toString()) ||
+        (contact.oldID && contact.oldID === state.contact.ID.toString())
       ) {
-        // Highlight Updates -> Compare this.state.contact with current contact and show differences
-        this.onRefreshCommentsActivities(contact.ID, true);
+        // Highlight Updates -> Compare state.contact with current contact and show differences
+        onRefreshCommentsActivities(contact.ID, true);
         toastSuccess.show(
           <View>
             <Text style={{ color: Colors.sucessText }}>{i18n.t('global.success.save')}</Text>
           </View>,
           3000,
         );
-        this.onDisableEdit();
-        this.props.endSaveContact();
+        onDisableEdit();
+        dispatch(saveEnd());
       }
     }
 
     // Share Contact with user
     if (savedShare && prevProps.savedShare !== savedShare) {
-      // Highlight Updates -> Compare this.state.contact with current contact and show differences
-      this.onRefreshCommentsActivities(this.state.contact.ID, true);
+      // Highlight Updates -> Compare state.contact with current contact and show differences
+      onRefreshCommentsActivities(state.contact.ID, true);
       toastSuccess.show(
         <View>
           <Text style={{ color: Colors.sucessText }}>{i18n.t('global.success.save')}</Text>
@@ -1009,7 +942,7 @@ class ContactDetailScreen extends React.Component {
     }
     // Fix to press back button in comments tab
     if (prevProps.navigation.state.params.hideTabBar !== navigation.state.params.hideTabBar) {
-      if (!navigation.state.params.hideTabBar && this.state.executingBack) {
+      if (!navigation.state.params.hideTabBar && state.executingBack) {
         setTimeout(() => {
           navigation.goBack(null);
           navigation.state.params.afterBack();
@@ -1017,12 +950,15 @@ class ContactDetailScreen extends React.Component {
       }
     }
   }
+  */
 
-  contactIsCreated = () =>
-    Object.prototype.hasOwnProperty.call(this.props.navigation.state.params, 'contactId');
+  // TODO: ?? delete or merge with Group
+  const contactIsCreated = () => {
+    return Object.prototype.hasOwnProperty.call(navigation.state.params, 'contactId');
+  };
 
-  onLoad() {
-    const { navigation } = this.props;
+  // TODO: ?? delete or merge with Group
+  const onLoad = () => {
     const { onlyView, contactId, contactName, importContact } = navigation.state.params;
     let newState = {};
     if (importContact) {
@@ -1044,7 +980,7 @@ class ContactDetailScreen extends React.Component {
       navigation.setParams({
         hideTabBar: true,
       });
-    } else if (this.contactIsCreated()) {
+    } else if (contactIsCreated()) {
       newState = {
         contact: {
           ID: contactId,
@@ -1086,29 +1022,34 @@ class ContactDetailScreen extends React.Component {
         onlyView,
       };
     }
-    this.setState(newState, () => {
-      this.getLists();
+    setState(newState, () => {
+      getLists();
     });
-  }
+  };
 
-  keyboardDidShow(event) {
-    this.setState({
-      footerLocation: isIOS ? event.endCoordinates.height /*+ extraNotchHeight*/ : 0,
+  // OK, move to helpers?
+  const keyboardDidShow = (event) => {
+    setState({
+      ...state,
+      footerLocation: isIOS ? event.endCoordinates.height : 0,
     });
-  }
+  };
 
-  keyboardDidHide(event) {
-    this.setState({
+  // OK, move to helpers?
+  const keyboardDidHide = (event) => {
+    setState({
+      ...state,
       footerLocation: 0,
     });
-  }
+  };
 
-  backButtonTap = () => {
-    let { navigation } = this.props;
+  // TODO: merge with Group and move to helpers
+  const backButtonTap = () => {
     let { params } = navigation.state;
     if (params.hideTabBar) {
-      this.setState(
+      setState(
         {
+          ...state,
           executingBack: true,
         },
         () => {
@@ -1124,17 +1065,18 @@ class ContactDetailScreen extends React.Component {
     }
   };
 
-  afterBack = () => {
-    let { navigation } = this.props;
-    let newPreviousContacts = [...this.props.previousContacts];
+  // TODO: specific to Contact or merge with Group and move to helpers?
+  const afterBack = () => {
+    let newPreviousContacts = [...previousContacts];
     newPreviousContacts.pop();
-    this.props.updatePrevious(newPreviousContacts);
+    dispatch(updatePrevious(newPreviousContacts));
     if (newPreviousContacts.length > 0) {
-      this.props.loadingFalse();
+      dispatch(loadingFalse());
       let currentParams = {
         ...newPreviousContacts[newPreviousContacts.length - 1],
       };
-      this.setState({
+      setState({
+        ...state,
         contact: {
           ID: currentParams.contactId,
           name: currentParams.contactName,
@@ -1152,12 +1094,14 @@ class ContactDetailScreen extends React.Component {
       navigation.setParams({
         ...currentParams,
       });
-      this.onRefresh(currentParams.contactId, true);
+      onRefresh(currentParams.contactId, true);
     } else if (navigation.state.params.fromNotificationView) {
+      /* TODO:
       const resetAction = StackActions.reset({
         index: 0,
         actions: [NavigationActions.navigate({ routeName: 'ContactList' })],
       });
+      */
       navigation.dispatch(resetAction);
       navigation.navigate('NotificationList');
     } else {
@@ -1168,22 +1112,24 @@ class ContactDetailScreen extends React.Component {
     }
   };
 
-  onRefresh(contactId, forceRefresh = false) {
-    if (!self.state.loading || forceRefresh) {
-      self.getContactById(contactId);
-      self.onRefreshCommentsActivities(contactId, true);
-      self.getShareSettings(contactId);
+  // TODO: leave this specific to each Module?
+  const onRefresh = (zzcontactId, forceRefresh = false) => {
+    //const onRefresh = (contactId, forceRefresh = false) => {
+    if (!state.loading || forceRefresh) {
+      const contactId = route?.params?.contactId ?? null;
+      console.log(`**** CONTACT ID: ${contactId} ****`);
+      dispatch(getById(contactId));
+      onRefreshCommentsActivities(contactId, true);
+      dispatch(getShareSettings(contactId));
+      if (state.showShareView) {
+        toggleShareView();
+      }
     }
-  }
+  };
 
-  onRefreshCommentsActivities(contactId, resetPagination = false) {
-    this.getContactComments(contactId, resetPagination);
-    this.getContactActivities(contactId, resetPagination);
-  }
-
-  getLists = async () => {
+  // TODO: move to helpers (GroupDetails needs it also)
+  const getLists = async () => {
     let newState = {};
-
     const users = await ExpoFileSystemStorage.getItem('usersList');
     if (users !== null) {
       newState = {
@@ -1196,7 +1142,7 @@ class ContactDetailScreen extends React.Component {
           // Prevent 'null' values
           if (
             Object.prototype.hasOwnProperty.call(user, 'contact_id') &&
-            sharedTools.isNumeric(user.contact_id)
+            utils.isNumeric(user.contact_id)
           ) {
             newUser = {
               ...newUser,
@@ -1224,12 +1170,12 @@ class ContactDetailScreen extends React.Component {
       };
     }
 
-    let sourcesList = Object.keys(this.props.contactSettings.fields.sources.values).map((key) => ({
-      name: this.props.contactSettings.fields.sources.values[key].label,
+    let sourcesList = Object.keys(contactSettings.fields.sources.values).map((key) => ({
+      name: contactSettings.fields.sources.values[key].label,
       value: key,
     }));
 
-    const mappedContacts = this.props.contactsList.map((contact) => {
+    const mappedContacts = contactsList.map((contact) => {
       return {
         name: contact.title,
         value: contact.ID,
@@ -1246,7 +1192,7 @@ class ContactDetailScreen extends React.Component {
     newState = {
       ...newState,
       usersContacts: [...mappedContacts, ...mappedUsers],
-      groups: this.props.groupsList.map((group) => ({
+      groups: groupsList.map((group) => ({
         name: group.title,
         value: group.ID,
       })),
@@ -1255,121 +1201,93 @@ class ContactDetailScreen extends React.Component {
       unmodifiedSources: [...sourcesList],
     };
 
-    this.setState(newState, () => {
+    setState(newState, () => {
       // Only execute in detail mode
-      if (this.contactIsCreated()) {
-        this.onRefresh(this.state.contact.ID);
+      if (contactIsCreated()) {
+        onRefresh(state.contact.ID);
       }
     });
   };
 
-  getContactById(contactId) {
-    this.props.getById(this.props.userData.domain, this.props.userData.token, contactId);
-  }
+  // TODO: move to helpers?
+  const onRefreshCommentsActivities = (contactId, resetPagination = false) => {
+    getContactComments(contactId, resetPagination);
+    getContactActivities(contactId, resetPagination);
+  };
 
-  getContactByIdEnd() {
-    this.props.getByIdEnd();
-  }
-
-  getContactComments(contactId, resetPagination = false) {
-    if (this.props.isConnected) {
+  // TODO: move to helpers?
+  const getContactComments = (contactId, resetPagination = false) => {
+    if (isConnected) {
       if (resetPagination) {
-        this.props.getComments(this.props.userData.domain, this.props.userData.token, contactId, {
-          offset: 0,
-          limit: 10,
-        });
+        dispatch(
+          getCommentsByContact(contactId, {
+            offset: 0,
+            limit: 10,
+          }),
+        );
       } else {
         //ONLY GET DATA IF THERE IS MORE DATA TO GET
         if (
-          !this.state.loadComments &&
-          this.state.comments.pagination.offset < this.state.comments.pagination.total
+          !state.loadComments &&
+          state.comments.pagination.offset < state.comments.pagination.total
         ) {
-          this.props.getComments(
-            this.props.userData.domain,
-            this.props.userData.token,
-            contactId,
-            this.state.comments.pagination,
-          );
+          dispatch(getCommentsByContact(contactId, state.comments.pagination));
         }
       }
     }
-  }
+  };
 
-  getContactActivities(contactId, resetPagination = false) {
-    if (this.props.isConnected) {
+  // TODO: move to helpers?
+  const getContactActivities = (contactId, resetPagination = false) => {
+    if (isConnected) {
       if (resetPagination) {
-        this.props.getActivities(this.props.userData.domain, this.props.userData.token, contactId, {
-          offset: 0,
-          limit: 10,
-        });
+        dispatch(
+          getActivitiesByContact(contactId, {
+            offset: 0,
+            limit: 10,
+          }),
+        );
       } else {
         //ONLY GET DATA IF THERE IS MORE DATA TO GET
         if (
-          !this.state.loadActivities &&
-          this.state.activities.pagination.offset < this.state.activities.pagination.total
+          !state.loadActivities &&
+          state.activities.pagination.offset < state.activities.pagination.total
         ) {
-          this.props.getActivities(
-            this.props.userData.domain,
-            this.props.userData.token,
-            contactId,
-            this.state.activities.pagination,
-          );
+          dispatch(getActivitiesByContact(contactId, state.activities.pagination));
         }
       }
     }
-  }
+  };
 
-  getShareSettings(contactId) {
-    this.props.getShareSettings(this.props.userData.domain, this.props.userData.token, contactId);
-    if (this.state.showShareView) {
-      this.toggleShareView();
-    }
-  }
-
-  addUserToShare(userId) {
-    this.props.addUserToShare(
-      this.props.userData.domain,
-      this.props.userData.token,
-      this.state.contact.ID,
-      userId,
-    );
-  }
-
-  removeUserToShare(userId) {
-    this.props.removeUserToShare(
-      this.props.userData.domain,
-      this.props.userData.token,
-      this.state.contact.ID,
-      userId,
-    );
-  }
-
-  onEnableEdit = () => {
-    this.setState((prevState) => {
+  // TODO: move to helpers
+  const onEnableEdit = () => {
+    setState((prevState) => {
       let indexFix = prevState.tabViewConfig.index;
       // Last tab (comments/activities)
       if (prevState.tabViewConfig.index === prevState.tabViewConfig.routes.length - 1) {
         indexFix = indexFix - 1; // -1 for commentsTab
       }
       return {
+        ...state,
         onlyView: false,
         tabViewConfig: {
           ...prevState.tabViewConfig,
           index: indexFix,
-          routes: this.getRoutesWithRender().filter(
+          routes: getRoutes(contactSettings).filter(
             (route) => route.key !== 'comments', // && route.key !== 'other',
           ),
         },
       };
     });
-    this.props.navigation.setParams({
+    navigation.setParams({
       hideTabBar: true,
       onlyView: false,
-      contactName: this.state.contact.name,
+      contactName: state.contact.name,
     });
   };
 
-  onDisableEdit = () => {
+  // TODO: move to helpers
+  const onDisableEdit = () => {
     const {
       unmodifiedContact,
       unmodifiedSources,
@@ -1382,8 +1300,8 @@ class ContactDetailScreen extends React.Component {
       unmodifiedConnectionGroups,
       unmodifedAssignedToContacts,
       unmodifiedSelectedReasonStatus,
-    } = this.state;
-    this.setState((prevState) => {
+    } = state;
+    setState((prevState) => {
       // Set correct index in Tab position according to view mode and current tab position
       let indexFix = prevState.tabViewConfig.index;
       let newState = {
@@ -1391,13 +1309,11 @@ class ContactDetailScreen extends React.Component {
         contact: {
           ...unmodifiedContact,
         },
-        overallStatusBackgroundColor: sharedTools.getSelectorColor(
-          unmodifiedContact.overall_status,
-        ),
+        overallStatusBackgroundColor: utils.getSelectorColor(unmodifiedContact.overall_status),
         tabViewConfig: {
           ...prevState.tabViewConfig,
           index: indexFix,
-          routes: this.getRoutesWithRender(),
+          routes: getRoutes(contactSettings),
         },
         sources: [...unmodifiedSources],
         subAssignedContacts: [...unmodifiedSubAssignedContacts],
@@ -1430,43 +1346,34 @@ class ContactDetailScreen extends React.Component {
           },
         };
       }
-      return newState;
+      return {
+        ...state,
+        newState,
+      };
     });
-    this.props.navigation.setParams({ hideTabBar: false, onlyView: true });
+    navigation.setParams({ hideTabBar: false, onlyView: true });
   };
 
-  onSelectizeValueChange = (propName, selectedItems) => {
-    this.setState((prevState) => ({
-      contact: {
-        ...prevState.contact,
-        [propName]: {
-          values: sharedTools.getSelectizeValuesToSave(
-            prevState.contact[propName] ? prevState.contact[propName].values : [],
-            selectedItems,
-          ),
-        },
-      },
-    }));
-  };
-
-  setContactStatus = (value) => {
+  // TODO: merge with 'setGroupStatus'? and move to helpers? bc Field and FieldValue
+  const setContactStatus = (value) => {
     let contactHaveReason = Object.prototype.hasOwnProperty.call(
-      this.props.contactSettings.fields,
+      contactSettings.fields,
       `reason_${value}`,
     );
-    this.setState((prevState) => {
+    setState((prevState) => {
       let newState = {
+        ...state,
         contact: {
           ...prevState.contact,
           overall_status: value,
         },
-        overallStatusBackgroundColor: sharedTools.getSelectorColor(value),
+        overallStatusBackgroundColor: utils.getSelectorColor(value),
         showReasonStatusView: contactHaveReason,
       };
 
       if (contactHaveReason) {
         // SET FIRST REASON STATUS AS DEFAULT SELECTED OPTION
-        let reasonValues = Object.keys(this.props.contactSettings.fields[`reason_${value}`].values);
+        let reasonValues = Object.keys(contactSettings.fields[`reason_${value}`].values);
         newState = {
           ...newState,
           selectedReasonStatus: {
@@ -1480,17 +1387,19 @@ class ContactDetailScreen extends React.Component {
     });
   };
 
-  onSaveContact = (quickAction = {}) => {
-    this.setState(
+  // TODO: move or leave bc it is pretty specific to Contact?
+  const onSaveContact = (quickAction = {}) => {
+    setState(
       {
+        ...state,
         nameRequired: false,
       },
       () => {
         Keyboard.dismiss();
-        if (this.state.contact.name && this.state.contact.name.length > 0) {
-          const { unmodifiedContact } = this.state;
+        if (state.contact.name && state.contact.name.length > 0) {
+          const { unmodifiedContact } = state;
           let contactToSave = {
-            ...this.state.contact,
+            ...state.contact,
           };
           if (
             Object.prototype.hasOwnProperty.call(quickAction, 'quick_button_no_answer') ||
@@ -1505,8 +1414,8 @@ class ContactDetailScreen extends React.Component {
             };
           }
           contactToSave = {
-            ...sharedTools.diff(unmodifiedContact, contactToSave),
-            name: this.state.contact.name,
+            ...utils.diff(unmodifiedContact, contactToSave),
+            name: state.contact.name,
           };
           // Do not save fields with empty values
           Object.keys(contactToSave)
@@ -1535,15 +1444,15 @@ class ContactDetailScreen extends React.Component {
               delete contactToSave[key];
             }
           });
-          //After 'sharedTools.diff()' method, ID is removed, then we add it again
-          if (Object.prototype.hasOwnProperty.call(this.state.contact, 'ID')) {
+          //After 'utils.diff()' method, ID is removed, then we add it again
+          if (Object.prototype.hasOwnProperty.call(state.contact, 'ID')) {
             contactToSave = {
               ...contactToSave,
-              ID: this.state.contact.ID,
+              ID: state.contact.ID,
             };
           }
           if (contactToSave.assigned_to) {
-            // TODO: this is a (hopefully temprorary workaround)
+            // TODO: is a (hopefully temprorary workaround)
             // ref: 'setContactCustomFieldValue' method AND "case 'user_select':" Ln#4273
             const assignedTo = contactToSave.assigned_to;
             const assignedToID = assignedTo.hasOwnProperty('key') ? assignedTo.key : assignedTo;
@@ -1552,14 +1461,11 @@ class ContactDetailScreen extends React.Component {
               assigned_to: `user-${assignedToID}`,
             };
           }
-          this.props.saveContact(
-            this.props.userData.domain,
-            this.props.userData.token,
-            contactToSave,
-          );
+          dispatch(save(contactToSave));
         } else {
           //Empty contact name
-          this.setState({
+          setState({
+            ...state,
             nameRequired: true,
           });
         }
@@ -1567,84 +1473,39 @@ class ContactDetailScreen extends React.Component {
     );
   };
 
-  formatActivityDate = (comment) => {
+  // TODO: move to utils (replace utils with utils)
+  const formatActivityDate = (comment) => {
     let baptismDateRegex = /\{(\d+)\}+/;
     if (baptismDateRegex.test(comment)) {
       comment = comment.replace(baptismDateRegex, (match, timestamp) =>
-        sharedTools.formatDateToView(timestamp * 1000),
+        utils.formatDateToView(timestamp * 1000),
       );
     }
     return comment;
   };
 
-  setComment = (value) => {
-    this.setState({
+  // TODO: move to helpers
+  const setComment = (value) => {
+    setState({
+      ...state,
       comment: value,
     });
   };
 
-  onSaveComment = () => {
-    const { comment } = this.state;
-    if (!this.state.loadComments) {
+  // TODO: move to helpers?
+  const onSaveComment = () => {
+    const { comment } = state;
+    if (!state.loadComments) {
       if (comment.length > 0) {
         Keyboard.dismiss();
-        this.props.saveComment(
-          this.props.userData.domain,
-          this.props.userData.token,
-          this.state.contact.ID,
-          {
-            comment,
-          },
-        );
+        dispatch(saveComment(state.contact.ID, { comment }));
       }
     }
   };
 
-  onCheckExistingMilestone = (milestoneName, customProp = null) => {
-    let list = customProp ? this.state.contact[customProp] : this.state.contact.milestones;
-    const milestonesList = list ? [...list.values] : [];
-    // Return 'boolean' acording to milestone existing in the 'milestonesList'
-    return milestonesList.some(
-      (milestone) => milestone.value === milestoneName && !milestone.delete,
-    );
-  };
-
-  onMilestoneChange = (milestoneName, customProp = null) => {
-    let list = customProp ? this.state.contact[customProp] : this.state.contact.milestones;
-    let propName = customProp ? customProp : 'milestones';
-    const milestonesList = list ? [...list.values] : [];
-    const foundMilestone = milestonesList.find((milestone) => milestone.value === milestoneName);
-    if (foundMilestone) {
-      const milestoneIndex = milestonesList.indexOf(foundMilestone);
-      if (foundMilestone.delete) {
-        const milestoneModified = {
-          ...foundMilestone,
-        };
-        delete milestoneModified.delete;
-        milestonesList[milestoneIndex] = milestoneModified;
-      } else {
-        milestonesList[milestoneIndex] = {
-          ...foundMilestone,
-          delete: true,
-        };
-      }
-    } else {
-      milestonesList.push({
-        value: milestoneName,
-      });
-    }
-    this.setState((prevState) => ({
-      contact: {
-        ...prevState.contact,
-        [propName]: {
-          values: milestonesList,
-        },
-      },
-    }));
-  };
-
-  getCommentsAndActivities() {
-    const { comments, activities, filtersSettings } = this.state;
+  // TODO: move to utils (or helpers bc of above)?
+  const getCommentsAndActivities = () => {
+    const { comments, activities, filtersSettings } = state;
     let list = [];
     if (filtersSettings.showComments) {
       list = list.concat(comments.data);
@@ -1652,10 +1513,11 @@ class ContactDetailScreen extends React.Component {
     if (filtersSettings.showActivities) {
       list = list.concat(activities.data);
     }
-    return sharedTools.groupCommentsActivities(list);
-  }
+    return utils.groupCommentsActivities(list);
+  };
 
-  getSelectizeItems = (contactList, localList) => {
+  // TODO: move to helper bc used by: ContactDetails, GroupDetails, Field, FieldValue
+  const getSelectizeItems = (contactList, localList) => {
     const items = [];
     if (contactList) {
       contactList.values.forEach((listItem) => {
@@ -1668,20 +1530,13 @@ class ContactDetailScreen extends React.Component {
         }
       });
     }
-    // remove dupes
-    const set = new Set(items.map((item) => JSON.stringify(item)));
-    return [...set].map((item) => JSON.parse(item));
+    return items;
   };
 
-  onViewOnMobileWeb = () => {
-    const domain = this.props.userData.domain;
-    const id = this.state.contact.ID;
-    Linking.openURL(`https://${domain}/contacts/${id}/`);
-  };
-
-  linkingPhoneDialer = (phoneNumber) => {
+  // TODO: move to helpers? currently only in Contacts, but some other future Module?
+  const linkingPhoneDialer = (phoneNumber) => {
     let number = '';
-    if (Platform.OS === 'ios') {
+    if (isIOS) {
       number = 'telprompt:${' + phoneNumber + '}';
     } else {
       number = 'tel:${' + phoneNumber + '}';
@@ -1689,63 +1544,395 @@ class ContactDetailScreen extends React.Component {
     Linking.openURL(number);
   };
 
-  offlineBarRender = () => (
-    <View style={[styles.offlineBar]}>
-      <Text style={[styles.offlineBarText]}>{i18n.t('global.offline')}</Text>
-    </View>
-  );
-
-  goToContactDetailScreen = (contactID, name) => {
-    let { navigation } = this.props;
-    /* eslint-disable */
+  // TODO: move to helpers?
+  const goToContactDetailScreen = (contactID, name) => {
     // Save new contact in 'previousContacts' array
-    if (
-      !this.props.previousContacts.find(
-        (previousContact) => previousContact.contactId === contactID,
-      )
-    ) {
+    if (!previousContacts.find((previousContact) => previousContact.contactId === contactID)) {
       // Add contact to 'previousContacts' array on creation
-      this.props.updatePrevious([
-        ...this.props.previousContacts,
-        {
-          contactId: contactID,
-          onlyView: true,
-          contactName: name,
-        },
-      ]);
+      dispatch(
+        updatePrevious([
+          ...previousContacts,
+          {
+            contactId: contactID,
+            onlyView: true,
+            contactName: name,
+          },
+        ]),
+      );
     }
     navigation.push('ContactDetail', {
       contactId: contactID,
       onlyView: true,
       contactName: name,
-      afterBack: () => this.afterBack(),
+      afterBack: () => afterBack(),
     });
-    /* eslint-enable */
   };
 
-  goToGroupDetailScreen = (groupID, name) => {
+  // TODO: move to helpers?
+  const goToGroupDetailScreen = (groupID, name) => {
     // Clean 'previousContacts' array
-    this.props.updatePreviousGroups([
-      {
-        groupId: groupID,
-        onlyView: true,
-        groupName: name,
-      },
-    ]);
-    this.props.navigation.navigate('GroupDetail', {
+    dispatch(
+      updatePreviousGroups([
+        {
+          groupId: groupID,
+          onlyView: true,
+          groupName: name,
+        },
+      ]),
+    );
+    navigation.navigate('GroupDetail', {
       groupId: groupID,
       onlyView: true,
       groupName: name,
     });
   };
 
-  noCommentsRender = () => (
+  // TODO:
+  const toggleShareView = () => {
+    setState({
+      ...state,
+      showShareView: !state.showShareView,
+    });
+  };
+
+  // TODO: filter
+  // move to helpers?
+  const toggleFilterView = () => {
+    setState({
+      ...state,
+      showFilterView: !state.showFilterView,
+    });
+  };
+
+  // TODO: filter
+  const resetFilters = () => {
+    setState(
+      {
+        ...state,
+        filtersSettings: {
+          showComments: true,
+          showActivities: true,
+        },
+      },
+      () => {
+        toggleFilterView();
+      },
+    );
+  };
+
+  // TODO: filter
+  const toggleFilter = (value, filterName) => {
+    setState((prevState) => ({
+      ...state,
+      filtersSettings: {
+        ...prevState.filtersSettings,
+        [filterName]: !value,
+      },
+    }));
+  };
+
+  // TODO: ??
+  const onSuggestionTap = (username, hidePanel) => {
+    hidePanel();
+    let comment = state.comment.slice(0, -state.keyword.length);
+    let mentionFormat = `@[${username.label}](${username.key})`;
+    setState({
+      ...state,
+      suggestedUsers: [],
+      comment: `${comment}${mentionFormat}`,
+    });
+  };
+
+  // TODO: ??
+  const filterUsers = (keyword) => {
+    let newKeyword = keyword.replace('@', '');
+    setState((state) => {
+      return {
+        ...state,
+        suggestedUsers: state.users.filter((user) =>
+          user.label.toLowerCase().includes(newKeyword.toLowerCase()),
+        ),
+        keyword,
+      };
+    });
+  };
+
+  // TODO: comments
+  const renderSuggestionsRow = ({ item }, hidePanel) => {
+    return (
+      <TouchableOpacity onPress={() => onSuggestionTap(item, hidePanel)}>
+        <View style={styles.suggestionsRowContainer}>
+          <View style={styles.userIconBox}>
+            <Text style={styles.usernameInitials}>
+              {!!item.label && item.label.substring(0, 2).toUpperCase()}
+            </Text>
+          </View>
+          <View style={styles.userDetailsBox}>
+            <Text style={styles.displayNameText}>{item.label}</Text>
+            <Text style={styles.usernameText}>@{item.label}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  // TODO: comments
+  const renderFilterCommentsView = () => (
+    <View style={{ flex: 1 }}>
+      <Text
+        style={[
+          {
+            color: Colors.tintColor,
+            fontSize: 18,
+            textAlign: 'left',
+            fontWeight: 'bold',
+            marginBottom: 20,
+            marginTop: 20,
+            marginLeft: 10,
+          },
+        ]}>
+        {i18n.t('global.showing')}:
+      </Text>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => toggleFilter(state.filtersSettings.showComments, 'showComments')}>
+        <View
+          style={{
+            flexDirection: 'row',
+            height: 50,
+          }}>
+          <Text
+            style={{
+              marginRight: 'auto',
+              marginLeft: 10,
+            }}>
+            {i18n.t('global.comments')} ({state.comments.data.length})
+          </Text>
+          <CheckBox
+            Component={TouchableWithoutFeedback}
+            checked={state.filtersSettings.showComments}
+            containerStyle={{
+              padding: 0,
+              margin: 0,
+            }}
+            checkedColor={Colors.tintColor}
+          />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => toggleFilter(state.filtersSettings.showActivities, 'showActivities')}>
+        <View
+          style={{
+            flexDirection: 'row',
+            height: 50,
+          }}>
+          <Text
+            style={{
+              marginRight: 'auto',
+              marginLeft: 10,
+            }}>
+            {i18n.t('global.activity')} ({state.activities.data.length})
+          </Text>
+          <CheckBox
+            Component={TouchableWithoutFeedback}
+            checked={state.filtersSettings.showActivities}
+            containerStyle={{
+              padding: 0,
+              margin: 0,
+            }}
+            checkedColor={Colors.tintColor}
+          />
+        </View>
+      </TouchableOpacity>
+      <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row' }}>
+        <Button
+          style={{
+            height: 75,
+            width: windowWidth / 2,
+            backgroundColor: '#FFFFFF',
+          }}
+          onPress={() => resetFilters()}>
+          <Text
+            style={{
+              color: Colors.primary,
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}>
+            {i18n.t('global.reset')}
+          </Text>
+        </Button>
+        <Button
+          style={{
+            height: 75,
+            width: windowWidth / 2,
+            backgroundColor: Colors.primary,
+          }}
+          onPress={() => toggleFilterView()}>
+          <Text
+            style={{
+              color: '#FFFFFF',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}>
+            {i18n.t('global.apply')}
+          </Text>
+        </Button>
+      </View>
+    </View>
+  );
+
+  // TODO: comments
+  const renderAllCommentsView = () => (
+    <View style={{ flex: 1, paddingBottom: state.footerHeight + state.footerLocation }}>
+      {state.comments.data.length == 0 &&
+      state.activities.data.length == 0 &&
+      !state.loadComments &&
+      !state.loadActivities ? (
+        noCommentsRender()
+      ) : (
+        <FlatList
+          style={{
+            backgroundColor: '#ffffff',
+          }}
+          ref={(flatList) => {
+            commentsFlatListRef = flatList;
+          }}
+          data={getCommentsAndActivities()}
+          extraData={!state.loadingMoreComments || !state.loadingMoreActivities}
+          inverted
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 1,
+                backgroundColor: '#CCCCCC',
+              }}
+            />
+          )}
+          keyExtractor={(item, index) => String(index)}
+          renderItem={(item) => {
+            const commentOrActivity = item.item;
+            return renderActivityOrCommentRow(commentOrActivity);
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={state.loadComments || state.loadActivities}
+              onRefresh={() => onRefreshCommentsActivities(state.contact.ID, true)}
+            />
+          }
+          onScroll={({ nativeEvent }) => {
+            utils.onlyExecuteLastCall(
+              {},
+              () => {
+                const flatList = nativeEvent;
+                const contentOffsetY = flatList.contentOffset.y;
+                const layoutMeasurementHeight = flatList.layoutMeasurement.height;
+                const contentSizeHeight = flatList.contentSize.height;
+                const heightOffsetSum = layoutMeasurementHeight + contentOffsetY;
+                const distanceToStart = contentSizeHeight - heightOffsetSum;
+                if (distanceToStart < 100) {
+                  getContactComments(state.contact.ID);
+                  getContactActivities(state.contact.ID);
+                }
+              },
+              500,
+            );
+          }}
+        />
+      )}
+      <View style={{ backgroundColor: Colors.mainBackgroundColor }}>
+        <MentionsTextInput
+          editable={!state.loadComments}
+          placeholder={i18n.t('global.writeYourCommentNoteHere')}
+          value={state.comment}
+          onChangeText={setComment}
+          style={isRTL ? { textAlign: 'right', flex: 1 } : {}}
+          textInputStyle={{
+            borderColor: '#B4B4B4',
+            borderRadius: 5,
+            borderWidth: 1,
+            padding: 5,
+            margin: 10,
+            width: windowWidth - 120,
+            backgroundColor: state.loadComments ? '#e6e6e6' : '#FFFFFF',
+          }}
+          loadingComponent={() => (
+            <View
+              style={{
+                flex: 1,
+                width: windowWidth,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <ActivityIndicator />
+            </View>
+          )}
+          textInputMinHeight={40}
+          textInputMaxHeight={80}
+          trigger={'@'}
+          triggerLocation={'new-word-only'}
+          triggerCallback={filterUsers}
+          renderSuggestionsRow={renderSuggestionsRow}
+          suggestionsData={state.suggestedUsers}
+          keyExtractor={(item, index) => item.key.toString()}
+          suggestionRowHeight={45}
+          horizontal={false}
+          MaxVisibleRowCount={3}
+        />
+        <TouchableOpacity
+          onPress={() => onSaveComment()}
+          style={[
+            styles.commentsActionButtons,
+            {
+              paddingTop: 7,
+              marginRight: 60,
+            },
+            state.loadComments
+              ? { backgroundColor: '#e6e6e6' }
+              : { backgroundColor: Colors.tintColor },
+            isRTL ? { paddingRight: 10 } : { paddingLeft: 10 },
+          ]}>
+          <Icon android="md-send" ios="ios-send" style={[{ color: 'white', fontSize: 25 }]} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => toggleFilterView()}
+          style={[
+            styles.commentsActionButtons,
+            {
+              marginRight: 10,
+            },
+          ]}>
+          <Icon
+            type="FontAwesome"
+            name="filter"
+            style={[
+              {
+                color: Colors.tintColor,
+                fontSize: 35,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                marginTop: 'auto',
+                marginBottom: 'auto',
+              },
+            ]}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  // TODO: comments
+  const noCommentsRender = () => (
     <ScrollView
       style={styles.noCommentsContainer}
       refreshControl={
         <RefreshControl
-          refreshing={this.state.loadComments || this.state.loadActivities}
-          onRefresh={() => this.onRefreshCommentsActivities(this.state.contact.ID, true)}
+          refreshing={state.loadComments || state.loadActivities}
+          onRefresh={() => onRefreshCommentsActivities(state.contact.ID, true)}
         />
       }>
       <Grid style={{ transform: [{ scaleY: -1 }] }}>
@@ -1763,7 +1950,7 @@ class ContactDetailScreen extends React.Component {
               {i18n.t('contactDetailScreen.noContactCommentPlacheHolder1')}
             </Text>
           </Row>
-          {!this.props.isConnected && (
+          {!isConnected && (
             <Row>
               <Text style={[styles.noCommentsText, { backgroundColor: '#fff2ac' }]}>
                 {i18n.t('contactDetailScreen.noContactCommentPlacheHolderOffline')}
@@ -1775,408 +1962,14 @@ class ContactDetailScreen extends React.Component {
     </ScrollView>
   );
 
-  toggleFilterView = () => {
-    this.setState((prevState) => ({
-      showFilterView: !prevState.showFilterView,
-    }));
+  // TODO: comments
+  //const renderCommentsView = () => {
+  const commentsView = () => {
+    return <>{state.showFilterView ? { renderFilterCommentsView } : { renderAllCommentsView }}</>;
   };
 
-  resetFilters = () => {
-    this.setState(
-      {
-        filtersSettings: {
-          showComments: true,
-          showActivities: true,
-        },
-      },
-      () => {
-        this.toggleFilterView();
-      },
-    );
-  };
-
-  toggleFilter = (value, filterName) => {
-    this.setState((prevState) => ({
-      filtersSettings: {
-        ...prevState.filtersSettings,
-        [filterName]: !value,
-      },
-    }));
-  };
-
-  toggleMenu = (value, menuRef) => {
-    if (value) {
-      menuRef.show();
-    } else {
-      menuRef.hide();
-    }
-  };
-
-  toggleShareView = () => {
-    this.setState((prevState) => ({
-      showShareView: !prevState.showShareView,
-    }));
-  };
-
-  renderConnectionLink = (
-    connectionList,
-    list,
-    isGroup = false,
-    search = false,
-    keyName = null,
-  ) => {
-    let collection;
-    if (this.isConnected) {
-      collection = [...connectionList.values];
-    } else {
-      collection = this.getSelectizeItems(connectionList, list);
-    }
-    return collection.map((entity, index) => (
-      <TouchableOpacity
-        key={index.toString()}
-        activeOpacity={0.5}
-        onPress={() => {
-          if (search) {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: 'ContactList',
-                  params: {
-                    customFilter: {
-                      [keyName]: entity.value,
-                    },
-                  },
-                }),
-              ],
-            });
-            this.props.navigation.dispatch(resetAction);
-          } else if (isGroup) {
-            this.goToGroupDetailScreen(entity.value, entity.name);
-          } else {
-            this.goToContactDetailScreen(entity.value, entity.name);
-          }
-        }}>
-        <Text
-          style={[
-            styles.linkingText,
-            { marginTop: 'auto', marginBottom: 'auto' },
-            this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-          ]}>
-          {entity.name}
-        </Text>
-      </TouchableOpacity>
-    ));
-  };
-
-  onSuggestionTap(username, hidePanel) {
-    hidePanel();
-    let comment = this.state.comment.slice(0, -this.state.keyword.length),
-      mentionFormat = `@[${username.label}](${username.key})`;
-    this.setState({
-      suggestedUsers: [],
-      comment: `${comment}${mentionFormat}`,
-    });
-  }
-
-  filterUsers(keyword) {
-    let newKeyword = keyword.replace('@', '');
-    this.setState((state) => {
-      return {
-        suggestedUsers: state.users.filter((user) =>
-          user.label.toLowerCase().includes(newKeyword.toLowerCase()),
-        ),
-        keyword,
-      };
-    });
-  }
-
-  renderSuggestionsRow({ item }, hidePanel) {
-    return (
-      <TouchableOpacity onPress={() => this.onSuggestionTap(item, hidePanel)}>
-        <View style={styles.suggestionsRowContainer}>
-          <View style={styles.userIconBox}>
-            <Text style={styles.usernameInitials}>
-              {!!item.label && item.label.substring(0, 2).toUpperCase()}
-            </Text>
-          </View>
-          <View style={styles.userDetailsBox}>
-            <Text style={styles.displayNameText}>{item.label}</Text>
-            <Text style={styles.usernameText}>@{item.label}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  commentsView = () => {
-    /*_viewable_*/
-    if (this.state.showFilterView) {
-      return (
-        <View style={{ flex: 1 }}>
-          <Text
-            style={[
-              {
-                color: Colors.tintColor,
-                fontSize: 18,
-                textAlign: 'left',
-                fontWeight: 'bold',
-                marginBottom: 20,
-                marginTop: 20,
-                marginLeft: 10,
-              },
-            ]}>
-            {i18n.t('global.showing')}:
-          </Text>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() =>
-              this.toggleFilter(this.state.filtersSettings.showComments, 'showComments')
-            }>
-            <View
-              style={{
-                flexDirection: 'row',
-                height: 50,
-              }}>
-              <Text
-                style={{
-                  marginRight: 'auto',
-                  marginLeft: 10,
-                }}>
-                {i18n.t('global.comments')} ({this.state.comments.data.length})
-              </Text>
-              <CheckBox
-                Component={TouchableWithoutFeedback}
-                checked={this.state.filtersSettings.showComments}
-                containerStyle={{
-                  padding: 0,
-                  margin: 0,
-                }}
-                checkedColor={Colors.tintColor}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() =>
-              this.toggleFilter(this.state.filtersSettings.showActivities, 'showActivities')
-            }>
-            <View
-              style={{
-                flexDirection: 'row',
-                height: 50,
-              }}>
-              <Text
-                style={{
-                  marginRight: 'auto',
-                  marginLeft: 10,
-                }}>
-                {i18n.t('global.activity')} ({this.state.activities.data.length})
-              </Text>
-              <CheckBox
-                Component={TouchableWithoutFeedback}
-                checked={this.state.filtersSettings.showActivities}
-                containerStyle={{
-                  padding: 0,
-                  margin: 0,
-                }}
-                checkedColor={Colors.tintColor}
-              />
-            </View>
-          </TouchableOpacity>
-          <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row' }}>
-            <Button
-              style={{
-                height: 75,
-                width: windowWidth / 2,
-                backgroundColor: '#FFFFFF',
-              }}
-              onPress={() => this.resetFilters()}>
-              <Text
-                style={{
-                  color: Colors.primary,
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                }}>
-                {i18n.t('global.reset')}
-              </Text>
-            </Button>
-            <Button
-              style={{
-                height: 75,
-                width: windowWidth / 2,
-                backgroundColor: Colors.primary,
-              }}
-              onPress={() => this.toggleFilterView()}>
-              <Text
-                style={{
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                }}>
-                {i18n.t('global.apply')}
-              </Text>
-            </Button>
-          </View>
-        </View>
-      );
-    } else {
-      return (
-        <View
-          style={{ flex: 1, paddingBottom: this.state.footerHeight + this.state.footerLocation }}>
-          {this.state.comments.data.length == 0 &&
-          this.state.activities.data.length == 0 &&
-          !this.state.loadComments &&
-          !this.state.loadActivities ? (
-            this.noCommentsRender()
-          ) : (
-            <FlatList
-              style={{
-                backgroundColor: '#ffffff',
-              }}
-              ref={(flatList) => {
-                this.commentsFlatListRef = flatList;
-              }}
-              data={this.getCommentsAndActivities()}
-              extraData={!this.state.loadingMoreComments || !this.state.loadingMoreActivities}
-              inverted
-              ItemSeparatorComponent={() => (
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: '#CCCCCC',
-                  }}
-                />
-              )}
-              keyExtractor={(item, index) => String(index)}
-              renderItem={(item) => {
-                const commentOrActivity = item.item;
-                return this.renderActivityOrCommentRow(commentOrActivity);
-              }}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.loadComments || this.state.loadActivities}
-                  onRefresh={() => this.onRefreshCommentsActivities(this.state.contact.ID, true)}
-                />
-              }
-              onScroll={({ nativeEvent }) => {
-                sharedTools.onlyExecuteLastCall(
-                  {},
-                  () => {
-                    const flatList = nativeEvent;
-                    const contentOffsetY = flatList.contentOffset.y;
-                    const layoutMeasurementHeight = flatList.layoutMeasurement.height;
-                    const contentSizeHeight = flatList.contentSize.height;
-                    const heightOffsetSum = layoutMeasurementHeight + contentOffsetY;
-                    const distanceToStart = contentSizeHeight - heightOffsetSum;
-                    if (distanceToStart < 100) {
-                      this.getContactComments(this.state.contact.ID);
-                      this.getContactActivities(this.state.contact.ID);
-                    }
-                  },
-                  500,
-                );
-              }}
-            />
-          )}
-          <View style={{ backgroundColor: Colors.mainBackgroundColor }}>
-            <MentionsTextInput
-              editable={!this.state.loadComments}
-              placeholder={i18n.t('global.writeYourCommentNoteHere')}
-              value={this.state.comment}
-              onChangeText={this.setComment}
-              style={this.props.isRTL ? { textAlign: 'right', flex: 1 } : {}}
-              textInputStyle={{
-                borderColor: '#B4B4B4',
-                borderRadius: 5,
-                borderWidth: 1,
-                padding: 5,
-                margin: 10,
-                width: windowWidth - 120,
-                backgroundColor: this.state.loadComments ? '#e6e6e6' : '#FFFFFF',
-              }}
-              loadingComponent={() => (
-                <View
-                  style={{
-                    flex: 1,
-                    width: windowWidth,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <ActivityIndicator />
-                </View>
-              )}
-              textInputMinHeight={40}
-              textInputMaxHeight={80}
-              trigger={'@'}
-              triggerLocation={'new-word-only'}
-              triggerCallback={this.filterUsers.bind(this)}
-              renderSuggestionsRow={this.renderSuggestionsRow.bind(this)}
-              suggestionsData={this.state.suggestedUsers}
-              keyExtractor={(item, index) => item.key.toString()}
-              suggestionRowHeight={45}
-              horizontal={false}
-              MaxVisibleRowCount={3}
-            />
-            <TouchableOpacity
-              onPress={() => this.onSaveComment()}
-              style={[
-                styles.commentsActionButtons,
-                {
-                  paddingTop: 7,
-                  marginRight: 60,
-                },
-                this.state.loadComments
-                  ? { backgroundColor: '#e6e6e6' }
-                  : { backgroundColor: Colors.tintColor },
-                this.props.isRTL ? { paddingRight: 10 } : { paddingLeft: 10 },
-              ]}>
-              <Icon android="md-send" ios="ios-send" style={[{ color: 'white', fontSize: 25 }]} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => this.toggleFilterView()}
-              style={[
-                styles.commentsActionButtons,
-                {
-                  marginRight: 10,
-                },
-              ]}>
-              <Icon
-                type="FontAwesome"
-                name="filter"
-                style={[
-                  {
-                    color: Colors.tintColor,
-                    fontSize: 35,
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    marginTop: 'auto',
-                    marginBottom: 'auto',
-                  },
-                ]}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
-  };
-
-  openCommentDialog = (comment, deleteComment = false) => {
-    this.setState({
-      commentDialog: {
-        toggle: true,
-        data: comment,
-        delete: deleteComment,
-      },
-    });
-  };
-
-  renderActivityOrCommentRow = (commentOrActivity) => (
+  // TODO: ??
+  const renderActivityOrCommentRow = (commentOrActivity) => (
     <View style={styles.container}>
       <Image style={styles.image} source={{ uri: commentOrActivity.data[0].gravatar }} />
       <View style={styles.content}>
@@ -2196,10 +1989,7 @@ class ContactDetailScreen extends React.Component {
                         <Row>
                           <Col>
                             <Text
-                              style={[
-                                styles.name,
-                                this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                              ]}>
+                              style={[styles.name, isRTL ? { textAlign: 'left', flex: 1 } : {}]}>
                               {Object.prototype.hasOwnProperty.call(item, 'content')
                                 ? item.author
                                 : item.name}
@@ -2209,11 +1999,9 @@ class ContactDetailScreen extends React.Component {
                             <Text
                               style={[
                                 styles.time,
-                                this.props.isRTL
-                                  ? { textAlign: 'left', flex: 1 }
-                                  : { textAlign: 'right' },
+                                isRTL ? { textAlign: 'left', flex: 1 } : { textAlign: 'right' },
                               ]}>
-                              {sharedTools.formatDateToView(item.date)}
+                              {utils.formatDateToView(item.date)}
                             </Text>
                           </Col>
                         </Row>
@@ -2230,24 +2018,23 @@ class ContactDetailScreen extends React.Component {
                       Object.prototype.hasOwnProperty.call(item, 'object_note')
                         ? { color: '#B4B4B4', fontStyle: 'italic' }
                         : {},
-                      this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
+                      isRTL ? { textAlign: 'left', flex: 1 } : {},
                       index > 0 ? { marginTop: 20 } : {},
                     ]}
                     parse={[
                       {
-                        pattern: sharedTools.mentionPattern,
+                        pattern: utils.mentionPattern,
                         style: { color: Colors.primary },
-                        renderText: sharedTools.renderMention,
+                        renderText: utils.renderMention,
                       },
                     ]}>
                     {Object.prototype.hasOwnProperty.call(item, 'content')
                       ? item.content
-                      : this.formatActivityDate(item.object_note)}
+                      : formatActivityDate(item.object_note)}
                   </ParsedText>
                   {Object.prototype.hasOwnProperty.call(item, 'content') &&
-                    (item.author.toLowerCase() === this.props.userData.username.toLowerCase() ||
-                      item.author.toLowerCase() ===
-                        this.props.userData.displayName.toLowerCase()) && (
+                    (item.author.toLowerCase() === userData.username.toLowerCase() ||
+                      item.author.toLowerCase() === userData.displayName.toLowerCase()) && (
                       <Grid style={{ marginTop: 20 }}>
                         <Row
                           style={{
@@ -2257,7 +2044,7 @@ class ContactDetailScreen extends React.Component {
                           <Row
                             style={{ marginLeft: 0, marginRight: 'auto' }}
                             onPress={() => {
-                              this.openCommentDialog(item, true);
+                              openCommentDialog(item, true);
                             }}>
                             <Icon
                               type="MaterialCommunityIcons"
@@ -2281,7 +2068,7 @@ class ContactDetailScreen extends React.Component {
                               marginRight: 0,
                             }}
                             onPress={() => {
-                              this.openCommentDialog(item);
+                              openCommentDialog(item);
                             }}>
                             <Icon
                               type="MaterialCommunityIcons"
@@ -2311,14 +2098,10 @@ class ContactDetailScreen extends React.Component {
     </View>
   );
 
-  renderStatusPickerItems = () =>
-    Object.keys(this.props.contactSettings.fields.overall_status.values).map((key) => {
-      const optionData = this.props.contactSettings.fields.overall_status.values[key];
-      return <Picker.Item key={key} label={optionData.label} value={key} />;
-    });
-
-  tabChanged = (index) => {
-    this.setState((prevState) => ({
+  // TODO: move to Tab component
+  const tabChanged = (index) => {
+    setState((prevState) => ({
+      ...state,
       tabViewConfig: {
         ...prevState.tabViewConfig,
         index,
@@ -2326,589 +2109,13 @@ class ContactDetailScreen extends React.Component {
     }));
   };
 
-  onAddCommunicationField = (key) => {
-    const communicationList = this.state.contact[key] ? [...this.state.contact[key]] : [];
-    communicationList.push({
-      value: '',
-    });
-    this.setState((prevState) => ({
-      contact: {
-        ...prevState.contact,
-        [key]: communicationList,
-      },
-    }));
-  };
-
-  onCommunicationFieldChange = (key, value, index, dbIndex, component) => {
-    const communicationList = [...component.state.contact[key]];
-    let communicationItem = {
-      ...communicationList[index],
-    };
-    communicationItem = {
-      ...communicationItem,
-      value,
-    };
-    if (dbIndex) {
-      communicationItem = {
-        ...communicationItem,
-        key: dbIndex,
-      };
-    }
-    communicationList[index] = {
-      ...communicationItem,
-    };
-    component.setState((prevState) => ({
-      contact: {
-        ...prevState.contact,
-        [key]: communicationList,
-      },
-    }));
-  };
-
-  onRemoveCommunicationField = (key, index, component) => {
-    const communicationList = [...component.state.contact[key]];
-    let communicationItem = communicationList[index];
-    if (communicationItem.key) {
-      communicationItem = {
-        key: communicationItem.key,
-        delete: true,
-      };
-      communicationList[index] = communicationItem;
-    } else {
-      communicationList.splice(index, 1);
-    }
-    component.setState((prevState) => ({
-      contact: {
-        ...prevState.contact,
-        [key]: communicationList,
-      },
-    }));
-  };
-
-  renderContactLink = (assignedTo) => {
-    let foundContact, valueToSearch, nameToShow;
-    if (assignedTo.key) {
-      valueToSearch = assignedTo.key;
-      nameToShow = assignedTo.label;
-    } else if (assignedTo.value) {
-      valueToSearch = assignedTo.value;
-      nameToShow = assignedTo.name;
-    }
-    foundContact = this.state.users.find(
-      (user) => user.key === parseInt(valueToSearch) || user.contactID === parseInt(valueToSearch),
-    );
-    if (!foundContact) {
-      foundContact = this.state.usersContacts.find(
-        (user) => user.value === valueToSearch.toString(),
-      );
-    }
-    // User have accesss to this assigned_to user/contact
-    if (foundContact && foundContact.contactID) {
-      // Contact exist in 'this.state.users' list
-      return (
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => this.goToContactDetailScreen(foundContact.contactID, nameToShow)}>
-          <Text
-            style={[styles.linkingText, this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}]}>
-            {nameToShow}
-          </Text>
-        </TouchableOpacity>
-      );
-    } else if (foundContact) {
-      // Contact exist in 'this.state.usersContacts' list
-      return (
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => this.goToContactDetailScreen(valueToSearch, nameToShow)}>
-          <Text
-            style={[styles.linkingText, this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}]}>
-            {nameToShow}
-          </Text>
-        </TouchableOpacity>
-      );
-    } else {
-      // User does not exist in any list
-      return (
-        <Text
-          style={[
-            { marginTop: 4, marginBottom: 4, fontSize: 15 },
-            this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-          ]}>
-          {nameToShow}
-        </Text>
-      );
-    }
-  };
-
-  onCloseCommentDialog() {
-    this.setState({
-      commentDialog: {
-        toggle: false,
-        data: {},
-        delete: false,
-      },
-    });
-  }
-
-  onUpdateComment(commentData) {
-    this.props.saveComment(
-      this.props.userData.domain,
-      this.props.userData.token,
-      this.state.contact.ID,
-      commentData,
-    );
-    this.onCloseCommentDialog();
-  }
-
-  onDeleteComment(commentData) {
-    this.props.deleteComment(
-      this.props.userData.domain,
-      this.props.userData.token,
-      this.state.contact.ID,
-      commentData.ID,
-    );
-    this.onCloseCommentDialog();
-  }
-
-  renderfaithMilestones() {
-    return (
-      <Grid
-        pointerEvents={this.state.onlyView ? 'none' : 'auto'}
-        style={{
-          height: milestonesGridSize,
-        }}>
-        <Row size={7}>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_has_bible');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={3}>
-                  <Image
-                    source={hasBibleIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_has_bible')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={1}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_has_bible')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_has_bible.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_reading_bible');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={3}>
-                  <Image
-                    source={readingBibleIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_reading_bible')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={1}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_reading_bible')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {
-                      this.props.contactSettings.fields.milestones.values.milestone_reading_bible
-                        .label
-                    }
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_belief');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={3}>
-                  <Image
-                    source={statesBeliefIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_belief')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={1}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_belief')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_belief.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-        </Row>
-        <Row size={1} />
-        <Row size={7}>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_can_share');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={7}>
-                  <Image
-                    source={canShareGospelIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_can_share')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={3}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_can_share')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_can_share.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_sharing');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={7}>
-                  <Image
-                    source={sharingTheGospelIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_sharing')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={3}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_sharing')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_sharing.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_baptized');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={7}>
-                  <Image
-                    source={baptizedIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_baptized')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={3}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_baptized')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_baptized.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-        </Row>
-        <Row size={1} />
-        <Row size={7}>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_baptizing');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={3}>
-                  <Image
-                    source={baptizingIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_baptizing')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={1}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_baptizing')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_baptizing.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_in_group');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={3}>
-                  <Image
-                    source={inChurchIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_in_group')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={1}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_in_group')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_in_group.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-          <Col size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange('milestone_planting');
-              }}
-              activeOpacity={1}
-              style={styles.progressIcon}>
-              <Col>
-                <Row size={3}>
-                  <Image
-                    source={startingChurchesIcon}
-                    style={[
-                      styles.progressIcon,
-                      this.onCheckExistingMilestone('milestone_planting')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}
-                  />
-                </Row>
-                <Row size={1}>
-                  <Text
-                    style={[
-                      styles.progressIconText,
-                      this.onCheckExistingMilestone('milestone_planting')
-                        ? styles.progressIconActive
-                        : styles.progressIconInactive,
-                    ]}>
-                    {this.props.contactSettings.fields.milestones.values.milestone_planting.label}
-                  </Text>
-                </Row>
-              </Col>
-            </TouchableOpacity>
-          </Col>
-          <Col size={1} />
-        </Row>
-      </Grid>
-    );
-  }
-
-  renderCustomFaithMilestones() {
-    const milestoneList = Object.keys(this.props.contactSettings.fields.milestones.values);
-    const customMilestones = milestoneList.filter(
-      (milestoneItem) => defaultFaithMilestones.indexOf(milestoneItem) < 0,
-    );
-    const rows = [];
-    let columnsByRow = [];
-    customMilestones.forEach((value, index) => {
-      if ((index + 1) % 3 === 0 || index === customMilestones.length - 1) {
-        // every third milestone or last milestone
-        columnsByRow.push(<Col key={columnsByRow.length} size={1} />);
-        columnsByRow.push(
-          <Col key={columnsByRow.length} size={5}>
-            <TouchableOpacity
-              onPress={() => {
-                this.onMilestoneChange(value);
-              }}
-              activeOpacity={1}
-              underlayColor={this.onCheckExistingMilestone(value) ? Colors.tintColor : Colors.gray}
-              style={{
-                borderRadius: 10,
-                backgroundColor: this.onCheckExistingMilestone(value)
-                  ? Colors.tintColor
-                  : Colors.gray,
-                padding: 10,
-              }}>
-              <Text
-                style={[
-                  styles.progressIconText,
-                  {
-                    color: this.onCheckExistingMilestone(value) ? '#FFFFFF' : '#000000',
-                  },
-                ]}>
-                {this.props.contactSettings.fields.milestones.values[value].label}
-              </Text>
-            </TouchableOpacity>
-          </Col>,
-        );
-        columnsByRow.push(<Col key={columnsByRow.length} size={1} />);
-        rows.push(
-          <Row key={`${index.toString()}-1`} size={1}>
-            <Text> </Text>
-          </Row>,
-        );
-        rows.push(
-          <Row key={index.toString()} size={7}>
-            {columnsByRow}
-          </Row>,
-        );
-        columnsByRow = [];
-      } else if ((index + 1) % 3 !== 0) {
-        columnsByRow.push(<Col key={columnsByRow.length} size={1} />);
-        columnsByRow.push(
-          <Col key={columnsByRow.length} size={5}>
-            <TouchableHighlight
-              onPress={() => {
-                this.onMilestoneChange(value);
-              }}
-              activeOpacity={1}
-              underlayColor={this.onCheckExistingMilestone(value) ? Colors.tintColor : Colors.gray}
-              style={{
-                borderRadius: 10,
-                backgroundColor: this.onCheckExistingMilestone(value)
-                  ? Colors.tintColor
-                  : Colors.gray,
-                padding: 10,
-              }}>
-              <Text
-                style={[
-                  styles.progressIconText,
-                  {
-                    color: this.onCheckExistingMilestone(value) ? '#FFFFFF' : '#000000',
-                  },
-                ]}>
-                {this.props.contactSettings.fields.milestones.values[value].label}
-              </Text>
-            </TouchableHighlight>
-          </Col>,
-        );
-      }
-    });
-    return <Grid pointerEvents={this.state.onlyView ? 'none' : 'auto'}>{rows}</Grid>;
-  }
-
-  searchLocationsDelayed = sharedTools.debounce((queryText) => {
-    this.setState(
-      {
-        foundGeonames: [],
-      },
-      () => {
-        if (queryText.length > 0) {
-          this.searchLocations(queryText);
-        }
-      },
-    );
-  }, 750);
-
-  searchLocations = (queryText) => {
-    this.props.searchLocations(this.props.userData.domain, this.props.userData.token, queryText);
-  };
-
-  onMeetingComplete = () => {
-    this.onSaveQuickAction('quick_button_meeting_complete');
+  // TODO: move to FAB component
+  const onMeetingComplete = () => {
+    onSaveQuickAction('quick_button_meeting_complete');
     var isQuestionnaireEnabled = false;
     var q_id = null;
     // loop thru all (active) questionnaires, and check whether 'contact'->'meeting_complete' is enabled
-    this.props.questionnaires.map((questionnaire) => {
+    questionnaires.map((questionnaire) => {
       if (
         questionnaire.trigger_type == 'contact' &&
         questionnaire.trigger_value == 'meeting_complete'
@@ -2917,29 +2124,32 @@ class ContactDetailScreen extends React.Component {
         q_id = questionnaire.id;
       }
     });
+    /* TODO
     if (isQuestionnaireEnabled) {
-      this.props.navigation.navigate(
+      navigation.navigate(
         NavigationActions.navigate({
           routeName: 'Questionnaire',
           action: NavigationActions.navigate({
             routeName: 'Question',
             params: {
-              userData: this.props.userData,
-              contact: this.state.contact,
+              userData: userData,
+              contact: state.contact,
               q_id,
             },
           }),
         }),
       );
     }
+    */
   };
 
-  onSaveQuickAction = (quickActionPropertyName) => {
-    let newActionValue = this.state.contact[quickActionPropertyName]
-      ? parseInt(this.state.contact[quickActionPropertyName], 10) + 1
+  // TODO: move to FAB component
+  const onSaveQuickAction = (quickActionPropertyName) => {
+    let newActionValue = state.contact[quickActionPropertyName]
+      ? parseInt(state.contact[quickActionPropertyName], 10) + 1
       : 1;
-    if (this.props.isConnected) {
-      this.onSaveContact({
+    if (isConnected) {
+      onSaveContact({
         [quickActionPropertyName]: newActionValue,
       });
     } else {
@@ -2964,1274 +2174,124 @@ class ContactDetailScreen extends React.Component {
           break;
         }
       }
-      if (seekerPathValue && this.state.contact.seeker_path != 'met') {
-        this.setState(
+      if (seekerPathValue && state.contact.seeker_path != 'met') {
+        setState(
           (prevState) => ({
+            ...state,
             contact: {
               ...prevState.contact,
               seeker_path: seekerPathValue,
             },
           }),
           () => {
-            this.onSaveContact({
+            onSaveContact({
               [quickActionPropertyName]: newActionValue,
             });
           },
         );
       } else {
-        this.onSaveContact({
+        onSaveContact({
           [quickActionPropertyName]: newActionValue,
         });
       }
     }
   };
 
-  setFieldContentStyle(field) {
-    let newStyles = {};
-    if (field.type == 'key_select' || field.type == 'user_select') {
-      newStyles = {
-        ...styles.contactTextRoundField,
-        paddingRight: 10,
-      };
-    }
-    if (field.name == 'name' && this.state.nameRequired) {
-      newStyles = {
-        ...newStyles,
-        backgroundColor: '#FFE6E6',
-        borderWidth: 2,
-        borderColor: Colors.errorBackground,
-      };
-    }
-    return newStyles;
-  }
-
-  renderFieldIcon(field, detailMode = false, hideIcon = false) {
-    let iconType = '',
-      iconName = '';
-    switch (field.type) {
-      case 'location':
-      case 'location_meta':
-        iconType = 'FontAwesome';
-        iconName = 'map-marker';
-        break;
-      case 'date': {
-        iconType = 'MaterialIcons';
-        iconName = 'date-range';
-        break;
-      }
-      case 'connection': {
-        if (field.name.includes('subassigned')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'briefcase-account-outline';
-        } else if (field.name.includes('relation')) {
-          iconType = 'FontAwesome5';
-          iconName = 'people-arrows';
-        } else if (field.name.includes('people_groups')) {
-          iconType = 'FontAwesome';
-          iconName = 'globe';
-        } else if (field.name.includes('coach')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'teach';
-        } else if (field.name.includes('bapti')) {
-          iconType = 'FontAwesome5';
-          iconName = 'water';
-        } else if (field.name.includes('group')) {
-          iconType = 'MaterialIcons';
-          iconName = 'groups';
-        } else if (field.name.includes('train')) {
-          iconType = 'FontAwesome5';
-          iconName = 'chalkboard-teacher';
-        } else {
-          iconType = 'MaterialIcons';
-          iconName = 'group-work';
-        }
-        break;
-      }
-      case 'multi_select': {
-        if (field.name.includes('email')) {
-          iconType = 'FontAwesome';
-          iconName = 'envelope';
-        } else if (field.name.includes('sources')) {
-          iconType = 'FontAwesome5';
-          iconName = 'compress-arrows-alt';
-        } else {
-          iconType = 'Ionicons';
-          iconName = 'list-circle';
-        }
-        break;
-      }
-      case 'communication_channel': {
-        if (field.name.includes('phone')) {
-          iconType = 'FontAwesome';
-          iconName = 'phone';
-        } else if (field.name.includes('email')) {
-          iconType = 'FontAwesome';
-          iconName = 'envelope';
-        } else if (field.name.includes('twitter')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'twitter';
-        } else if (field.name.includes('facebook')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'facebook';
-        } else if (field.name.includes('instagram')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'instagram';
-        } else if (field.name.includes('whatsapp')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'whatsapp';
-        } else if (field.name.includes('address')) {
-          iconType = 'FontAwesome5';
-          iconName = 'directions';
-        } else {
-          iconType = 'Feather';
-          iconName = 'hash';
-        }
-        break;
-      }
-      case 'key_select': {
-        if (field.name.includes('faith_status')) {
-          iconType = 'FontAwesome5';
-          iconName = 'cross';
-        } else if (field.name.includes('seeker_path')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'map-marker-path';
-        } else if (field.name.includes('gender')) {
-          iconType = 'FontAwesome5';
-          iconName = 'transgender';
-        } else if (field.name.includes('age')) {
-          iconType = 'FontAwesome5';
-          iconName = 'user-clock';
-        } else {
-          iconType = 'Ionicons';
-          iconName = 'list-circle';
-        }
-        break;
-      }
-      case 'user_select': {
-        if (field.name.includes('assigned_to')) {
-          iconType = 'MaterialCommunityIcons';
-          iconName = 'briefcase-account';
-        } else {
-          iconType = 'FontAwesome';
-          iconName = 'user';
-        }
-        break;
-      }
-      case 'tags': {
-        iconType = 'AntDesign';
-        iconName = 'tags';
-        break;
-      }
-      case 'text': {
-        if (field.name.includes('nickname')) {
-          iconType = 'FontAwesome5';
-          iconName = 'user-tag';
-        } else if (field.name.includes('name')) {
-          iconType = 'FontAwesome5';
-          iconName = 'user-alt';
-        } else {
-          iconType = 'Entypo';
-          iconName = 'text';
-        }
-        break;
-      }
-      case 'number': {
-        iconType = 'Feather';
-        iconName = 'hash';
-        break;
-      }
-      default: {
-        iconType = 'MaterialCommunityIcons';
-        iconName = 'square-small';
-        break;
-      }
-    }
+  // TODO: refactor to shared component AND dynamic list
+  const FAB = () => {
     return (
-      <Icon
-        type={iconType}
-        name={iconName}
-        style={[
-          styles.formIcon,
-          detailMode ? { marginTop: 0 } : {},
-          hideIcon ? { opacity: 0 } : {},
-        ]}
-      />
-    );
-  }
-
-  renderCustomView = (fields, createView = false) => (
-    <View style={{ flex: 1 }}>
-      {this.state.onlyView && createView === false ? (
-        <View>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.loading}
-                onRefresh={() => this.onRefresh(this.state.contact.ID)}
-              />
-            }>
-            <View style={[styles.formContainer, { marginTop: 0 }]}>
-              {fields.map((field, index) => (
-                <View key={index.toString()}>
-                  {field.name == 'overall_status' || field.name == 'milestones' ? (
-                    this.renderFieldValue(field)
-                  ) : (
-                    <Row style={[styles.formRow, { paddingTop: 15 }]}>
-                      <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
-                        {this.renderFieldIcon(field, true)}
-                      </Col>
-                      <Col>
-                        <View>{this.renderFieldValue(field)}</View>
-                      </Col>
-                      <Col style={styles.formParentLabel}>
-                        <Label style={styles.formLabel}>{field.label}</Label>
-                      </Col>
-                    </Row>
-                  )}
-                  {field.name == 'overall_status' ? null : <View style={styles.formDivider} />}
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-      ) : (
-        <KeyboardAwareScrollView /*_editable_*/
-          enableAutomaticScroll
-          enableOnAndroid
-          keyboardOpeningTime={0}
-          extraScrollHeight={150}
-          keyboardShouldPersistTaps="handled">
-          <View style={[styles.formContainer, { marginTop: 10, paddingTop: 0 }]}>
-            {/* TODO: enable edit of 'tags' and 'campaigns' */}
-            {fields
-              .filter((field) => field.name !== 'tags' && field.name !== 'campaigns')
-              .map((field, index) => (
-                <View key={index.toString()}>
-                  {field.name == 'overall_status' ||
-                  field.name == 'milestones' ||
-                  field.type == 'communication_channel' ? (
-                    this.renderField(field)
-                  ) : (
-                    <Col>
-                      <Row style={styles.formFieldMargin}>
-                        <Col style={styles.formIconLabelCol}>
-                          <View style={styles.formIconLabelView}>
-                            {this.renderFieldIcon(field)}
-                          </View>
-                        </Col>
-                        <Col>
-                          <Label style={styles.formLabel}>{field.label}</Label>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col style={styles.formIconLabelCol}>
-                          <View style={styles.formIconLabelView}>
-                            {this.renderFieldIcon(field, false, true)}
-                          </View>
-                        </Col>
-                        <Col style={this.setFieldContentStyle(field)}>
-                          {this.renderField(field)}
-                        </Col>
-                      </Row>
-                      {field.name == 'name' && this.state.nameRequired ? (
-                        <Row>
-                          <Col style={styles.formIconLabelCol}>
-                            <View style={styles.formIconLabelView}>
-                              <Icon
-                                type="FontAwesome"
-                                name="user"
-                                style={[styles.formIcon, { opacity: 0 }]}
-                              />
-                            </View>
-                          </Col>
-                          <Col>
-                            <Text style={styles.validationErrorMessage}>
-                              {i18n.t('contactDetailScreen.fullName.error')}
-                            </Text>
-                          </Col>
-                        </Row>
-                      ) : null}
-                    </Col>
-                  )}
-                </View>
-              ))}
-          </View>
-        </KeyboardAwareScrollView>
-      )}
-    </View>
-  );
-
-  renderFieldValue = (field) => {
-    let propExist = Object.prototype.hasOwnProperty.call(this.state.contact, field.name);
-    let mappedValue;
-    let value = this.state.contact[field.name],
-      valueType = field.type;
-    let postType;
-    if (Object.prototype.hasOwnProperty.call(field, 'post_type')) {
-      postType = field.post_type;
-    }
-    switch (valueType) {
-      case 'location': {
-        if (propExist) {
-          mappedValue = (
-            <Text style={this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}}>
-              {value.values.map((location) => location.name).join(', ')}
-            </Text>
-          );
-        }
-        break;
-      }
-      case 'location_meta': {
-        if (propExist) {
-          mappedValue = value.values.map((location, idx) => {
-            const mapURL = isIOS
-              ? `http://maps.apple.com/?ll=${location.lat},${location.lng}`
-              : `https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`;
-            return (
-              <>
-                {location?.lat && location?.lng ? (
-                  <TouchableOpacity activeOpacity={0.5} onPress={() => Linking.openURL(mapURL)}>
-                    <Text
-                      style={[
-                        styles.linkingText,
-                        this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                      ]}>
-                      {location.label}
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <Text style={this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}}>
-                    {location.label}
-                  </Text>
-                )}
-              </>
-            );
-          });
-        }
-        break;
-      }
-      case 'date': {
-        if (propExist && value.length > 0) {
-          mappedValue = (
-            <Text>
-              {sharedTools.formatDateToView(
-                sharedTools.isNumeric(value) ? parseInt(value) * 1000 : value,
-              )}
-            </Text>
-          );
-        }
-        break;
-      }
-      case 'connection': {
-        if (propExist) {
-          let collection = [],
-            isGroup = false;
-          if (field.name === 'people_groups') {
-            mappedValue = (
-              <Text
-                style={[
-                  { marginTop: 'auto', marginBottom: 'auto' },
-                  this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                ]}>
-                {value.values
-                  .map(
-                    function (peopleGroup) {
-                      return safeFind(
-                        this.state.peopleGroups.find(
-                          (person) => person.value === peopleGroup.value,
-                        ),
-                        'name',
-                      );
-                    }.bind(this),
-                  )
-                  .filter(String)
-                  .join(', ')}
-              </Text>
-            );
-          } else {
-            switch (postType) {
-              case 'contacts': {
-                collection = [
-                  ...this.state.subAssignedContacts,
-                  ...this.state.relationContacts,
-                  ...this.state.baptizedByContacts,
-                  ...this.state.coachedByContacts,
-                  ...this.state.coachedContacts,
-                  ...this.state.usersContacts,
-                ];
-                break;
-              }
-              case 'groups': {
-                collection = [...this.state.connectionGroups, ...this.state.groups];
-                isGroup = true;
-                break;
-              }
-              default: {
-                break;
-              }
-            }
-            mappedValue = this.renderConnectionLink(value, collection, isGroup);
-          }
-        }
-        break;
-      }
-      case 'multi_select': {
-        // Dont check field existence (propExist) to render all the options
-        if (field.name == 'milestones') {
-          mappedValue = (
-            <Col style={{ paddingBottom: 15 }}>
-              <Row style={[styles.formRow, { paddingTop: 10 }]}>
-                <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
-                  <Icon type="Octicons" name="milestone" style={styles.formIcon} />
-                </Col>
-                <Col>
-                  <Label
-                    style={[
-                      styles.formLabel,
-                      { fontWeight: 'bold', marginBottom: 'auto', marginTop: 'auto' },
-                      this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                    ]}>
-                    {field.label}
-                  </Label>
-                </Col>
-              </Row>
-              {this.renderfaithMilestones()}
-              {this.renderCustomFaithMilestones()}
-            </Col>
-          );
-        } else if (field.name == 'sources') {
-          if (propExist) {
-            mappedValue = (
-              <Text
-                style={[
-                  { marginTop: 'auto', marginBottom: 'auto' },
-                  this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                ]}>
-                {value.values
-                  .map(
-                    (source) =>
-                      this.state.sources.find((sourceItem) => sourceItem.value === source.value)
-                        .name,
-                  )
-                  .join(', ')}
-              </Text>
-            );
-          }
-        } else {
-          mappedValue = (
-            <Row style={{ flexWrap: 'wrap' }}>
-              {Object.keys(field.default).map((value, index) =>
-                this.renderMultiSelectField(field, value, index),
-              )}
-            </Row>
-          );
-        }
-        break;
-      }
-      case 'communication_channel': {
-        if (propExist) {
-          if (field.name.includes('phone')) {
-            mappedValue = value
-              .filter((communicationChannel) => !communicationChannel.delete)
-              .map((communicationChannel, index) => (
-                <TouchableOpacity
-                  key={index.toString()}
-                  activeOpacity={0.5}
-                  onPress={() => {
-                    this.linkingPhoneDialer(communicationChannel.value);
-                  }}>
-                  <Text
-                    style={[
-                      styles.linkingText,
-                      { marginTop: 'auto', marginBottom: 'auto' },
-                      this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                    ]}>
-                    {communicationChannel.value}
-                  </Text>
-                </TouchableOpacity>
-              ));
-          } else if (field.name.includes('email')) {
-            mappedValue = value
-              .filter((communicationChannel) => !communicationChannel.delete)
-              .map((communicationChannel, index) => (
-                <TouchableOpacity
-                  key={index.toString()}
-                  activeOpacity={0.5}
-                  onPress={() => {
-                    Linking.openURL('mailto:' + communicationChannel.value);
-                  }}>
-                  <Text
-                    style={[
-                      styles.linkingText,
-                      { marginTop: 'auto', marginBottom: 'auto' },
-                      this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                    ]}>
-                    {communicationChannel.value}
-                  </Text>
-                </TouchableOpacity>
-              ));
-          } else {
-            mappedValue = value
-              .filter((communicationChannel) => !communicationChannel.delete)
-              .map((communicationChannel, index) => (
-                <>
-                  {communicationChannel?.value?.includes('://') ? (
-                    <TouchableOpacity
-                      key={index.toString()}
-                      activeOpacity={0.5}
-                      onPress={() => {
-                        Linking.openURL(communicationChannel.value);
-                      }}>
-                      <Text
-                        style={[
-                          styles.linkingText,
-                          { marginTop: 'auto', marginBottom: 'auto' },
-                          this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                        ]}>
-                        {communicationChannel.value}
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <Text
-                      style={[
-                        { marginTop: 'auto', marginBottom: 'auto' },
-                        this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                      ]}>
-                      {communicationChannel.value}
-                    </Text>
-                  )}
-                </>
-              ));
-          }
-        }
-        break;
-      }
-      case 'key_select': {
-        if (propExist) {
-          if (field.name === 'overall_status') {
-            mappedValue = (
-              <Col>
-                <Row style={[styles.formRow, { paddingTop: 15 }]}>
-                  <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
-                    <Image source={statusIcon} style={[styles.fieldsIcons, {}]} />
-                  </Col>
-                  <Col>
-                    <Label
-                      style={[
-                        {
-                          color: Colors.tintColor,
-                          fontSize: 12,
-                          fontWeight: 'bold',
-                          marginTop: 'auto',
-                          marginBottom: 'auto',
-                        },
-                        this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                      ]}>
-                      {field.label}
-                    </Label>
-                  </Col>
-                </Row>
-                <Row
-                  style={[styles.formRow, { paddingTop: 5, paddingBottom: 5 }]}
-                  pointerEvents="none">
-                  <Col
-                    style={[
-                      styles.statusFieldContainer,
-                      Platform.select({
-                        android: {
-                          borderColor: this.state.overallStatusBackgroundColor,
-                          backgroundColor: this.state.overallStatusBackgroundColor,
-                        },
-                      }),
-                    ]}>
-                    <Picker
-                      selectedValue={value}
-                      onValueChange={this.setContactStatus}
-                      style={Platform.select({
-                        android: {
-                          color: '#ffffff',
-                          backgroundColor: 'transparent',
-                        },
-                        ios: {
-                          backgroundColor: this.state.overallStatusBackgroundColor,
-                        },
-                      })}
-                      textStyle={{
-                        color: '#ffffff',
-                      }}>
-                      {this.renderStatusPickerItems()}
-                    </Picker>
-                  </Col>
-                </Row>
-                <Row style={{ paddingBottom: 15 }}>
-                  {Object.prototype.hasOwnProperty.call(
-                    this.state.contact,
-                    `reason_${this.state.contact.overall_status}`,
-                  ) ? (
-                    <Text>
-                      (
-                      {
-                        this.props.contactSettings.fields[
-                          `reason_${this.state.contact.overall_status}`
-                        ].values[this.state.contact[`reason_${this.state.contact.overall_status}`]]
-                          .label
-                      }
-                      )
-                    </Text>
-                  ) : null}
-                </Row>
-              </Col>
-            );
-          } else {
-            mappedValue = (
-              <Text style={this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}}>
-                {field.default[value] ? field.default[value].label : ''}
-              </Text>
-            );
-          }
-        }
-        break;
-      }
-      case 'user_select': {
-        if (propExist) {
-          mappedValue = this.renderContactLink(value);
-        }
-        break;
-      }
-      case 'tags': {
-        if (propExist) {
-          mappedValue = value.values.map((tag, idx) => (
-            <>
-              <Text
-                style={[
-                  { marginBottom: 10 },
-                  this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                ]}>
-                {tag.value}
-              </Text>
-            </>
-          ));
-        }
-        break;
-      }
-      default: {
-        if (propExist) {
-          mappedValue = (
-            <Text style={this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}}>
-              {value.toString()}
-            </Text>
-          );
-        }
-        break;
-      }
-    }
-    return mappedValue;
-  };
-
-  renderMultiSelectField = (field, value, index) => (
-    <TouchableOpacity
-      key={index.toString()}
-      onPress={() => {
-        if (!this.state.onlyView) {
-          this.onMilestoneChange(value, field.name);
-        }
-      }}
-      activeOpacity={1}
-      underlayColor={
-        this.onCheckExistingMilestone(value, field.name) ? Colors.tintColor : Colors.gray
-      }
-      style={{
-        borderRadius: 10,
-        backgroundColor: this.onCheckExistingMilestone(value, field.name)
-          ? Colors.tintColor
-          : Colors.gray,
-        padding: 10,
-        marginRight: 10,
-        marginBottom: 10,
-      }}>
-      <Text
-        style={[
-          styles.progressIconText,
-          {
-            color: this.onCheckExistingMilestone(value, field.name) ? '#FFFFFF' : '#000000',
-          },
-        ]}>
-        {field.default[value].label}
-      </Text>
-    </TouchableOpacity>
-  );
-
-  renderField = (field) => {
-    let propExist = Object.prototype.hasOwnProperty.call(this.state.contact, field.name);
-    let mappedValue;
-    let value = this.state.contact[field.name],
-      valueType = field.type;
-    let postType;
-    if (Object.prototype.hasOwnProperty.call(field, 'post_type')) {
-      postType = field.post_type;
-    }
-    switch (valueType) {
-      case 'location': {
-        mappedValue = (
-          <Selectize
-            itemId="value"
-            items={this.state.foundGeonames}
-            selectedItems={this.getSelectizeItems(
-              this.state.contact[field.name],
-              this.state.geonames,
-            )}
-            textInputProps={{
-              placeholder: i18n.t('global.selectLocations'),
-              onChangeText: this.searchLocationsDelayed,
-            }}
-            renderChip={(id, onClose, item, style, iconStyle) => (
-              <Chip
-                key={id}
-                iconStyle={iconStyle}
-                onClose={onClose}
-                text={item.name}
-                style={style}
-              />
-            )}
-            renderRow={(id, onPress, item) => (
-              <TouchableOpacity
-                activeOpacity={0.6}
-                key={id}
-                onPress={onPress}
-                style={{
-                  paddingVertical: 8,
-                  paddingHorizontal: 10,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                  }}>
-                  <Text
-                    style={{
-                      color: 'rgba(0, 0, 0, 0.87)',
-                      fontSize: 14,
-                      lineHeight: 21,
-                    }}>
-                    {item.name}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            filterOnKey="name"
-            onChangeSelectedItems={(selectedItems) =>
-              this.onSelectizeValueChange(field.name, selectedItems)
-            }
-            inputContainerStyle={styles.selectizeField}
-          />
-        );
-        break;
-      }
-      case 'location_meta': {
-        // TODO: implement support for editing
-        mappedValue = (
-          <Text
-            style={
-              this.props.isRTL ? { textAlign: 'left', flex: 1, color: '#ccc' } : { color: '#ccc' }
-            }>
-            {value?.values.map((location) => location.label).join(', ')}
-          </Text>
-        );
-        break;
-      }
-      case 'date': {
-        mappedValue = (
-          <Row>
-            <DatePicker
-              ref={(ref) => {
-                this[`${field.name}Ref`] = ref;
-              }}
-              onDateChange={(dateValue) =>
-                this.setContactCustomFieldValue(field.name, dateValue, valueType)
-              }
-              defaultDate={
-                this.state.contact[field.name] && this.state.contact[field.name].length > 0
-                  ? sharedTools.formatDateToDatePicker(this.state.contact[field.name] * 1000)
-                  : ''
-              }
-            />
+      <ActionButton
+        buttonColor={Colors.primaryRGBA}
+        renderIcon={(active) =>
+          active ? (
             <Icon
-              type="AntDesign"
+              type="MaterialCommunityIcons"
               name="close"
-              style={[
-                styles.formIcon,
-                styles.addRemoveIcons,
-                styles.removeIcons,
-                { marginLeft: 'auto' },
-              ]}
-              onPress={() => this.setContactCustomFieldValue(field.name, null, valueType)}
+              style={{ color: 'white', fontSize: 22 }}
             />
-          </Row>
-        );
-        break;
-      }
-      case 'connection': {
-        let listItems = [],
-          placeholder = '';
-        if (field.name == 'people_groups') {
-          listItems = [...this.state.peopleGroups];
-          placeholder = i18n.t('global.selectPeopleGroups');
-        } else {
-          switch (postType) {
-            case 'contacts': {
-              listItems = [
-                ...this.state.subAssignedContacts,
-                ...this.state.relationContacts,
-                ...this.state.baptizedByContacts,
-                ...this.state.coachedByContacts,
-                ...this.state.coachedContacts,
-                ...this.state.usersContacts,
-              ];
-              placeholder = i18n.t('global.searchContacts');
-              break;
-            }
-            case 'groups': {
-              //listItems = [...this.state.groups];
-              listItems = [...this.state.connectionGroups, ...this.state.groups];
-              placeholder = i18n.t('groupDetailScreen.searchGroups');
-              break;
-            }
-            default:
-          }
-        }
-        mappedValue = (
-          <Selectize
-            itemId="value"
-            items={listItems}
-            selectedItems={this.getSelectizeItems(this.state.contact[field.name], listItems)}
-            textInputProps={{
-              placeholder: placeholder,
-            }}
-            renderRow={(id, onPress, item) => (
-              <TouchableOpacity
-                activeOpacity={0.6}
-                key={id}
-                onPress={onPress}
-                style={{
-                  paddingVertical: 8,
-                  paddingHorizontal: 10,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                  }}>
-                  {item.avatarUri && (
-                    <Image style={styles.avatar} source={{ uri: item.avatarUri }} />
-                  )}
-                  <Text
-                    style={{
-                      color: 'rgba(0, 0, 0, 0.87)',
-                      fontSize: 14,
-                      lineHeight: 21,
-                    }}>
-                    {item.name}
-                  </Text>
-                  <Text
-                    style={{
-                      color: 'rgba(0, 0, 0, 0.54)',
-                      fontSize: 14,
-                      lineHeight: 21,
-                    }}>
-                    {' '}
-                    (#
-                    {id})
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            renderChip={(id, onClose, item, style, iconStyle) => (
-              <Chip
-                key={id}
-                iconStyle={iconStyle}
-                onClose={onClose}
-                text={item.name}
-                style={style}
-              />
-            )}
-            filterOnKey="name"
-            onChangeSelectedItems={(selectedItems) =>
-              this.onSelectizeValueChange(field.name, selectedItems)
-            }
-            inputContainerStyle={styles.selectizeField}
-          />
-        );
-        break;
-      }
-      case 'multi_select': {
-        if (field.name == 'sources') {
-          mappedValue = (
-            <Selectize
-              itemId="value"
-              items={this.state.sources}
-              selectedItems={
-                this.state.contact[field.name]
-                  ? // Only add option elements (by contact sources) does exist in source list
-                    this.state.contact[field.name].values
-                      .filter((contactSource) =>
-                        this.state.sources.find(
-                          (sourceItem) => sourceItem.value === contactSource.value,
-                        ),
-                      )
-                      .map((contactSource) => {
-                        return {
-                          name: this.state.sources.find(
-                            (sourceItem) => sourceItem.value === contactSource.value,
-                          ).name,
-                          value: contactSource.value,
-                        };
-                      })
-                  : []
-              }
-              textInputProps={{
-                placeholder: i18n.t('contactDetailScreen.selectSources'),
-              }}
-              renderRow={(id, onPress, item) => (
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  key={id}
-                  onPress={onPress}
-                  style={{
-                    paddingVertical: 8,
-                    paddingHorizontal: 10,
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                    }}>
-                    <Text
-                      style={{
-                        color: 'rgba(0, 0, 0, 0.87)',
-                        fontSize: 14,
-                        lineHeight: 21,
-                      }}>
-                      {item.name}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-              renderChip={(id, onClose, item, style, iconStyle) => (
-                <Chip
-                  key={id}
-                  iconStyle={iconStyle}
-                  onClose={(props) => {
-                    const nonExistingSourcesList = [...this.state.nonExistingSources];
-                    let foundNonExistingSource = nonExistingSourcesList.findIndex(
-                      (source) => source.value === id,
-                    );
-                    if (foundNonExistingSource > -1) {
-                      // Remove custom source from select list
-                      const sourceList = [...this.state.sources]; //,
-                      let foundSourceIndex = sourceList.findIndex((source) => source.value === id);
-                      sourceList.splice(foundSourceIndex, 1);
-                      this.setState({
-                        sources: [...sourceList],
-                      });
-                    }
-                    onClose(props);
-                  }}
-                  text={item.name}
-                  style={style}
-                />
-              )}
-              filterOnKey="name"
-              onChangeSelectedItems={(selectedItems) =>
-                this.onSelectizeValueChange(field.name, selectedItems)
-              }
-              inputContainerStyle={styles.selectizeField}
+          ) : (
+            <Icon
+              type="MaterialCommunityIcons"
+              name="comment-plus"
+              style={{ color: 'white', fontSize: 25 }}
             />
-          );
-        } else if (field.name == 'milestones') {
-          mappedValue = (
-            <Col style={{ paddingBottom: 15 }}>
-              <Row style={[styles.formRow, { paddingTop: 10 }]}>
-                <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
-                  <Icon type="Octicons" name="milestone" style={styles.formIcon} />
-                </Col>
-                <Col>
-                  <Label
-                    style={[
-                      styles.formLabel,
-                      { fontWeight: 'bold', marginBottom: 'auto', marginTop: 'auto' },
-                      this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                    ]}>
-                    {field.label}
-                  </Label>
-                </Col>
-              </Row>
-              {this.renderfaithMilestones()}
-              {this.renderCustomFaithMilestones()}
-            </Col>
-          );
-        } else {
-          mappedValue = (
-            <Row style={{ flexWrap: 'wrap' }}>
-              {Object.keys(field.default).map((value, index) =>
-                this.renderMultiSelectField(field, value, index),
-              )}
-            </Row>
-          );
+          )
         }
-        break;
-      }
-      case 'communication_channel': {
-        let keyboardType = 'default';
-        if (field.name.includes('phone')) {
-          keyboardType = 'phone-pad';
-        } else if (field.name.includes('email')) {
-          keyboardType = 'email-address';
-        }
-        mappedValue = (
-          <Col>
-            <Row style={styles.formFieldMargin}>
-              <Col style={styles.formIconLabelCol}>
-                <View style={styles.formIconLabelView}>
-                  <Icon type="Octicons" name="primitive-dot" style={styles.formIcon} />
-                </View>
-              </Col>
-              <Col>
-                <Label style={styles.formLabel}>{field.label}</Label>
-              </Col>
-              <Col style={styles.formIconLabel}>
-                <Icon
-                  android="md-add"
-                  ios="ios-add"
-                  style={[styles.addRemoveIcons, styles.addIcons]}
-                  onPress={() => {
-                    this.onAddCommunicationField(field.name);
-                  }}
-                />
-              </Col>
-            </Row>
-            {value &&
-              value.map((communicationChannel, index) =>
-                !communicationChannel.delete ? (
-                  <Row key={index.toString()} style={{ marginBottom: 10 }}>
-                    <Col style={styles.formIconLabelCol}>
-                      <View style={styles.formIconLabelView}>
-                        <Icon
-                          type="FontAwesome"
-                          name="user"
-                          style={[styles.formIcon, { opacity: 0 }]}
-                        />
-                      </View>
-                    </Col>
-                    <Col>
-                      <Input
-                        value={communicationChannel.value}
-                        onChangeText={(value) => {
-                          this.onCommunicationFieldChange(
-                            field.name,
-                            value,
-                            index,
-                            communicationChannel.key,
-                            this,
-                          );
-                        }}
-                        style={styles.contactTextField}
-                        keyboardType={keyboardType}
-                      />
-                    </Col>
-                    <Col style={styles.formIconLabel}>
-                      <Icon
-                        android="md-remove"
-                        ios="ios-remove"
-                        style={[styles.formIcon, styles.addRemoveIcons, styles.removeIcons]}
-                        onPress={() => {
-                          this.onRemoveCommunicationField(field.name, index, this);
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                ) : null,
-              )}
-          </Col>
-        );
-        break;
-      }
-      case 'key_select': {
-        if (field.name === 'overall_status') {
-          mappedValue = (
-            <Col>
-              <Row style={[styles.formRow, { paddingTop: 15 }]}>
-                <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
-                  <Image source={statusIcon} style={[styles.fieldsIcons, {}]} />
-                </Col>
-                <Col>
-                  <Label
-                    style={[
-                      {
-                        color: Colors.tintColor,
-                        fontSize: 12,
-                        fontWeight: 'bold',
-                        marginTop: 'auto',
-                        marginBottom: 'auto',
-                      },
-                      this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-                    ]}>
-                    {field.label}
-                  </Label>
-                </Col>
-              </Row>
-              <Row style={[styles.formRow, { paddingTop: 5, paddingBottom: 5 }]}>
-                <Col
-                  style={[
-                    styles.statusFieldContainer,
-                    Platform.select({
-                      android: {
-                        borderColor: this.state.overallStatusBackgroundColor,
-                        backgroundColor: this.state.overallStatusBackgroundColor,
-                      },
-                    }),
-                  ]}>
-                  <Picker
-                    selectedValue={value}
-                    onValueChange={this.setContactStatus}
-                    style={Platform.select({
-                      android: {
-                        color: '#ffffff',
-                        backgroundColor: 'transparent',
-                      },
-                      ios: {
-                        backgroundColor: this.state.overallStatusBackgroundColor,
-                      },
-                    })}
-                    textStyle={{
-                      color: '#ffffff',
-                    }}>
-                    {this.renderStatusPickerItems()}
-                  </Picker>
-                  <Icon name="caret-down" size={10} style={styles.pickerIcon} />
-                </Col>
-              </Row>
-              {Object.prototype.hasOwnProperty.call(
-                this.state.contact,
-                `reason_${this.state.contact.overall_status}`,
-              ) ? (
-                <TouchableOpacity activeOpacity={0.6} onPress={this.toggleReasonStatusView}>
-                  <Row>
-                    <Text>
-                      (
-                      {
-                        this.props.contactSettings.fields[
-                          `reason_${this.state.contact.overall_status}`
-                        ].values[this.state.contact[`reason_${this.state.contact.overall_status}`]]
-                          .label
-                      }
-                      )
-                    </Text>
-                    <Icon
-                      type="MaterialCommunityIcons"
-                      name="pencil"
-                      style={{
-                        fontSize: 21,
-                      }}
-                    />
-                  </Row>
-                </TouchableOpacity>
-              ) : null}
-            </Col>
-          );
-        } else {
-          mappedValue = (
-            <Picker
-              mode="dropdown"
-              selectedValue={this.state.contact[field.name]}
-              onValueChange={(value) => this.setContactCustomFieldValue(field.name, value)}
-              textStyle={{ color: Colors.tintColor }}>
-              <Picker.Item key={-1} label={''} value={''} />
-              {Object.keys(field.default).map((key) => {
-                const optionData = field.default[key];
-                return <Picker.Item key={key} label={optionData.label} value={key} />;
-              })}
-            </Picker>
-          );
-        }
-        break;
-      }
-      case 'user_select': {
-        const selectedValue = propExist && value.hasOwnProperty('key') ? value.key : value;
-        mappedValue = (
-          <Picker
-            mode="dropdown"
-            selectedValue={propExist ? selectedValue : this.props.userData?.id}
-            onValueChange={(value) => this.setContactCustomFieldValue(field.name, value)}
-            textStyle={{ color: Colors.tintColor }}>
-            {[...this.state.users, ...this.state.assignedToContacts].map((item) => {
-              return (
-                <Picker.Item
-                  key={item.key}
-                  label={item.label + ' (#' + item.key + ')'}
-                  value={item.key}
-                />
-              );
-            })}
-          </Picker>
-        );
-        break;
-      }
-      case 'number': {
-        mappedValue = (
-          <Input
-            value={value}
-            keyboardType="numeric"
-            onChangeText={(value) => this.setContactCustomFieldValue(field.name, value)}
-            style={[
-              styles.contactTextField,
-              this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-            ]}
+        degrees={0}
+        activeOpacity={0}
+        bgColor="rgba(0,0,0,0.5)"
+        nativeFeedbackRippleColor="rgba(0,0,0,0)">
+        <ActionButton.Item
+          title={contactSettings.fields.quick_button_no_answer.name}
+          onPress={() => {
+            onSaveQuickAction('quick_button_no_answer');
+          }}
+          size={40}
+          buttonColor={Colors.colorNo}
+          nativeFeedbackRippleColor="rgba(0,0,0,0)"
+          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
+          textContainerStyle={{ height: 'auto' }}>
+          <Icon type="Feather" name="phone-off" style={styles.contactFABIcon} />
+        </ActionButton.Item>
+        <ActionButton.Item
+          title={contactSettings.fields.quick_button_contact_established.name}
+          onPress={() => {
+            onSaveQuickAction('quick_button_contact_established');
+          }}
+          size={40}
+          buttonColor={Colors.colorYes}
+          nativeFeedbackRippleColor="rgba(0,0,0,0)"
+          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
+          textContainerStyle={{ height: 'auto' }}>
+          <Icon type="MaterialCommunityIcons" name="phone-in-talk" style={styles.contactFABIcon} />
+        </ActionButton.Item>
+        <ActionButton.Item
+          title={contactSettings.fields.quick_button_meeting_scheduled.name}
+          onPress={() => {
+            onSaveQuickAction('quick_button_meeting_scheduled');
+          }}
+          buttonColor={Colors.colorWait}
+          size={40}
+          nativeFeedbackRippleColor="rgba(0,0,0,0)"
+          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
+          textContainerStyle={{ height: 'auto' }}>
+          <Icon type="MaterialCommunityIcons" name="calendar-plus" style={styles.contactFABIcon} />
+        </ActionButton.Item>
+        <ActionButton.Item
+          title={contactSettings.fields.quick_button_meeting_complete.name}
+          onPress={() => {
+            onMeetingComplete();
+          }}
+          size={40}
+          buttonColor={Colors.colorYes}
+          nativeFeedbackRippleColor="rgba(0,0,0,0)"
+          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
+          textContainerStyle={{ height: 'auto' }}>
+          <Icon type="MaterialCommunityIcons" name="calendar-check" style={styles.contactFABIcon} />
+        </ActionButton.Item>
+        <ActionButton.Item
+          title={contactSettings.fields.quick_button_no_show.name}
+          onPress={() => {
+            onSaveQuickAction('quick_button_no_show');
+          }}
+          size={40}
+          buttonColor={Colors.colorNo}
+          nativeFeedbackRippleColor="rgba(0,0,0,0)"
+          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
+          textContainerStyle={{ height: 'auto' }}>
+          <Icon
+            type="MaterialCommunityIcons"
+            name="calendar-remove"
+            style={styles.contactFABIcon}
           />
-        );
-        break;
-      }
-      case 'text': {
-        mappedValue = (
-          <Input
-            value={value}
-            onChangeText={(value) => this.setContactCustomFieldValue(field.name, value)}
-            style={[
-              field.name == 'name' && this.state.nameRequired
-                ? [styles.contactTextField, { borderBottomWidth: 0 }]
-                : styles.contactTextField,
-              this.props.isRTL ? { textAlign: 'left', flex: 1 } : {},
-            ]}
-          />
-        );
-        break;
-      }
-      default: {
-        mappedValue = <Text>{field.toString()}</Text>;
-        break;
-      }
-    }
-    return mappedValue;
+        </ActionButton.Item>
+      </ActionButton>
+    );
   };
 
-  setContactCustomFieldValue = (fieldName, value, fieldType = null) => {
-    if (fieldType == 'date') {
-      if (!value) {
-        // Clear DatePicker value
-        this[`${fieldName}Ref`].state.chosenDate = undefined;
-        this[`${fieldName}Ref`].state.defaultDate = new Date();
-        this.forceUpdate();
-      }
-      value = value ? sharedTools.formatDateToBackEnd(value) : '';
-    }
-
-    this.setState((prevState) => ({
-      contact: {
-        ...prevState.contact,
-        [fieldName]: value,
-      },
-    }));
-  };
-
-  toggleReasonStatusView = (confirmReasonChange = false) => {
-    this.setState((prevState) => {
+  // TODO: move with renderShowReasonStatusView = () => {
+  const toggleReasonStatusView = (confirmReasonChange = false) => {
+    setState((prevState) => {
       let newState = {
         showReasonStatusView: !prevState.showReasonStatusView,
       };
@@ -4247,10 +2307,11 @@ class ContactDetailScreen extends React.Component {
       } else {
         // Revert selectedReasonStatus to current cotnact reasonStatus
         newState = {
+          ...state,
           ...newState,
           selectedReasonStatus: {
-            key: `reason_${this.state.contact.overall_status}`,
-            value: this.state.contact[`reason_${this.state.contact.overall_status}`],
+            key: `reason_${state.contact.overall_status}`,
+            value: state.contact[`reason_${state.contact.overall_status}`],
           },
         };
       }
@@ -4258,708 +2319,386 @@ class ContactDetailScreen extends React.Component {
     });
   };
 
-  renderReasonStatusPickerItems = (collection) => {
+  // TODO: move with renderShowReasonStatusView = () => {
+  const renderReasonStatusPickerItems = (collection) => {
     return Object.keys(collection).map((key) => {
       let value = collection[key];
       return <Picker.Item key={key} label={value.label} value={key} />;
     });
   };
 
-  render() {
-    const successToast = (
-      <Toast
-        ref={(toast) => {
-          toastSuccess = toast;
-        }}
-        style={{ backgroundColor: Colors.successBackground }}
-        positionValue={250}
-      />
-    );
-    const errorToast = (
-      <Toast
-        ref={(toast) => {
-          toastError = toast;
-        }}
-        style={{ backgroundColor: Colors.errorBackground }}
-        positionValue={250}
-      />
-    );
-
+  // TODO: componentize (w/ Modal?)
+  const renderShowShareView = () => {
     return (
-      <View style={{ flex: 1 }}>
-        {this.state.loadedLocal && (
-          <View style={{ flex: 1 }}>
-            {this.contactIsCreated() ? (
-              <View style={{ flex: 1 }}>
-                {!this.props.isConnected && this.offlineBarRender()}
-                <TabView
-                  navigationState={this.state.tabViewConfig}
-                  renderTabBar={(props) => (
-                    <TabBar
-                      {...props}
-                      style={styles.tabStyle}
-                      activeColor={Colors.tintColor}
-                      inactiveColor={Colors.gray}
-                      scrollEnabled
-                      tabStyle={{ width: 'auto' }}
-                      indicatorStyle={styles.tabBarUnderlineStyle}
-                      renderLabel={({ route, color }) => (
-                        <Text style={{ color, fontWeight: 'bold' }}>{route.title}</Text>
-                      )}
-                    />
-                  )}
-                  renderScene={({ route }) => {
-                    return route.render();
-                  }}
-                  onIndexChange={this.tabChanged}
-                  initialLayout={{ width: windowWidth }}
-                />
-                {this.state.onlyView &&
-                  this.state.tabViewConfig.index !== this.state.tabViewConfig.routes.length - 1 && (
-                    <ActionButton
-                      buttonColor={Colors.primaryRGBA}
-                      renderIcon={(active) =>
-                        active ? (
-                          <Icon
-                            type="MaterialCommunityIcons"
-                            name="close"
-                            style={{ color: 'white', fontSize: 22 }}
-                          />
-                        ) : (
-                          <Icon
-                            type="MaterialCommunityIcons"
-                            name="comment-plus"
-                            style={{ color: 'white', fontSize: 25 }}
-                          />
-                        )
-                      }
-                      degrees={0}
-                      activeOpacity={0}
-                      bgColor="rgba(0,0,0,0.5)"
-                      nativeFeedbackRippleColor="rgba(0,0,0,0)">
-                      <ActionButton.Item
-                        title={this.props.contactSettings.fields.quick_button_no_answer.name}
-                        onPress={() => {
-                          this.onSaveQuickAction('quick_button_no_answer');
-                        }}
-                        size={40}
-                        buttonColor={Colors.colorNo}
-                        nativeFeedbackRippleColor="rgba(0,0,0,0)"
-                        textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-                        textContainerStyle={{ height: 'auto' }}>
-                        <Icon type="Feather" name="phone-off" style={styles.contactFABIcon} />
-                      </ActionButton.Item>
-                      <ActionButton.Item
-                        title={
-                          this.props.contactSettings.fields.quick_button_contact_established.name
-                        }
-                        onPress={() => {
-                          this.onSaveQuickAction('quick_button_contact_established');
-                        }}
-                        size={40}
-                        buttonColor={Colors.colorYes}
-                        nativeFeedbackRippleColor="rgba(0,0,0,0)"
-                        textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-                        textContainerStyle={{ height: 'auto' }}>
-                        <Icon
-                          type="MaterialCommunityIcons"
-                          name="phone-in-talk"
-                          style={styles.contactFABIcon}
-                        />
-                      </ActionButton.Item>
-                      <ActionButton.Item
-                        title={
-                          this.props.contactSettings.fields.quick_button_meeting_scheduled.name
-                        }
-                        onPress={() => {
-                          this.onSaveQuickAction('quick_button_meeting_scheduled');
-                        }}
-                        buttonColor={Colors.colorWait}
-                        size={40}
-                        nativeFeedbackRippleColor="rgba(0,0,0,0)"
-                        textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-                        textContainerStyle={{ height: 'auto' }}>
-                        <Icon
-                          type="MaterialCommunityIcons"
-                          name="calendar-plus"
-                          style={styles.contactFABIcon}
-                        />
-                      </ActionButton.Item>
-                      <ActionButton.Item
-                        title={this.props.contactSettings.fields.quick_button_meeting_complete.name}
-                        onPress={() => {
-                          this.onMeetingComplete();
-                        }}
-                        size={40}
-                        buttonColor={Colors.colorYes}
-                        nativeFeedbackRippleColor="rgba(0,0,0,0)"
-                        textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-                        textContainerStyle={{ height: 'auto' }}>
-                        <Icon
-                          type="MaterialCommunityIcons"
-                          name="calendar-check"
-                          style={styles.contactFABIcon}
-                        />
-                      </ActionButton.Item>
-                      <ActionButton.Item
-                        title={this.props.contactSettings.fields.quick_button_no_show.name}
-                        onPress={() => {
-                          this.onSaveQuickAction('quick_button_no_show');
-                        }}
-                        size={40}
-                        buttonColor={Colors.colorNo}
-                        nativeFeedbackRippleColor="rgba(0,0,0,0)"
-                        textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-                        textContainerStyle={{ height: 'auto' }}>
-                        <Icon
-                          type="MaterialCommunityIcons"
-                          name="calendar-remove"
-                          style={styles.contactFABIcon}
-                        />
-                      </ActionButton.Item>
-                    </ActionButton>
-                  )}
-                {this.state.commentDialog.toggle ? (
-                  <BlurView
-                    tint="dark"
-                    intensity={50}
-                    style={[
-                      styles.dialogBackground,
-                      {
-                        width: windowWidth,
-                        height: windowHeight,
-                      },
-                    ]}>
-                    <KeyboardAvoidingView
-                      behavior={'position'}
-                      contentContainerStyle={{
-                        height: windowHeight / 1.5,
+      <View style={[styles.dialogBox, { height: windowHeight * 0.65 }]}>
+        <Grid>
+          <Row>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>
+                {i18n.t('global.shareSettings')}
+              </Text>
+              <Text>{i18n.t('contactDetailScreen.contactSharedWith')}:</Text>
+              <Selectize
+                itemId="value"
+                items={state.users.map((user) => ({
+                  name: user.label,
+                  value: user.key,
+                }))}
+                selectedItems={getSelectizeItems(
+                  { values: [...state.sharedUsers] },
+                  state.users.map((user) => ({
+                    name: user.label,
+                    value: user.key,
+                  })),
+                )}
+                textInputProps={{
+                  placeholder: i18n.t('global.searchUsers'),
+                }}
+                renderChip={(id, onClose, item, style, iconStyle) => (
+                  <Chip
+                    key={id}
+                    iconStyle={iconStyle}
+                    onClose={(props) => {
+                      // TODO: parseInt?
+                      dispatch(removeUserToShare(state.contact.ID, item.value));
+                      onClose(props);
+                    }}
+                    text={item.name}
+                    style={style}
+                  />
+                )}
+                renderRow={(id, onPress, item) => (
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    key={id}
+                    onPress={(props) => {
+                      dispatch(addUserToShare(state.contact.ID, parseInt(item.value)));
+                      onPress(props);
+                    }}
+                    style={{
+                      paddingVertical: 8,
+                      paddingHorizontal: 10,
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
                       }}>
-                      <View style={styles.dialogBox}>
-                        <Grid>
-                          <Row>
-                            {this.state.commentDialog.delete ? (
-                              <View style={styles.dialogContent}>
-                                <Row style={{ height: 30 }}>
-                                  <Label style={[styles.name, { marginBottom: 5 }]}>
-                                    {i18n.t('global.delete')}
-                                  </Label>
-                                </Row>
-                                <Row>
-                                  <Text style={{ fontSize: 15 }}>
-                                    {this.state.commentDialog.data.content}
-                                  </Text>
-                                </Row>
-                              </View>
-                            ) : (
-                              <View style={styles.dialogContent}>
-                                <Grid>
-                                  <Row style={{ height: 30 }}>
-                                    <Label style={[styles.name, { marginBottom: 5 }]}>
-                                      {i18n.t('global.edit')}
-                                    </Label>
-                                  </Row>
-                                  <Row>
-                                    <Input
-                                      multiline
-                                      value={this.state.commentDialog.data.content}
-                                      onChangeText={(value) => {
-                                        this.setState((prevState) => ({
-                                          commentDialog: {
-                                            ...prevState.commentDialog,
-                                            data: {
-                                              ...prevState.commentDialog.data,
-                                              content: value,
-                                            },
-                                          },
-                                        }));
-                                      }}
-                                      style={[
-                                        styles.contactTextField,
-                                        { height: 'auto', minHeight: 50 },
-                                      ]}
-                                    />
-                                  </Row>
-                                </Grid>
-                              </View>
-                            )}
-                          </Row>
-                          <Row style={{ height: 60 }}>
-                            <Button
-                              transparent
-                              style={{
-                                marginTop: 20,
-                                marginLeft: 'auto',
-                                marginRight: 'auto',
-                                marginBottom: 'auto',
-                                paddingLeft: 25,
-                                paddingRight: 25,
-                              }}
-                              onPress={() => {
-                                this.onCloseCommentDialog();
-                              }}>
-                              <Text style={{ color: Colors.primary }}>
-                                {i18n.t('global.close')}
-                              </Text>
-                            </Button>
-                            {this.state.commentDialog.delete ? (
-                              <Button
-                                block
-                                style={[
-                                  styles.dialogButton,
-                                  { backgroundColor: Colors.buttonDelete },
-                                ]}
-                                onPress={() => {
-                                  this.onDeleteComment(this.state.commentDialog.data);
-                                }}>
-                                <Text style={{ color: Colors.buttonText }}>
-                                  {i18n.t('global.delete')}
-                                </Text>
-                              </Button>
-                            ) : (
-                              <Button
-                                block
-                                style={styles.dialogButton}
-                                onPress={() => {
-                                  this.onUpdateComment(this.state.commentDialog.data);
-                                }}>
-                                <Text style={{ color: Colors.buttonText }}>
-                                  {i18n.t('global.save')}
-                                </Text>
-                              </Button>
-                            )}
-                          </Row>
-                        </Grid>
-                      </View>
-                    </KeyboardAvoidingView>
-                  </BlurView>
-                ) : null}
-                {this.state.showShareView ? (
-                  <BlurView
-                    tint="dark"
-                    intensity={50}
-                    style={[
-                      styles.dialogBackground,
-                      {
-                        width: windowWidth,
-                        height: windowHeight,
-                      },
-                    ]}>
-                    <KeyboardAvoidingView behavior={'position'} keyboardVerticalOffset={-50}>
-                      <View style={[styles.dialogBox, { height: windowHeight * 0.65 }]}>
-                        <Grid>
-                          <Row>
-                            <ScrollView keyboardShouldPersistTaps="handled">
-                              <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>
-                                {i18n.t('global.shareSettings')}
-                              </Text>
-                              <Text>{i18n.t('contactDetailScreen.contactSharedWith')}:</Text>
-                              <Selectize
-                                itemId="value"
-                                items={this.state.users.map((user) => ({
-                                  name: user.label,
-                                  value: user.key,
-                                }))}
-                                selectedItems={this.getSelectizeItems(
-                                  { values: [...this.state.sharedUsers] },
-                                  this.state.users.map((user) => ({
-                                    name: user.label,
-                                    value: user.key,
-                                  })),
-                                )}
-                                textInputProps={{
-                                  placeholder: i18n.t('global.searchUsers'),
-                                }}
-                                renderChip={(id, onClose, item, style, iconStyle) => (
-                                  <Chip
-                                    key={id}
-                                    iconStyle={iconStyle}
-                                    onClose={(props) => {
-                                      this.removeUserToShare(item.value);
-                                      onClose(props);
-                                    }}
-                                    text={item.name}
-                                    style={style}
-                                  />
-                                )}
-                                renderRow={(id, onPress, item) => (
-                                  <TouchableOpacity
-                                    activeOpacity={0.6}
-                                    key={id}
-                                    onPress={(props) => {
-                                      this.addUserToShare(parseInt(item.value));
-                                      onPress(props);
-                                    }}
-                                    style={{
-                                      paddingVertical: 8,
-                                      paddingHorizontal: 10,
-                                    }}>
-                                    <View
-                                      style={{
-                                        flexDirection: 'row',
-                                      }}>
-                                      <Text
-                                        style={{
-                                          color: 'rgba(0, 0, 0, 0.87)',
-                                          fontSize: 14,
-                                          lineHeight: 21,
-                                        }}>
-                                        {item.name}
-                                      </Text>
-                                      <Text
-                                        style={{
-                                          color: 'rgba(0, 0, 0, 0.54)',
-                                          fontSize: 14,
-                                          lineHeight: 21,
-                                        }}>
-                                        {' '}
-                                        (#
-                                        {id})
-                                      </Text>
-                                    </View>
-                                  </TouchableOpacity>
-                                )}
-                                filterOnKey="name"
-                                inputContainerStyle={[styles.selectizeField]}
-                                showItems="onFocus"
-                              />
-                            </ScrollView>
-                          </Row>
-                          <Row style={{ height: 60, borderColor: '#B4B4B4', borderTopWidth: 1 }}>
-                            <Button
-                              block
-                              style={styles.dialogButton}
-                              onPress={this.toggleShareView}>
-                              <Text style={{ color: Colors.buttonText }}>
-                                {i18n.t('global.close')}
-                              </Text>
-                            </Button>
-                          </Row>
-                        </Grid>
-                      </View>
-                    </KeyboardAvoidingView>
-                  </BlurView>
-                ) : null}
-                {this.state.showReasonStatusView ? (
-                  <BlurView
-                    tint="dark"
-                    intensity={50}
-                    style={[
-                      styles.dialogBackground,
-                      {
-                        width: windowWidth,
-                        height: windowHeight,
-                      },
-                    ]}>
-                    <View style={[styles.dialogBox, { height: windowHeight - windowHeight * 0.4 }]}>
-                      <Grid>
-                        <Row>
-                          <View>
-                            <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 20 }}>
-                              {
-                                this.props.contactSettings.fields[
-                                  `reason_${this.state.contact.overall_status}`
-                                ].name
-                              }
-                            </Text>
-                            <Text style={{ marginBottom: 20 }}>
-                              {
-                                this.props.contactSettings.fields[
-                                  `reason_${this.state.contact.overall_status}`
-                                ].description
-                              }
-                            </Text>
-                            <Text style={{ marginBottom: 20 }}>
-                              {i18n.t('global.chooseOption')}:
-                            </Text>
-                            <View style={styles.contactTextRoundField}>
-                              <Picker
-                                selectedValue={this.state.selectedReasonStatus.value}
-                                onValueChange={(value) => {
-                                  this.setState({
-                                    selectedReasonStatus: {
-                                      key: `reason_${this.state.contact.overall_status}`,
-                                      value,
-                                    },
-                                  });
-                                }}>
-                                {this.renderReasonStatusPickerItems(
-                                  this.props.contactSettings.fields[
-                                    `reason_${this.state.contact.overall_status}`
-                                  ].values,
-                                )}
-                              </Picker>
-                            </View>
-                          </View>
-                        </Row>
-                        <Row style={{ height: 60, borderColor: '#B4B4B4', borderTopWidth: 1 }}>
-                          <Button
-                            block
-                            style={[styles.dialogButton, { backgroundColor: '#FFFFFF' }]}
-                            onPress={() => this.toggleReasonStatusView()}>
-                            <Text style={{ color: Colors.primary }}>{i18n.t('global.cancel')}</Text>
-                          </Button>
-                          <Button
-                            block
-                            style={styles.dialogButton}
-                            onPress={() => this.toggleReasonStatusView(true)}>
-                            <Text style={{ color: Colors.buttonText }}>
-                              {i18n.t('global.confirm')}
-                            </Text>
-                          </Button>
-                        </Row>
-                      </Grid>
+                      <Text
+                        style={{
+                          color: 'rgba(0, 0, 0, 0.87)',
+                          fontSize: 14,
+                          lineHeight: 21,
+                        }}>
+                        {item.name}
+                      </Text>
+                      <Text
+                        style={{
+                          color: 'rgba(0, 0, 0, 0.54)',
+                          fontSize: 14,
+                          lineHeight: 21,
+                        }}>
+                        {' '}
+                        (#
+                        {id})
+                      </Text>
                     </View>
-                  </BlurView>
-                ) : null}
-              </View>
-            ) : (
-              <KeyboardAwareScrollView
-                enableAutomaticScroll
-                enableOnAndroid
-                keyboardOpeningTime={0}
-                extraScrollHeight={150}
-                keyboardShouldPersistTaps="handled">
-                {!this.props.isConnected && this.offlineBarRender()}
-                <View style={styles.formContainer}>
-                  {this.renderCustomView(this.renderCreationFields(), true)}
-                </View>
-              </KeyboardAwareScrollView>
-            )}
-          </View>
-        )}
-        {successToast}
-        {errorToast}
+                  </TouchableOpacity>
+                )}
+                filterOnKey="name"
+                inputContainerStyle={[styles.selectizeField]}
+                showItems="onFocus"
+              />
+            </ScrollView>
+          </Row>
+          <Row style={{ height: 60, borderColor: '#B4B4B4', borderTopWidth: 1 }}>
+            <Button block style={styles.dialogButton} onPress={toggleShareView}>
+              <Text style={{ color: Colors.buttonText }}>{i18n.t('global.close')}</Text>
+            </Button>
+          </Row>
+        </Grid>
       </View>
     );
-  }
-}
+  };
 
+  // TODO: componentize (w/ Modal?)
+  const renderShowReasonStatusView = () => {
+    return (
+      <View style={[styles.dialogBox, { height: windowHeight - windowHeight * 0.4 }]}>
+        <Grid>
+          <Row>
+            <View>
+              <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 20 }}>
+                {contactSettings.fields[`reason_${state.contact.overall_status}`].name}
+              </Text>
+              <Text style={{ marginBottom: 20 }}>
+                {contactSettings.fields[`reason_${state.contact.overall_status}`].description}
+              </Text>
+              <Text style={{ marginBottom: 20 }}>{i18n.t('global.chooseOption')}:</Text>
+              <View style={styles.contactTextRoundField}>
+                <Picker
+                  selectedValue={state.selectedReasonStatus.value}
+                  onValueChange={(value) => {
+                    setState({
+                      ...state,
+                      selectedReasonStatus: {
+                        key: `reason_${state.contact.overall_status}`,
+                        value,
+                      },
+                    });
+                  }}>
+                  {renderReasonStatusPickerItems(
+                    contactSettings.fields[`reason_${state.contact.overall_status}`].values,
+                  )}
+                </Picker>
+              </View>
+            </View>
+          </Row>
+          <Row style={{ height: 60, borderColor: '#B4B4B4', borderTopWidth: 1 }}>
+            <Button
+              block
+              style={[styles.dialogButton, { backgroundColor: '#FFFFFF' }]}
+              onPress={() => toggleReasonStatusView()}>
+              <Text style={{ color: Colors.primary }}>{i18n.t('global.cancel')}</Text>
+            </Button>
+            <Button block style={styles.dialogButton} onPress={() => toggleReasonStatusView(true)}>
+              <Text style={{ color: Colors.buttonText }}>{i18n.t('global.confirm')}</Text>
+            </Button>
+          </Row>
+        </Grid>
+      </View>
+    );
+  };
+
+  // TODO:  move to CommentDialog/Modal component
+  const openCommentDialog = (comment, deleteComment = false) => {
+    setState({
+      ...state,
+      commentDialog: {
+        toggle: true,
+        data: comment,
+        delete: deleteComment,
+      },
+    });
+  };
+
+  // TODO:  move to CommentDialog/Modal component
+  const onCloseCommentDialog = () => {
+    setState({
+      ...state,
+      commentDialog: {
+        toggle: false,
+        data: {},
+        delete: false,
+      },
+    });
+  };
+
+  // TODO: how to share in helpers when using styles?
+  const renderCommentDialog = () => {
+    return (
+      <View style={styles.dialogBox}>
+        <Grid>
+          <Row>
+            {state.commentDialog.delete ? (
+              <View style={styles.dialogContent}>
+                <Row style={{ height: 30 }}>
+                  <Label style={[styles.name, { marginBottom: 5 }]}>
+                    {i18n.t('global.delete')}
+                  </Label>
+                </Row>
+                <Row>
+                  <Text style={{ fontSize: 15 }}>{state.commentDialog.data.content}</Text>
+                </Row>
+              </View>
+            ) : (
+              <View style={styles.dialogContent}>
+                <Grid>
+                  <Row style={{ height: 30 }}>
+                    <Label style={[styles.name, { marginBottom: 5 }]}>
+                      {i18n.t('global.edit')}
+                    </Label>
+                  </Row>
+                  <Row>
+                    <Input
+                      multiline
+                      value={state.commentDialog.data.content}
+                      onChangeText={(value) => {
+                        setState((prevState) => ({
+                          ...state,
+                          commentDialog: {
+                            ...prevState.commentDialog,
+                            data: {
+                              ...prevState.commentDialog.data,
+                              content: value,
+                            },
+                          },
+                        }));
+                      }}
+                      style={[styles.contactTextField, { height: 'auto', minHeight: 50 }]}
+                    />
+                  </Row>
+                </Grid>
+              </View>
+            )}
+          </Row>
+          <Row style={{ height: 60 }}>
+            <Button
+              transparent
+              style={{
+                marginTop: 20,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                marginBottom: 'auto',
+                paddingLeft: 25,
+                paddingRight: 25,
+              }}
+              onPress={() => {
+                onCloseCommentDialog();
+              }}>
+              <Text style={{ color: Colors.primary }}>{i18n.t('global.close')}</Text>
+            </Button>
+            {state.commentDialog.delete ? (
+              <Button
+                block
+                style={[styles.dialogButton, { backgroundColor: Colors.buttonDelete }]}
+                onPress={() => {
+                  dispatch(deleteComment(state.contact.ID, state.commentDialog.data.ID));
+                  onCloseCommentDialog();
+                }}>
+                <Text style={{ color: Colors.buttonText }}>{i18n.t('global.delete')}</Text>
+              </Button>
+            ) : (
+              <Button
+                block
+                style={styles.dialogButton}
+                onPress={() => {
+                  dispatch(saveComment(state.contact.ID, state.commentDialog.data));
+                  onCloseCommentDialog();
+                }}>
+                <Text style={{ color: Colors.buttonText }}>{i18n.t('global.save')}</Text>
+              </Button>
+            )}
+          </Row>
+        </Grid>
+      </View>
+    );
+  };
+
+  // TODO: componentize as NewRecord?
+  const NewContact = () => {
+    return (
+      <KeyboardAwareScrollView
+        enableAutomaticScroll
+        enableOnAndroid
+        keyboardOpeningTime={0}
+        extraScrollHeight={150}
+        keyboardShouldPersistTaps="handled">
+        {!isConnected && <OfflineBar />}
+        <View style={styles.formContainer}>
+          <CustomView state={state} fields={renderCreationFields(contactSettings)} create />
+        </View>
+      </KeyboardAwareScrollView>
+    );
+  };
+
+  // TODO: move to it's own component
+  const Tabs = () => {
+    return (
+      <TabView
+        lazy
+        navigationState={state.tabViewConfig}
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            style={styles.tabStyle}
+            activeColor={Colors.tintColor}
+            inactiveColor={Colors.gray}
+            scrollEnabled
+            tabStyle={{ width: 'auto' }}
+            indicatorStyle={styles.tabBarUnderlineStyle}
+            renderLabel={({ route, color }) => (
+              <Text style={{ color, fontWeight: 'bold' }}>{route.title}</Text>
+            )}
+          />
+        )}
+        renderScene={({ route }) => {
+          // TODO: placeholder if error?
+          const tile = contactSettings.tiles.find((tile) => tile.label === route.title);
+          if (route.key === 'comments') {
+            if (state.showFilterView) {
+              return renderFilterCommentsView();
+            } else {
+              return renderAllCommentsView();
+            }
+          }
+          return <CustomView state={state} fields={tile.fields} />;
+        }}
+        renderLazyPlaceholder={({ route }) => {
+          return null;
+        }}
+        onIndexChange={tabChanged}
+        initialLayout={{ width: windowWidth }}
+      />
+    );
+  };
+
+  // TODO: componentize as ExistingRecord?
+  const ExistingContact = () => {
+    return (
+      <>
+        {!isConnected && <OfflineBar />}
+        <Tabs />
+        {true && state.tabViewConfig?.index !== state.tabViewConfig?.routes?.length - 1 && <FAB />}
+      </>
+    );
+  };
+  //{state.onlyView && state.tabViewConfig?.index !== state.tabViewConfig?.routes?.length-1 && (
+
+  // TODO: componentize?
+  const Modals = () => {
+    return (
+      <>
+        <ActionModal
+          visible={state?.commentDialog?.toggle}
+          onClose={(visible) => {
+            onCancel();
+          }}
+          title={'?? INSERT TITLE HERE ??'}>
+          {renderCommentDialog}
+        </ActionModal>
+        {/* TODO: not working...*/}
+        <ActionModal
+          //visible={state?.showShareView}
+          visible={false}
+          onClose={(visible) => {
+            onCancel();
+          }}
+          title={'?? INSERT TITLE HERE ??'}>
+          {renderShowShareView}
+        </ActionModal>
+        <ActionModal
+          visible={state?.showReasonStatusView}
+          onClose={(visible) => {
+            onCancel();
+          }}
+          title={'?? INSERT TITLE HERE ??'}>
+          {renderShowReasonStatusView}
+        </ActionModal>
+      </>
+    );
+  };
+
+  // TODO:
+  const isAddNewContact = false;
+  return (
+    <>
+      {isAddNewContact ? <NewContact /> : <ExistingContact />}
+      <Modals />
+    </>
+  );
+};
+
+/*
 ContactDetailScreen.propTypes = {
-  userData: PropTypes.shape({
-    domain: PropTypes.string,
-    token: PropTypes.string,
-  }).isRequired,
-  contact: PropTypes.shape({
-    ID: PropTypes.any,
-    name: PropTypes.string,
-    seeker_path: PropTypes.string,
-    oldID: PropTypes.string,
-  }),
-  userReducerError: PropTypes.shape({
-    code: PropTypes.any,
-    message: PropTypes.any,
-  }),
-  newComment: PropTypes.bool,
-  contactsReducerError: PropTypes.shape({
-    code: PropTypes.any,
-    message: PropTypes.any,
-  }),
-  navigation: PropTypes.shape({
-    getParam: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
-    setParams: PropTypes.func.isRequired,
-    state: PropTypes.shape({
-      params: PropTypes.shape({
-        onlyView: PropTypes.any,
-        contactId: PropTypes.any,
-        contactName: PropTypes.string,
-      }),
-    }),
-  }).isRequired,
-  saveContact: PropTypes.func.isRequired,
-  getById: PropTypes.func.isRequired,
-  getComments: PropTypes.func.isRequired,
-  saveComment: PropTypes.func.isRequired,
-  getActivities: PropTypes.func.isRequired,
-  saved: PropTypes.bool,
-  isConnected: PropTypes.bool,
-  endSaveContact: PropTypes.func.isRequired,
-  getByIdEnd: PropTypes.func.isRequired,
-  contactSettings: PropTypes.shape({
-    fields: PropTypes.shape({
-      sources: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      overall_status: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      milestones: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({
-          milestone_has_bible: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_reading_bible: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_belief: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_can_share: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_sharing: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_baptized: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_baptizing: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_in_group: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-          milestone_planting: PropTypes.shape({
-            label: PropTypes.string,
-          }),
-        }),
-      }),
-      assigned_to: PropTypes.shape({
-        key: PropTypes.number,
-        label: PropTypes.string,
-      }),
-      subassigned: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      location_grid: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      people_groups: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      age: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      gender: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      seeker_path: PropTypes.shape({
-        name: PropTypes.string,
-        values: PropTypes.shape({}),
-      }),
-      baptism_date: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      groups: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      relation: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      baptized_by: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      baptized: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      coached_by: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      coaching: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-    }),
-    channels: PropTypes.shape({}),
-  }),
-};
-
-ContactDetailScreen.defaultProps = {
-  contact: null,
-  userReducerError: null,
-  newComment: null,
-  contactsReducerError: null,
-  saved: null,
-  isConnected: null,
-  contactSettings: null,
-  isRTL: false,
-  questionnaires: [],
-  previousContacts: [],
-};
-
-const mapStateToProps = (state) => ({
-  userData: state.userReducer.userData,
-  userReducerError: state.userReducer.error,
-  contact: state.contactsReducer.contact,
-  comments: state.contactsReducer.comments,
-  totalComments: state.contactsReducer.totalComments,
-  loadingComments: state.contactsReducer.loadingComments,
-  activities: state.contactsReducer.activities,
-  totalActivities: state.contactsReducer.totalActivities,
-  loadingActivities: state.contactsReducer.loadingActivities,
-  newComment: state.contactsReducer.newComment,
-  contactsReducerError: state.contactsReducer.error,
-  loading: state.contactsReducer.loading,
-  saved: state.contactsReducer.saved,
-  isConnected: state.networkConnectivityReducer.isConnected,
-  contactSettings: state.contactsReducer.settings,
-  foundGeonames: state.groupsReducer.foundGeonames,
-  groupsList: state.groupsReducer.groups,
-  contactsList: state.contactsReducer.contacts,
-  isRTL: state.i18nReducer.isRTL,
-  questionnaires: state.questionnaireReducer.questionnaires,
-  previousContacts: state.contactsReducer.previousContacts,
-  previousGroups: state.groupsReducer.previousGroups,
-  loadingShare: state.contactsReducer.loadingShare,
-  shareSettings: state.contactsReducer.shareSettings,
-  savedShare: state.contactsReducer.savedShare,
-  tags: state.contactsReducer.tags,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  saveContact: (domain, token, contactDetail) => {
-    dispatch(save(domain, token, contactDetail));
-  },
-  getById: (domain, token, contactId) => {
-    dispatch(getById(domain, token, contactId));
-  },
-  getByIdEnd: () => {
-    dispatch(getByIdEnd());
-  },
-  getComments: (domain, token, contactId, pagination) => {
-    dispatch(getCommentsByContact(domain, token, contactId, pagination));
-  },
-  saveComment: (domain, token, contactId, commentData) => {
-    dispatch(saveComment(domain, token, contactId, commentData));
-  },
-  getActivities: (domain, token, contactId, pagination) => {
-    dispatch(getActivitiesByContact(domain, token, contactId, pagination));
-  },
-  endSaveContact: () => {
-    dispatch(saveEnd());
-  },
-  searchLocations: (domain, token, queryText) => {
-    dispatch(searchLocations(domain, token, queryText));
-  },
-  deleteComment: (domain, token, contactId, commentId) => {
-    dispatch(deleteComment(domain, token, contactId, commentId));
-  },
-  loadingFalse: () => {
-    dispatch(loadingFalse());
-  },
-  updatePrevious: (previousContacts) => {
-    dispatch(updatePrevious(previousContacts));
-  },
-  updatePreviousGroups: (previousGroups) => {
-    dispatch(updatePreviousGroups(previousGroups));
-  },
-  getShareSettings: (domain, token, contactId) => {
-    dispatch(getShareSettings(domain, token, contactId));
-  },
-  addUserToShare: (domain, token, contactId, userId) => {
-    dispatch(addUserToShare(domain, token, contactId, userId));
-  },
-  removeUserToShare: (domain, token, contactId, userData) => {
-    dispatch(removeUserToShare(domain, token, contactId, userData));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactDetailScreen);
+*/
+export default ContactDetailScreen;

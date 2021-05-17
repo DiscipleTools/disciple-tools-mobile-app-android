@@ -2,9 +2,7 @@
   "global": {
     "error": {
       "code": "Cod: ",
-      "message": "Mesaj: ",
-      "text": "text",
-      "noRecords": "Fără înregistrări"
+      "message": "Mesaj: "
     },
     "success": {
       "save": "Datele salvate cu succes!"
@@ -29,25 +27,7 @@
     "nameRequired": "Nume (obligatoriu",
     "close": "Închide",
     "editComment": "Editați | ×",
-    "deleteComment": "Șterge",
-    "delete": "șterge",
-    "sortBy": "filtrează după",
-    "reset": "resetați",
-    "apply": "aplica",
-    "showing": "arătând",
-    "comments": "comentarii",
-    "activity": "activitate",
-    "submit": "Trimite",
-    "share": "acțiune",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "opțiuni de distribuire",
-    "searchUsers": "căutareUtilizatori",
-    "noFilters": "noFilters",
-    "searchContacts": "căutareContact",
-    "selectLocations": "selectați Locații",
-    "other": "alte",
-    "chooseOption": "alegeți Opțiune",
-    "confirm": "a confirma"
+    "deleteComment": "Șterge"
   },
   "loginScreen": {
     "domain": {
@@ -68,10 +48,7 @@
     "forgotPassword": "Ti-ai pierdut parola?",
     "errors": {
       "invalidUsername": "Nume utilizator necunoscut. Verificați din nou sau încercați adresa dvs. de e-mail.",
-      "incorrectPassword": "Parola introdusă pentru numele de utilizator este incorectă",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "incorrectPassword": "Parola introdusă pentru numele de utilizator este incorectă"
     }
   },
   "contactsScreen": {
@@ -98,8 +75,7 @@
     "incorrectPin": "Cod PIN incorect",
     "savedPinCode": "Codul PIN a fost salvat cu succes",
     "removedPinCode": "Codul PIN a fost eliminat cu succes",
-    "close": "Închide",
-    "confirmPin": "confirmPin"
+    "close": "Închide"
   },
   "contactDetailScreen": {
     "addNewContact": "Adăugați un contact nou",
@@ -123,10 +99,7 @@
       "error": "Numele este necesar"
     },
     "noContactCommentPlacheHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
-    "noContactCommentPlacheHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi comentariul de contact.",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "noContactCommentPlacheHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi comentariul de contact."
   },
   "groupDetailScreen": {
     "addNewGroup": "Adăugați grup nou",
@@ -149,17 +122,7 @@
       "quick_button_meeting_scheduled": "Întâlnire programată",
       "quick_button_meeting_postponed": "Întâlnire amânată",
       "quick_button_meeting_complete": "Întâlnire finalizată"
-    },
-    "memberCount": "memberCount",
-    "memberList": "lista membrilor",
-    "attendance": {
-      "header": "antet",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
-    },
-    "groupSharedWith": "groupSharedWith"
+    }
   },
   "notificationsScreen": {
     "notifications": "Notificări",

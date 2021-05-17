@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     color: '#3f729b',
   },
-  buttoContainer: {
+  buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 35,
@@ -88,16 +88,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     color: '#3f729b',
     fontSize: 14,
-  },
-  offlineBar: {
-    height: 20,
-    backgroundColor: '#FCAB10',
-  },
-  offlineBarText: {
-    fontSize: 14,
-    color: 'white',
-    textAlignVertical: 'center',
-    textAlign: 'center',
   },
   dontHaveNotificationsText: {
     fontSize: 14,

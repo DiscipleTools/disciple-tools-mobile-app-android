@@ -1,6 +1,6 @@
 // Imports: Dependencies
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { persistStore, persistReducer, createTransform } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
 import hardSet from 'redux-persist/es/stateReconciler/hardSet';
@@ -32,29 +32,24 @@ const middleware = [sagaMiddleware];
 
 // Middleware: Redux Persist Config
 const persistConfig = {
-  // Root?
   key: 'root',
-  // Storage Method (React Native)
   storage: ExpoFileSystemStorage,
-  // Whitelist (Save Specific Reducers)
-  /* whitelist: [
-    'authReducer',
-  ], */
-  // Blacklist (Don't Save Specific Reducers)
-  /* blacklist: [
-    'counterReducer',
-  ], */
+  // whitelist (save specific reducers)
+  // whitelist: [
+  //  'authReducer',
+  //],
+  // blacklist (don't save specific reducers)
+  blacklist: ['requestReducer'],
   stateReconciler: hardSet,
   //transforms: [
   //  transformState,
   //],
 };
-
-// Middleware: Redux Persist Persisted Reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Redux: Store
-const store = createStore(persistedReducer, applyMiddleware(...middleware));
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(persistedReducer, composeEnhancers(applyMiddleware(...middleware)));
 
 sagaMiddleware.run(rootSaga);
 

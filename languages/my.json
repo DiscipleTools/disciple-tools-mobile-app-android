@@ -2,9 +2,7 @@
   "global": {
     "error": {
       "code": "ကုဒ်: ",
-      "message": "စာ ",
-      "text": "စာသား",
-      "noRecords": "မှတ်တမ်း"
+      "message": "စာ "
     },
     "success": {
       "save": "ဒေတာကိုအောင်အောင်မြင်မြင်သိမ်းဆည်းပြီးပါပြီ။"
@@ -29,25 +27,7 @@
     "nameRequired": "နာမည်လိုအပ်သည်",
     "close": "ပိတ်သည်",
     "editComment": "တည်းဖြတ်ပါ",
-    "deleteComment": "ဖျက်ပါ",
-    "delete": "ဖျက်ပါ",
-    "sortBy": "အလိုက်စဥ်သည်",
-    "reset": "ပြန်လည်စတင်",
-    "apply": "လျှောက်ထားပါ",
-    "showing": "ပြသ",
-    "comments": "မှတ်ချက်များ",
-    "activity": "လှုပ်ရှားမှု",
-    "submit": "တင်သွင်း",
-    "share": "ဝေစု",
-    "viewOnMobileWeb": "မြင်ကွင်း",
-    "shareSettings": "Sရာဝတီ",
-    "searchUsers": "ရှာသည်",
-    "noFilters": "မ",
-    "searchContacts": "ရှာဖွေရေး",
-    "selectLocations": "ကျား",
-    "other": "အခြား",
-    "chooseOption": "ကဲ",
-    "confirm": "အတည်ပြုပါ"
+    "deleteComment": "ဖျက်ပါ"
   },
   "loginScreen": {
     "domain": {
@@ -68,10 +48,7 @@
     "forgotPassword": "မင်းရဲ့လျှို့ဝှက်နံပါတ်ပျောက်သွားသလား။",
     "errors": {
       "invalidUsername": "အမည်မသိသုံးစွဲသူ။ ထပ်မံစစ်ဆေးပါသို့မဟုတ်သင့်အီးမေးလ်လိပ်စာဖြင့်စမ်းကြည့်ပါ။",
-      "incorrectPassword": "အသုံးပြုသူအမည်အတွက်သင်ထည့်သွင်းထားသောစကားဝှက်မှာမမှန်ကန်ပါ",
-      "configurationNeededOn": "ကိုအောင်နိုင်",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "incorrectPassword": "အသုံးပြုသူအမည်အတွက်သင်ထည့်သွင်းထားသောစကားဝှက်မှာမမှန်ကန်ပါ"
     }
   },
   "contactsScreen": {
@@ -98,8 +75,7 @@
     "incorrectPin": "PIN နံပါတ်မမှန်ကန်ပါ",
     "savedPinCode": "ပင်နံပါတ်ကိုအောင်မြင်စွာသိမ်းဆည်းပြီးဖြစ်သည်",
     "removedPinCode": "PIN နံပါတ်ကိုအောင်မြင်စွာဖယ်ရှားလိုက်ပြီ",
-    "close": "ပိတ်",
-    "confirmPin": "ကန္တာရ"
+    "close": "ပိတ်"
   },
   "contactDetailScreen": {
     "addNewContact": "ဆက်သွယ်ရန်အသစ်ထည့်ပါ",
@@ -123,10 +99,7 @@
       "error": "နာမည်လိုအပ်ပါသည်"
     },
     "noContactCommentPlacheHolder1": "သင့်ဆိုဒ်မှ၎င်းတို့အားရယူရန်ပြသနာရှိနိုင်သည်။ ပြန်လည်ဆန်းသစ်ရန် နှင့် ထပ်မံကြိုးစားရန်အောက်သို့ဆွဲချပါ။",
-    "noContactCommentPlacheHolderOffline": "သင်လက်ရှိ offline ဖြစ်နေတယ်။ သင့်အဆက်အသွယ်မှတ်ချက်ကို ရရှိရန် နှင့် ပြန်လည်ဆန်းသစ်စေရန်၊ wifi သို့မဟုတ် မိုဘိုင်းဒေတာနှင့်ချိတ်ဆက်ထားကြောင်းသေချာပါစေ။",
-    "importContact": "importContact",
-    "contactSharedWith": "အဆက်အသွယ်",
-    "ageNotSet": "မင်္ဂလာပါ"
+    "noContactCommentPlacheHolderOffline": "သင်လက်ရှိ offline ဖြစ်နေတယ်။ သင့်အဆက်အသွယ်မှတ်ချက်ကို ရရှိရန် နှင့် ပြန်လည်ဆန်းသစ်စေရန်၊ wifi သို့မဟုတ် မိုဘိုင်းဒေတာနှင့်ချိတ်ဆက်ထားကြောင်းသေချာပါစေ။"
   },
   "groupDetailScreen": {
     "addNewGroup": "အုပ်စုအသစ်ထည့်ပါ",
@@ -149,17 +122,7 @@
       "quick_button_meeting_scheduled": "စီစဉ်ထားသောအစည်းအဝေး",
       "quick_button_meeting_postponed": "အစည်းအဝေးရွှေ့ဆိုင်း",
       "quick_button_meeting_complete": "အစည်းအဝေးပြီးပြီ"
-    },
-    "memberCount": "အဖွဲ့ဝင်",
-    "memberList": "အဖွဲ့ဝင်",
-    "attendance": {
-      "header": "header ကို",
-      "didAttendComment": "ချစ်သူ",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "ကျေးဇူးတင်ပါတယ်",
-      "groupComment": "နေပြည်တော်"
-    },
-    "groupSharedWith": "မင်္ဂလာပါ"
+    }
   },
   "notificationsScreen": {
     "notifications": "အသိပေးချက်များ",

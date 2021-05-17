@@ -230,21 +230,6 @@ const Questionnaire = ({ navigation }) => {
   }, [error]);
 
   /*
-  useEffect(() => { 
-    hardwareBackPressListener = BackHandler.addEventListener('hardwareBackPress', () => {
-      sharedTools.onlyExecuteLastCall(
-        null,
-        () => {
-          this.backButtonTap();
-        },
-        1000,
-      );
-      return true;
-    });
-  }, [])
-  */
-
-  /*
   let toastSuccess;
   const successToast = (
     <Toast

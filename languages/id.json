@@ -3,8 +3,8 @@
     "error": {
       "code": "Kode: ",
       "message": "Pesan: ",
-      "text": "teks",
-      "noRecords": "noRecords"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Data berhasil disimpan!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "Tulis komentar atau komentar Anda di sini",
     "requiredField": "kolom yang harus diisi",
     "edit": "Edit",
+    "delete": "Menghapus",
     "cancel": "Membatalkan",
     "save": "Menyimpan",
     "online": "On line",
@@ -30,24 +31,22 @@
     "close": "Menutup",
     "editComment": "Edit",
     "deleteComment": "Menghapus",
-    "delete": "menghapus",
-    "sortBy": "Sortir dengan",
-    "reset": "reset",
-    "apply": "menerapkan",
-    "showing": "menunjukkan",
-    "comments": "komentar",
-    "activity": "aktivitas",
-    "submit": "Kirimkan",
-    "share": "Bagikan",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "shareSettings",
-    "searchUsers": "searchUsers",
-    "noFilters": "noFilters",
-    "searchContacts": "searchContacts",
-    "selectLocations": "selectLocations",
-    "other": "lain",
-    "chooseOption": "selectOption",
-    "confirm": "Konfirmasi"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "Pilih lokasi",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "Nama pengguna tidak dikenal. Periksa lagi atau coba alamat email Anda.",
       "incorrectPassword": "Kata sandi yang Anda masukkan untuk nama pengguna salah",
-      "configurationNeededOn": "konfigurasiNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "Kode PIN berhasil disimpan",
     "removedPinCode": "Kode PIN berhasil dihapus",
     "close": "Menutup",
-    "confirmPin": "confirmPin"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "Tambahkan Kontak Baru",
     "subAssignThisContact": "Sub-assign kontak ini",
     "mobile": "Mobile",
-    "selectLocations": "Pilih lokasi",
     "selectSources": "Pilih sumber",
     "connections": "Koneksi",
     "addGroup": "Tambahkan Grup",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
     "noContactCommentPlacheHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan komentar kontak Anda.",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "Tambahkan Grup Baru",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "Tidak ada komentar grup yang tersedia saat ini.",
     "noGroupCommentPlacheHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
     "noGroupCommentPlacheHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan komentar grup Anda.",
-    "selectLocations": "Pilih Lokasi",
     "noMembersMessage": "noMembersMessage",
     "groupName": {
       "label": "Nama grup",
       "error": "Nama harus diisi"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "Rapat Terjadwal",
       "quick_button_meeting_postponed": "Rapat Ditunda",
       "quick_button_meeting_complete": "Rapat Selesai"
     },
-    "memberCount": "jumlah anggota",
-    "memberList": "Daftar anggota",
     "attendance": {
-      "header": "header",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "Notifikasi",

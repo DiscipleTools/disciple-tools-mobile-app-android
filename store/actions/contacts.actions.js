@@ -83,24 +83,18 @@ export const CONTACTS_GET_TAGS_FAILURE = 'CONTACTS_GET_TAGS_FAILURE';
  */
 /**
  *
- * @param {*} domain
- * @param {*} token
  * @param {*} filter { offset: number, limit: number, sort: string, name?: string, ...optionFilter }
  */
-export function getAll(domain, token, filter) {
+export function getAll(filter) {
   return {
     type: CONTACTS_GETALL,
-    domain,
-    token,
     filter,
   };
 }
 
-export function save(domain, token, contactData) {
+export function save(contactData) {
   return {
     type: CONTACTS_SAVE,
-    domain,
-    token,
     contactData,
   };
 }
@@ -111,11 +105,9 @@ export function saveEnd() {
   };
 }
 
-export function getById(domain, token, contactId) {
+export function getById(contactId) {
   return {
     type: CONTACTS_GETBYID,
-    domain,
-    token,
     contactId,
   };
 }
@@ -126,49 +118,39 @@ export function getByIdEnd() {
   };
 }
 
-export function getCommentsByContact(domain, token, contactId, pagination) {
+export function getCommentsByContact(contactId, pagination) {
   return {
     type: CONTACTS_GET_COMMENTS,
-    domain,
-    token,
     contactId,
     pagination,
   };
 }
 
-export function saveComment(domain, token, contactId, commentData) {
+export function saveComment(contactId, commentData) {
   return {
     type: CONTACTS_SAVE_COMMENT,
-    domain,
-    token,
     contactId,
     commentData,
   };
 }
 
-export function getActivitiesByContact(domain, token, contactId, pagination) {
+export function getActivitiesByContact(contactId, pagination) {
   return {
     type: CONTACTS_GET_ACTIVITIES,
-    domain,
-    token,
     contactId,
     pagination,
   };
 }
 
-export function getContactSettings(domain, token) {
+export function getContactSettings() {
   return {
     type: CONTACTS_GET_SETTINGS,
-    domain,
-    token,
   };
 }
 
-export function deleteComment(domain, token, contactId, commentId) {
+export function deleteComment(contactId, commentId) {
   return {
     type: CONTACTS_DELETE_COMMENT,
-    domain,
-    token,
     contactId,
     commentId,
   };
@@ -187,39 +169,31 @@ export function updatePrevious(previousContacts) {
   };
 }
 
-export function getShareSettings(domain, token, contactId) {
+export function getShareSettings(contactId) {
   return {
     type: CONTACTS_GET_SHARE_SETTINGS,
-    domain,
-    token,
     contactId,
   };
 }
 
-export function addUserToShare(domain, token, contactId, userId) {
+export function addUserToShare(contactId, userId) {
   return {
     type: CONTACTS_ADD_USER_SHARE,
-    domain,
-    token,
     contactId,
     userId,
   };
 }
 
-export function removeUserToShare(domain, token, contactId, userId) {
+export function removeUserToShare(contactId, userId) {
   return {
     type: CONTACTS_REMOVE_SHARED_USER,
-    domain,
-    token,
     contactId,
     userId,
   };
 }
 
-export function getTags(domain, token) {
+export function getTags() {
   return {
     type: CONTACTS_GET_TAGS,
-    domain,
-    token,
   };
 }

@@ -1,443 +1,285 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { View, Text, FlatList, RefreshControl, StyleSheet, TouchableOpacity } from 'react-native';
-import { Container } from 'native-base';
+import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import { View, Text, RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
+// component library (native base)
+import { Container } from 'native-base';
+// recommended by native base
 import { Col, Row } from 'react-native-easy-grid';
-import moment from '../languages/moment';
+// expo
+// redux
+import { useSelector, useDispatch } from 'react-redux';
+// actions
+import { getAll, markViewed, markUnread, markAllAsRead } from 'store/actions/notifications.actions';
+// helpers/utils
+import Colors from 'constants/Colors';
+import i18n from 'languages';
+import moment from 'languages/moment';
+// custom components
+import FilterList from 'components/FilterList';
+import OfflineBar from 'components/OfflineBar';
+// third-party components
 import { Html5Entities } from 'html-entities';
-
-import {
-  getAll,
-  getNotificationsCount,
-  markViewed,
-  markUnread,
-  markAllAsRead,
-} from '../store/actions/notifications.actions';
-import Colors from '../constants/Colors';
-import i18n from '../languages';
-
-const entities = new Html5Entities();
-
+// styles/assets
 import { styles } from './NotificationsScreen.styles';
 
-class NotificationsScreen extends React.Component {
-  state = {
-    notificationsSourceData: [],
-    isAll: false,
-    loading: false,
-    notificationsCount: 0,
-    limit: 20,
-    offset: 0,
-    haveNotifications: true,
-  };
+const NotificationsScreen = ({ navigation }) => {
+  const DEFAULT_LIMIT = 10;
 
-  componentDidMount() {
-    this.onRefresh();
-  }
+  const dispatch = useDispatch();
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { loading, notifications, notificationsCount } = nextProps;
-    let newState = {
-      ...prevState,
-      loading,
-      notificationsCount,
-    };
-    if (notifications) {
-      if (newState.offset > 0) {
-        newState = {
-          ...newState,
-          notificationsSourceData: prevState.notificationsSourceData.concat(notifications),
-        };
-      } else if (notifications.length > 0) {
-        newState = {
-          ...newState,
-          notificationsSourceData: notifications,
-          haveNotifications: true,
-        };
-      } else {
-        newState = {
-          ...newState,
-          notificationsSourceData: notifications,
-          haveNotifications: false,
-        };
-      }
-    }
-    return newState;
-  }
+  const userData = useSelector((state) => state.userReducer.userData);
+  const notifications = useSelector((state) => state.notificationsReducer.notifications);
+  const loading = useSelector((state) => state.notificationsReducer.loading);
+  const error = useSelector((state) => state.notificationsReducer.error);
+  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
+  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  onRefresh = (pagination = false) => {
-    if (pagination) {
-      this.setState(
-        (prevState) => ({
-          offset: prevState.offset + prevState.limit,
-          haveNotifications: true,
-        }),
-        () => {
-          this.props.getAllNotifications(
-            this.props.userData.domain,
-            this.props.userData.token,
-            this.state.isAll,
-            this.state.offset,
-            this.state.limit,
-          );
-        },
-      );
-    } else {
-      this.setState(
-        () => ({
-          offset: 0,
-          haveNotifications: true,
-        }),
-        () => {
-          this.props.getAllNotifications(
-            this.props.userData.domain,
-            this.props.userData.token,
-            this.state.isAll,
-            this.state.offset,
-            this.state.limit,
-          );
-        },
-      );
-    }
-    this.props.getNotificationsCount(this.props.userData.domain, this.props.userData.token);
-  };
-
-  getAll = () => {
-    this.setState(
-      {
-        isAll: true,
-      },
-      () => {
-        this.onRefresh();
-      },
-    );
-  };
-
-  getUnread = () => {
-    this.setState(
-      {
-        isAll: false,
-      },
-      () => {
-        this.onRefresh();
-      },
-    );
-  };
-
-  markAll = () => {
-    this.props.markAllAsRead(
-      this.props.userData.domain,
-      this.props.userData.token,
-      this.props.userData.id,
-    );
-    if (this.props.isConnected) {
-      this.onRefresh();
-    } else {
-      this.setState({
-        isAll: false,
-        notificationsCount: 0,
-        notificationsSourceData: [],
-        haveNotifications: false,
-      });
-    }
-  };
-
-  markAsRead = (notification) => {
-    const indexArray = this.state.notificationsSourceData.findIndex(
-      (notificationArray) => notificationArray.id === notification.id,
-    );
-    const saveMark = this.state.notificationsSourceData;
-    if (notification.is_new === '1') {
-      this.props.markViewed(this.props.userData.domain, this.props.userData.token, notification.id);
-      saveMark[indexArray].is_new = '0';
-      if (!this.state.isAll) {
-        saveMark.splice(indexArray, 1);
-      }
-      this.setState({
-        notificationsSourceData: saveMark,
-      });
-      this.props.getNotificationsCount(this.props.userData.domain, this.props.userData.token);
-    } else {
-      this.props.markUnread(this.props.userData.domain, this.props.userData.token, notification.id);
-      saveMark[indexArray].is_new = '1';
-      this.setState({
-        notificationsSourceData: saveMark,
-      });
-      this.props.getNotificationsCount(this.props.userData.domain, this.props.userData.token);
-    }
-  };
-
-  redirectToDetailView = (viewName, entityId, entityTitle) => {
-    let view, prop;
-    switch (viewName) {
-      case 'contacts':
-        view = 'ContactDetail';
-        prop = 'contact';
-        break;
-      case 'groups':
-        view = 'GroupDetail';
-        prop = 'group';
-        break;
-      default:
-    }
-    this.props.navigation.push(view, {
-      [`${prop}Id`]: entityId,
-      onlyView: true,
-      [`${prop}Name`]: entityTitle,
-      fromNotificationView: true,
+  let unreadNotifications = [];
+  if (notifications !== undefined) {
+    unreadNotifications = notifications?.filter((notification) => {
+      if (notification.is_new === '1') return notification;
     });
-  };
+  }
 
-  renderRow = (notification) => {
-    const str1 = notification.notification_note.search('<');
-    const str2 = notification.notification_note.search('>');
-    const str3 = notification.notification_note.length - 4;
-    const newNotificationNoteA = notification.notification_note.substr(0, str1);
-    const newNotificationNoteB = notification.notification_note.substr(str2, str3);
-    const str4 = newNotificationNoteB.search('<') - 1;
-    const newNotificationNoteC = newNotificationNoteB.substr(1, str4);
-    let entityLink = notification.notification_note.substring(
-      notification.notification_note.lastIndexOf('href="') + 6,
-      notification.notification_note.lastIndexOf('">'),
-    );
-    let entityId = entityLink.split('/')[4];
-    let entityName = entityLink.split('/')[3];
+  const [isAll, setIsAll] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10); // fails: useState(DEFAULT_LIMIT);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    dispatch(getAll(true, 0, DEFAULT_LIMIT));
+  });
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onRefresh();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  /*
+  useEffect(() => {
+    onRefresh();
+  }, []);
+  */
+
+  /*
+  const onRefresh = (loadMore = false) => {
+    // NOTE: not actually paginating, only increasing limit (like an infinite scroll)
+    //const offset_p = paginate ? (offset + DEFAULT_LIMIT) : 0;
+    const limit_p = loadMore ? limit + DEFAULT_LIMIT : limit;
+    const isAll = true;
+    dispatch(getAll(isAll, offset, limit_p));
+    //setOffset(offset_p);
+    setLimit(limit_p);
+  };
+  */
+  const Header = () => {
+    const getAllReadUnread = () => {
+      setIsAll(true);
+    };
+    const getUnread = () => {
+      setIsAll(false);
+    };
+    const markAll = () => {
+      dispatch(markAllAsRead(userData.id));
+    };
     return (
-      <View
-        style={
-          notification.is_new === '1'
-            ? { backgroundColor: 'rgba(63, 114, 155, 0.19)' }
-            : { backgroundColor: Colors.mainBackgroundColor }
-        }>
-        <View style={[styles.notificationContainer, { flex: 1, flexDirection: 'row' }]}>
-          <View style={{ flex: 1 }}>
-            <Text style={[this.props.isRTL ? { textAlign: 'left' } : {}]}>
-              <Text>{entities.decode(newNotificationNoteA)}</Text>
-              <Text
-                style={{ color: Colors.primary }}
-                onPress={() =>
-                  this.redirectToDetailView(entityName, entityId, newNotificationNoteC)
-                }>
-                {entities.decode(newNotificationNoteC)}
-              </Text>
-            </Text>
-            <Text
-              style={[styles.prettyTime, this.props.isRTL ? { textAlign: 'left', flex: 1 } : {}]}>
-              {moment(notification.date_notified).fromNow() +
-                ' ~ ' +
-                moment(notification.date_notified).format('L')}
-            </Text>
+      <Row style={{ height: 60, margin: 15 }}>
+        <Col size={2}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            {unreadNotifications && unreadNotifications.length > 0 && (
+              <>
+                <Text style={styles.newHeaderNumber}> {unreadNotifications.length} </Text>
+                <Text style={styles.newHeader}>{i18n.t('notificationsScreen.new')}</Text>
+              </>
+            )}
           </View>
-          <TouchableOpacity
-            onPress={() => {
-              this.markAsRead(notification);
-            }}>
-            <View style={styles.buttoContainer}>
-              <View
-                style={
-                  notification.is_new === '1'
-                    ? styles.notificationUnreadButton
-                    : styles.notificationReadButton
-                }
-              />
+        </Col>
+        <Col size={3}>
+          <TouchableOpacity onPress={getAllReadUnread}>
+            <View style={[isAll ? styles.marketButton : styles.unmarketButton, { marginRight: 1 }]}>
+              <Text style={isAll ? styles.marketButtonText : styles.unmarketButtonText}>
+                {i18n.t('notificationsScreen.all')}
+              </Text>
             </View>
           </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  flatListItemSeparator = () => (
-    <View
-      style={{
-        height: 1,
-        width: '100%',
-        backgroundColor: '#dddddd',
-      }}
-    />
-  );
-
-  offlineBarRender = () => (
-    <View style={[styles.offlineBar]}>
-      <Text style={[styles.offlineBarText]}>{i18n.t('global.offline')}</Text>
-    </View>
-  );
-
-  dontHaveNotifications = () => (
-    <View style={[styles.dontHaveNotificationsText]}>
-      {this.state.isAll && (
-        <Text style={[styles.dontHaveNotificationsText]}>
-          {i18n.t('notificationsScreen.dontHaveNotifications')}
-        </Text>
-      )}
-      {!this.state.isAll && (
-        <Text style={[styles.dontHaveNotificationsText]}>
-          {i18n.t('notificationsScreen.dontHaveNotificationsUnread')}
-        </Text>
-      )}
-    </View>
-  );
-
-  renderFooter = () => {
-    // it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    return (
-      <View style={styles.loadMoreFooterText}>
-        <TouchableOpacity
-          onPress={() => {
-            this.onRefresh(true);
-          }}>
-          <Text style={styles.loadMoreFooterText}>{i18n.t('notificationsScreen.loadMore')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  static navigationOptions = {
-    title: i18n.t('notificationsScreen.notifications'),
-    headerStyle: {
-      backgroundColor: Colors.tintColor,
-    },
-    headerTintColor: '#FFFFFF',
-    headerTitleStyle: {
-      fontWeight: 'bold',
-    },
-  };
-
-  render() {
-    return (
-      <Container>
-        <View style={{ flex: 1 }}>
-          {!this.props.isConnected && this.offlineBarRender()}
-          <Row style={{ height: 60, margin: 15 }}>
-            <Col size={2}>
-              <View style={{ flex: 1, flexDirection: 'row' }}>
-                {this.state.notificationsCount > 0 && (
-                  <Text style={styles.newHeaderNumber}> {this.state.notificationsCount} </Text>
-                )}
-                <Text style={styles.newHeader}>{i18n.t('notificationsScreen.new')}</Text>
+        </Col>
+        <Col size={3}>
+          <TouchableOpacity onPress={getUnread}>
+            <View style={[isAll ? styles.unmarketButton : styles.marketButton, { marginLeft: 1 }]}>
+              <Text style={isAll ? styles.unmarketButtonText : styles.marketButtonText}>
+                {i18n.t('notificationsScreen.unRead')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </Col>
+        <Col size={2}>
+          {unreadNotifications.length > 0 && (
+            <TouchableOpacity onPress={markAll}>
+              <View>
+                <Text style={[styles.markAllHeader, { marginRight: 1 }]}>
+                  {i18n.t('notificationsScreen.markAll')}
+                </Text>
               </View>
-            </Col>
-            <Col size={3}>
-              <TouchableOpacity onPress={this.getAll}>
-                <View
-                  style={[
-                    this.state.isAll ? styles.marketButton : styles.unmarketButton,
-                    { marginRight: 1 },
-                  ]}>
-                  <Text
-                    style={this.state.isAll ? styles.marketButtonText : styles.unmarketButtonText}>
-                    {i18n.t('notificationsScreen.all')}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </Col>
-            <Col size={3}>
-              <TouchableOpacity onPress={this.getUnread}>
-                <View
-                  style={[
-                    this.state.isAll ? styles.unmarketButton : styles.marketButton,
-                    { marginLeft: 1 },
-                  ]}>
-                  <Text
-                    style={this.state.isAll ? styles.unmarketButtonText : styles.marketButtonText}>
-                    {i18n.t('notificationsScreen.unRead')}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </Col>
-            <Col size={2}>
-              <TouchableOpacity onPress={this.markAll}>
-                <View>
-                  <Text style={[styles.markAllHeader, { marginRight: 1 }]}>
-                    {i18n.t('notificationsScreen.markAll')}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </Col>
-          </Row>
-          {!this.state.haveNotifications && this.dontHaveNotifications()}
-          <FlatList
-            data={this.state.notificationsSourceData}
-            extraData={this.state.loading}
-            renderItem={(item) => this.renderRow(item.item)}
-            ItemSeparatorComponent={this.flatListItemSeparator}
-            refreshControl={
-              <RefreshControl refreshing={this.props.loading} onRefresh={this.onRefresh} />
-            }
-            ListFooterComponent={this.renderFooter}
-            style={{ backgroundColor: Colors.mainBackgroundColor }}
-          />
-        </View>
-      </Container>
+            </TouchableOpacity>
+          )}
+        </Col>
+      </Row>
     );
-  }
-}
+  };
 
-const mapStateToProps = (state) => ({
-  userData: state.userReducer.userData,
-  notifications: state.notificationsReducer.notifications,
-  loading: state.notificationsReducer.loading,
-  error: state.notificationsReducer.error,
-  contactSettings: state.contactsReducer.settings,
-  isConnected: state.networkConnectivityReducer.isConnected,
-  notificationsCount: state.notificationsReducer.notificationsCount,
-  isRTL: state.i18nReducer.isRTL,
-});
-const mapDispatchToProps = (dispatch) => ({
-  getAllNotifications: (domain, token, all, offset, limit) => {
-    dispatch(getAll(domain, token, all, offset, limit));
-  },
-  getNotificationsCount: (domain, token) => {
-    dispatch(getNotificationsCount(domain, token));
-  },
-  markViewed: (domain, token, notificaitonId) => {
-    dispatch(markViewed(domain, token, notificaitonId));
-  },
-  markUnread: (domain, token, notificaitonId) => {
-    dispatch(markUnread(domain, token, notificaitonId));
-  },
-  markAllAsRead: (domain, token, userId) => {
-    dispatch(markAllAsRead(domain, token, userId));
-  },
-});
+  const NotificationsList = ({ list }) => {
+    const markAsReadUnread = (notification, isNew) => {
+      if (isNew) {
+        dispatch(markViewed(notification.id));
+      } else {
+        dispatch(markUnread(notification.id));
+      }
+    };
+    const redirectToDetailView = (viewName, entityId, entityTitle) => {
+      let view, prop;
+      switch (viewName) {
+        case 'contacts':
+          view = 'ContactDetail';
+          prop = 'contact';
+          break;
+        case 'groups':
+          view = 'GroupDetail';
+          prop = 'group';
+          break;
+        default:
+      }
+      navigation.push(view, {
+        [`${prop}Id`]: entityId,
+        onlyView: true,
+        [`${prop}Name`]: entityTitle,
+        fromNotificationView: true,
+      });
+    };
+    const renderRow = (notification) => {
+      console.log('*** RENDER ROW ***');
+      console.log(JSON.stringify(notification));
+      const str1 = notification.notification_note.search('<');
+      const str2 = notification.notification_note.search('>');
+      const str3 = notification.notification_note.length - 4;
+      const newNotificationNoteA = notification.notification_note.substr(0, str1);
+      const newNotificationNoteB = notification.notification_note.substr(str2, str3);
+      const str4 = newNotificationNoteB.search('<') - 1;
+      const newNotificationNoteC = newNotificationNoteB.substr(1, str4);
+      let entityLink = notification.notification_note.substring(
+        notification.notification_note.lastIndexOf('href="') + 6,
+        notification.notification_note.lastIndexOf('">'),
+      );
+      let entityId = entityLink.split('/')[4];
+      let entityName = entityLink.split('/')[3];
+      const entities = new Html5Entities();
+      const isNew = notification.is_new === '1' ? true : false;
+      return (
+        <View
+          style={
+            isNew
+              ? { backgroundColor: 'rgba(63, 114, 155, 0.19)' }
+              : { backgroundColor: Colors.mainBackgroundColor }
+          }>
+          <View style={[styles.notificationContainer, { flex: 1, flexDirection: 'row' }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={[isRTL ? { textAlign: 'left' } : {}]}>
+                <Text>{entities.decode(newNotificationNoteA)}</Text>
+                <Text
+                  style={{ color: Colors.primary }}
+                  onPress={() => redirectToDetailView(entityName, entityId, newNotificationNoteC)}>
+                  {entities.decode(newNotificationNoteC)}
+                </Text>
+              </Text>
+              <Text style={[styles.prettyTime, isRTL ? { textAlign: 'left', flex: 1 } : {}]}>
+                {moment(notification.date_notified).fromNow() +
+                  ' ~ ' +
+                  moment(notification.date_notified).format('L')}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                markAsReadUnread(notification, isNew);
+              }}>
+              <View style={styles.buttonContainer}>
+                <View
+                  style={isNew ? styles.notificationUnreadButton : styles.notificationReadButton}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    };
+    const renderFooter = () => {
+      return (
+        <View style={styles.loadMoreFooterText}>
+          <TouchableOpacity
+            onPress={() => {
+              onRefresh(true);
+            }}>
+            <Text style={styles.loadMoreFooterText}>{i18n.t('notificationsScreen.loadMore')}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    };
+    // TODO: replace with FilterList and filter is All or Unread :-)
+    return (
+      <FilterList
+        onRefresh={onRefresh}
+        selectOptionFilter={null}
+        filterByText={null}
+        data={list}
+        renderRow={renderRow}
+        footer={list.length >= DEFAULT_LIMIT ? renderFooter : null}
+        style={{ backgroundColor: Colors.mainBackgroundColor }}
+      />
+    );
+  };
 
+  const NotificationsPlaceholder = () => {
+    return (
+      <ScrollView
+        contentContainerStyle={styles.dontHaveNotificationsText}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}>
+        {isAll && (
+          <Text style={styles.dontHaveNotificationsText}>
+            {i18n.t('notificationsScreen.dontHaveNotifications')}
+          </Text>
+        )}
+        {!isAll && (
+          <Text style={styles.dontHaveNotificationsText}>
+            {i18n.t('notificationsScreen.dontHaveNotificationsUnread')}
+          </Text>
+        )}
+      </ScrollView>
+    );
+  };
+
+  /*
+      {<Header />}
+      {isAll && notifications && notifications.length > 0 ? (
+        <NotificationsList list={notifications} />
+      ) : unreadNotifications && unreadNotifications.length > 0 ? (
+        <NotificationsList list={unreadNotifications} />
+      ) : (
+        <NotificationsPlaceholder />
+      )}
+*/
+  return (
+    <Container style={styles.container}>
+      {!isConnected && <OfflineBar />}
+      {notifications && notifications.length > 0 ? (
+        <NotificationsList list={notifications} />
+      ) : (
+        <NotificationsPlaceholder />
+      )}
+    </Container>
+  );
+};
 NotificationsScreen.propTypes = {
-  isConnected: PropTypes.bool,
-  getAllNotifications: PropTypes.func.isRequired,
-  getNotificationsCount: PropTypes.func.isRequired,
-  markViewed: PropTypes.func.isRequired,
-  markUnread: PropTypes.func.isRequired,
-  markAllAsRead: PropTypes.func.isRequired,
-  userData: PropTypes.shape({
-    domain: PropTypes.string,
-    token: PropTypes.string,
-    username: PropTypes.string,
-    id: PropTypes.number,
-  }).isRequired,
-  /* eslint-disable */
-  notifications: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.id,
-    }),
-  ),
-  /* eslint-enable */
-  loading: PropTypes.bool,
-  error: PropTypes.shape({
-    code: PropTypes.any,
-    message: PropTypes.string,
-  }),
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+  navigation: PropTypes.object.isRequired,
+  route: PropTypes.object.isRequired,
 };
-
-NotificationsScreen.defaultProps = {
-  error: null,
-  loading: false,
-  notifications: [],
-  isConnected: null,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NotificationsScreen);
+export default NotificationsScreen;

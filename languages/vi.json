@@ -2,9 +2,7 @@
   "global": {
     "error": {
       "code": "Mã số: ",
-      "message": "Thông điệp: ",
-      "text": "bản văn",
-      "noRecords": "noRecords"
+      "message": "Thông điệp: "
     },
     "success": {
       "save": "Đã lưu dữ liệu thành công!"
@@ -29,25 +27,7 @@
     "nameRequired": "Tên yêu cầu",
     "close": "Đóng",
     "editComment": "Biên tập",
-    "deleteComment": "Xóa bỏ",
-    "delete": "xóa bỏ",
-    "sortBy": "sắp xếp",
-    "reset": "cài lại",
-    "apply": "ứng dụng",
-    "showing": "trưng bày",
-    "comments": "bình luận",
-    "activity": "Hoạt động",
-    "submit": "Gửi đi",
-    "share": "chia sẻ",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "chia sẻ cài đặt",
-    "searchUsers": "searchUsers",
-    "noFilters": "không có bộ lọc",
-    "searchContacts": "tìm liên lạc",
-    "selectLocations": "selectLocations",
-    "other": "khác",
-    "chooseOption": "selectOption",
-    "confirm": "xác nhận"
+    "deleteComment": "Xóa bỏ"
   },
   "loginScreen": {
     "domain": {
@@ -68,10 +48,7 @@
     "forgotPassword": "Quên mật khẩu?",
     "errors": {
       "invalidUsername": "Tên người dùng chưa biết. Kiểm tra lại hoặc thử địa chỉ email của bạn.",
-      "incorrectPassword": "Mật khẩu bạn đã nhập cho tên người dùng không chính xác",
-      "configurationNeededOn": "configNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "incorrectPassword": "Mật khẩu bạn đã nhập cho tên người dùng không chính xác"
     }
   },
   "contactsScreen": {
@@ -98,8 +75,7 @@
     "incorrectPin": "Mã PIN không chính xác",
     "savedPinCode": "Mã PIN đã được lưu thành công",
     "removedPinCode": "Đã xóa mã PIN thành công",
-    "close": "Đóng",
-    "confirmPin": "Xác nhận mã PIN"
+    "close": "Đóng"
   },
   "contactDetailScreen": {
     "addNewContact": "Thêm liên hệ mới",
@@ -123,10 +99,7 @@
       "error": "Tên là bắt buộc"
     },
     "noContactCommentPlacheHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
-    "noContactCommentPlacheHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận được liên hệ nhận xét của bạn.",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "noContactCommentPlacheHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận được liên hệ nhận xét của bạn."
   },
   "groupDetailScreen": {
     "addNewGroup": "Thêm nhóm mới",
@@ -149,17 +122,7 @@
       "quick_button_meeting_scheduled": "Cuộc họp đã lên lịch",
       "quick_button_meeting_postponed": "Cuộc họp bị hoãn lại",
       "quick_button_meeting_complete": "Cuộc họp hoàn thành"
-    },
-    "memberCount": "Số lượng thành viên",
-    "memberList": "danh sách thành viên",
-    "attendance": {
-      "header": "tiêu đề",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
-    },
-    "groupSharedWith": "groupSharedWith"
+    }
   },
   "notificationsScreen": {
     "notifications": "Thông báo",

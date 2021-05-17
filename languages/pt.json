@@ -3,8 +3,8 @@
     "error": {
       "code": "Código: ",
       "message": "Mensagem: ",
-      "text": "texto",
-      "noRecords": "não há registros"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Dados salvos com sucesso!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "Escreva seu comentário ou anotação aqui",
     "requiredField": "Campo obrigatório",
     "edit": "editar",
+    "delete": "Excluir",
     "cancel": "Cancelar",
     "save": "Salvar",
     "online": "Online",
@@ -30,24 +31,22 @@
     "close": "Fechar",
     "editComment": "Editar",
     "deleteComment": "Excluir",
-    "delete": "excluir",
-    "sortBy": "ordenar por",
-    "reset": "Redefinir",
-    "apply": "Aplique",
-    "showing": "mostrando",
-    "comments": "comentários",
-    "activity": "atividade",
-    "submit": "enviar",
-    "share": "compartilhar",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "shareSettings",
-    "searchUsers": "searchUsers",
-    "noFilters": "Sem filtros",
-    "searchContacts": "searchContacts",
-    "selectLocations": "selectLocations",
-    "other": "outro",
-    "chooseOption": "ChooseOption",
-    "confirm": "confirme"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "Selecionar locais",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "Nome de Usuário desconhecido. Verifique novamente ou tente seu endereço de e-mail",
       "incorrectPassword": "A senha que você digitou para o usuário está incorreta",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "Código PIN salvo com sucesso",
     "removedPinCode": "Código PIN removido com sucesso",
     "close": "Perto",
-    "confirmPin": "confirmPin"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "Adicionar novo contato",
     "subAssignThisContact": "Sub-assinar este contato",
     "mobile": "Móvel",
-    "selectLocations": "Selecionar locais",
     "selectSources": "Selecionar fontes",
     "connections": "Nome do líder que tem contato",
     "addGroup": "Adicionar Grupo",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente.  ",
     "noContactCommentPlacheHolderOffline": "Você está atualmente offline. Verifique se você está conectado a dados móveis ou Wi-Fi para atualizar e obter seu comentário de contato.",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "Adicionar novo grupo",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "Não há comentários de grupos disponíveis atualmente.",
     "noGroupCommentPlacheHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente. ",
     "noGroupCommentPlacheHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus comentários de grupos. ",
-    "selectLocations": "Selecionar locais",
     "noMembersMessage": "Não há membros. Clique aqui em Editar para adicionar membros a este grupo.",
     "groupName": {
       "label": "Nome do Grupo",
       "error": "Nome é necessário"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "Reunião agendada",
       "quick_button_meeting_postponed": "Reunião adiada",
       "quick_button_meeting_complete": "Reunião Completa"
     },
-    "memberCount": "Contagem de membro",
-    "memberList": "lista de membros",
     "attendance": {
-      "header": "cabeçalho",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "Notificações",

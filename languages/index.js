@@ -71,15 +71,25 @@ i18n.locales.pt = ['pt-BR'];
 //i18n.locales.pt = ["pt-BR","pt-PT"];
 i18n.locales.zh = ['zh-CN', 'zh-TW'];
 
+// expecting format "en-US"
+// TODO: add unit tests!!
 i18n.getLocaleObj = function getLocaleObj(locale) {
-  var localeObj = locales.find((item) => {
-    return item.code === locale;
+  if (locale === null || locale === undefined) {
+    const defaultCode = i18n.defaultLocale.toString();
+    localeObj = locales.find((item) => {
+      return item.code === defaultCode;
+    });
+    return localeObj;
+  }
+  const locale_p = locale.replace('_', '-');
+  let localeObj = locales.find((item) => {
+    return item.code === locale_p;
   });
   if (localeObj !== undefined) {
     return localeObj;
   } else {
-    if (locale.length > 1) {
-      const subcode = locale.substring(0, 2);
+    if (locale_p.length && locale_p.length > 1) {
+      const subcode = locale_p.substring(0, 2);
       if (i18n.locales.hasOwnProperty(subcode)) {
         const subLangCodes = i18n.locales[subcode];
         for (var ii = 0; ii < subLangCodes.length; ii++) {
@@ -90,8 +100,8 @@ i18n.getLocaleObj = function getLocaleObj(locale) {
           if (localeObj !== null) break;
         }
       }
-    }
-    if (localeObj === undefined) {
+    } else {
+      // TODO: duplicate, add function
       const defaultCode = i18n.defaultLocale.toString();
       localeObj = locales.find((item) => {
         return item.code === defaultCode;
@@ -101,9 +111,7 @@ i18n.getLocaleObj = function getLocaleObj(locale) {
   }
 };
 
-// Do not try to set I18nManager.isRTL here as it will have no effect.
-// To change RTL, use I18nManager.forceRTL(bool) and then refresh the app
-// to see the direction changed.
+// use I18nManager.forceRTL(bool) prior to restarting the app
 i18n.setLocale = function setLocale(languageCode) {
   const localeObj = this.getLocaleObj(languageCode);
   const locale = localeObj.code;

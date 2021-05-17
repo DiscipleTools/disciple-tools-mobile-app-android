@@ -2,7 +2,7 @@ import * as actions from '../actions/contacts.actions';
 import * as userActions from '../actions/user.actions';
 import { Html5Entities } from 'html-entities';
 import { REHYDRATE } from 'redux-persist/lib/constants';
-import sharedTools from '../../shared';
+import utils from 'utils';
 
 const initialState = {
   loading: false,
@@ -67,7 +67,7 @@ export default function contactsReducer(state = initialState, action) {
           if (newFilter.filterOption) {
             delete newFilter.filterOption;
             if (Object.keys(newFilter).length > 0) {
-              filteredContacts = sharedTools.contactsByFilter([...currentContacts], newFilter);
+              filteredContacts = utils.contactsByFilter([...currentContacts], newFilter);
             } else {
               filteredContacts = [...currentContacts];
             }
@@ -112,15 +112,15 @@ export default function contactsReducer(state = initialState, action) {
         newPersistedContacts = [...currentContacts];
       } else {
         // Online
-        let mappedContacts = sharedTools.mapContacts(contacts, entities);
+        let mappedContacts = utils.mapContacts(contacts, entities);
         let persistedContacts = currentContacts.filter((currentContact) =>
-          sharedTools.isNumeric(currentContact.ID),
+          utils.isNumeric(currentContact.ID),
         );
         // Filter
         if (filter.filtered) {
           // Pagination
           if (filter.offset > 0) {
-            let merge = sharedTools.mergeContactList(mappedContacts, persistedContacts);
+            let merge = utils.mergeContactList(mappedContacts, persistedContacts);
             newPersistedContacts = [...merge.persistedContacts, ...merge.newContacts];
             filteredContacts = [...filteredContacts, ...merge.newContacts];
           } else {
@@ -129,7 +129,7 @@ export default function contactsReducer(state = initialState, action) {
         } else {
           // Pagination
           if (filter.offset > 0) {
-            let merge = sharedTools.mergeContactList(mappedContacts, persistedContacts);
+            let merge = utils.mergeContactList(mappedContacts, persistedContacts);
             newPersistedContacts = [...merge.persistedContacts, ...merge.newContacts];
           } else {
             newPersistedContacts = [...mappedContacts];
@@ -160,7 +160,7 @@ export default function contactsReducer(state = initialState, action) {
           ...contact,
         };
       } else {
-        mappedContact = sharedTools.mapContact(contact, entities);
+        mappedContact = utils.mapContact(contact, entities);
       }
       const oldId = mappedContact.oldID ? mappedContact.oldID : null;
       newState = {
@@ -327,7 +327,7 @@ export default function contactsReducer(state = initialState, action) {
           };
         }
       } else {
-        contact = sharedTools.mapContact(contact, entities);
+        contact = utils.mapContact(contact, entities);
         // Update localContact with dbContact
         const contactIndex = newState.contacts.findIndex(
           (contactItem) => contactItem.ID.toString() === contact.ID,

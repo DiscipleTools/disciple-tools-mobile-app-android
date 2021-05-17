@@ -200,11 +200,11 @@ export function* phoneIsOffline() {
 
 function* getFiltersConfig() {
   const userData = yield select((state) => state.userReducer.userData);
-  // Only do this request when user is logged
-  if (userData.domain && userData.token) {
-    yield call(getContactFilters, { domain: userData.domain, token: userData.token });
-    yield call(getGroupFilters, { domain: userData.domain, token: userData.token });
-  }
+  // TODO: revisit
+  //if (userData.domain && userData.token) {
+  yield call(getContactFilters);
+  yield call(getGroupFilters);
+  //}
 }
 
 export default function* networkConnectivity() {

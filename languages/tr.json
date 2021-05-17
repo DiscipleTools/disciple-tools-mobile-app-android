@@ -3,8 +3,8 @@
     "error": {
       "code": "Kod: ",
       "message": "Mesaj: ",
-      "text": "Metin",
-      "noRecords": "kayıt yok"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Başarıyla kayıt edildi!"
@@ -18,6 +18,7 @@
     "writeYourCommentNoteHere": "Yorumunu veya notunu buraya yaz",
     "requiredField": "Gerekli alan",
     "edit": "Düzenle",
+    "delete": "Sil",
     "cancel": "İptal et",
     "save": "kaydet",
     "online": "Çevrimiçi",
@@ -30,24 +31,22 @@
     "close": "Kapat",
     "editComment": "Düzenle",
     "deleteComment": "Sil",
-    "delete": "sil",
-    "sortBy": "göre sırala",
-    "reset": "Sıfırla",
-    "apply": "uygulamak",
-    "showing": "gösteren",
-    "comments": "yorumlar",
-    "activity": "aktivite",
-    "submit": "Sunmak",
-    "share": "Paylaş",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "shareSettings",
-    "searchUsers": "searchUsers",
-    "noFilters": "filtresiz",
-    "searchContacts": "Kişileri ara",
-    "selectLocations": "selectLocations",
-    "other": "diğer",
-    "chooseOption": "selectOption",
-    "confirm": "onaylamak"
+    "sortByLastModified": "",
+    "reset": "",
+    "apply": "",
+    "showing": "",
+    "comments": "",
+    "activity": "",
+    "submit": "",
+    "share": "",
+    "shareSettings": "",
+    "searchUsers": "",
+    "noFilters": "",
+    "searchContacts": "",
+    "selectLocations": "Konumları seç",
+    "other": "",
+    "chooseOption": "",
+    "confirm": ""
   },
   "loginScreen": {
     "domain": {
@@ -69,9 +68,9 @@
     "errors": {
       "invalidUsername": "Bilinmeyen kullanıcı adı. Tekrar kontrol edin veya e-posta adresinizi deneyin.",
       "incorrectPassword": "Kullanıcı adı için girdiğiniz şifre yanlış",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
@@ -99,13 +98,12 @@
     "savedPinCode": "PIN kodu başarıyla kaydedildi",
     "removedPinCode": "PIN kodu başarıyla kaldırıldı",
     "close": "Kapat",
-    "confirmPin": "PIN'i onaylayın"
+    "confirmPin": ""
   },
   "contactDetailScreen": {
     "addNewContact": "Yeni bağlantı ekle",
     "subAssignThisContact": "Bu bağlantıya alt görev ata",
     "mobile": "Mobil",
-    "selectLocations": "Konumları seç",
     "selectSources": "Kaynak seç",
     "connections": "Bağlantılar",
     "addGroup": "Grup Ekle",
@@ -124,9 +122,8 @@
     },
     "noContactCommentPlacheHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
     "noContactCommentPlacheHolderOffline": "Şu anda çevrimdışısınız. İrtibat yorumunuzu yenilemek ve almak için wifi veya mobil verilere bağlı olduğunuzdan emin olun.",
-    "importContact": "ithalat",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "Grup Ekle",
@@ -139,27 +136,26 @@
     "noGroupCommentPlacheHolder": "Şu anda hiçbir grup yorumu mevcut değil.",
     "noGroupCommentPlacheHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
     "noGroupCommentPlacheHolderOffline": "Şu anda çevrimdışısınız. Grup yorumunuzu yenilemek ve almak için kablosuz bağlantıya veya mobil verilere bağlı olduğunuzdan emin olun.",
-    "selectLocations": "Konumları Seçin",
     "noMembersMessage": "Üye yok. Bu gruba bazı üyeler eklemek için burayı veya Değiştir'i tıklayın.",
     "groupName": {
       "label": "Grup ismi",
       "error": "İsim gerekli"
     },
+    "memberCount": "",
+    "memberList": "",
     "fab": {
       "quick_button_meeting_scheduled": "Toplantı Planlandı",
       "quick_button_meeting_postponed": "Toplantı Ertelendi",
       "quick_button_meeting_complete": "Toplantı Tamamlandı"
     },
-    "memberCount": "Üye Sayısı",
-    "memberList": "üye Listesi",
     "attendance": {
-      "header": "başlık",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "Bildirim",

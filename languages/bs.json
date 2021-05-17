@@ -2,9 +2,7 @@
   "global": {
     "error": {
       "code": "Šifra: ",
-      "message": "Poruka: ",
-      "text": "tekst",
-      "noRecords": "noRecords"
+      "message": "Poruka: "
     },
     "success": {
       "save": "Podaci su uspješno spremljeni!"
@@ -29,25 +27,7 @@
     "nameRequired": "Potrebno ime",
     "close": "Zatvori",
     "editComment": "Uredi",
-    "deleteComment": "Izbriši",
-    "delete": "izbriši",
-    "sortBy": "sortBy",
-    "reset": "resetovati",
-    "apply": "primijeniti",
-    "showing": "pokazivanje",
-    "comments": "komentari",
-    "activity": "aktivnost",
-    "submit": "predati",
-    "share": "podijeli",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "shareSettings",
-    "searchUsers": "searchUsers",
-    "noFilters": "noFilters",
-    "searchContacts": "searchContacts",
-    "selectLocations": "selectLocations",
-    "other": "drugo",
-    "chooseOption": "chooseOption",
-    "confirm": "potvrdite"
+    "deleteComment": "Izbriši"
   },
   "loginScreen": {
     "domain": {
@@ -68,10 +48,7 @@
     "forgotPassword": "Izgubili ste lozinku?",
     "errors": {
       "invalidUsername": "Nepoznato korisničko ime. Provjerite ponovo ili isprobajte svoju adresu e-pošte.",
-      "incorrectPassword": "Lozinka koju ste unijeli za korisničko ime je netačna",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "incorrectPassword": "Lozinka koju ste unijeli za korisničko ime je netačna"
     }
   },
   "contactsScreen": {
@@ -98,8 +75,7 @@
     "incorrectPin": "Netačan PIN",
     "savedPinCode": "PIN kod je uspješno sačuvan",
     "removedPinCode": "PIN kôd je uspješno uklonjen",
-    "close": "Zatvori",
-    "confirmPin": "confirmPin"
+    "close": "Zatvori"
   },
   "contactDetailScreen": {
     "addNewContact": "Dodajte novi kontakt",
@@ -123,10 +99,7 @@
       "error": "Ime je obavezno"
     },
     "noContactCommentPlacheHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da pokušate osvježiti i pokušajte ponovo.",
-    "noContactCommentPlacheHolderOffline": "Trenutno ste van mreže. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili komentar na kontakt.",
-    "importContact": "importContact",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "noContactCommentPlacheHolderOffline": "Trenutno ste van mreže. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili komentar na kontakt."
   },
   "groupDetailScreen": {
     "addNewGroup": "Dodajte novu grupu",
@@ -149,17 +122,7 @@
       "quick_button_meeting_scheduled": "Sastanak zakazan",
       "quick_button_meeting_postponed": "Sastanak odgođen",
       "quick_button_meeting_complete": "Sastanak završen"
-    },
-    "memberCount": "memberCount",
-    "memberList": "memberList",
-    "attendance": {
-      "header": "zaglavlje",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
-    },
-    "groupSharedWith": "groupSharedWith"
+    }
   },
   "notificationsScreen": {
     "notifications": "Obavijesti",

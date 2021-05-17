@@ -1,10 +1,14 @@
 import { put, take, takeLatest, all, select } from 'redux-saga/effects';
 
+import * as SecureStore from 'expo-secure-store';
+
 import * as actions from '../actions/notifications.actions';
 
-export function* getNotificationsByUser({ domain, token, allNotifications, offset, limit }) {
+export function* getNotificationsByUser({ allNotifications, offset, limit }) {
   yield put({ type: actions.NOTIFICATIONS_BY_USER_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -17,8 +21,8 @@ export function* getNotificationsByUser({ domain, token, allNotifications, offse
         },
         body: JSON.stringify({
           all: allNotifications,
-          limit,
           page: offset,
+          limit,
         }),
       },
       action: actions.NOTIFICATIONS_BY_USER_RESPONSE,
@@ -60,9 +64,11 @@ export function* getNotificationsByUser({ domain, token, allNotifications, offse
   }
 }
 
-export function* getNotificationsCount({ domain, token }) {
+export function* getNotificationsCount() {
   yield put({ type: actions.NOTIFICATIONS_COUNT_BY_USER_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -109,9 +115,11 @@ export function* getNotificationsCount({ domain, token }) {
   }
 }
 
-export function* markViewed({ domain, token, notificationId }) {
+export function* markViewed({ notificationId }) {
   yield put({ type: actions.NOTIFICATIONS_MARK_AS_VIEWED_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -158,9 +166,11 @@ export function* markViewed({ domain, token, notificationId }) {
   }
 }
 
-export function* markUnread({ domain, token, notificationId }) {
+export function* markUnread({ notificationId }) {
   yield put({ type: actions.NOTIFICATIONS_MARK_AS_UNREAD_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {
@@ -207,9 +217,11 @@ export function* markUnread({ domain, token, notificationId }) {
   }
 }
 
-export function* markAllAsRead({ domain, token, userID }) {
+export function* markAllAsRead({ userID }) {
   yield put({ type: actions.NOTIFICATIONS_MARK_ALL_AS_READ_START });
   const isConnected = yield select((state) => state.networkConnectivityReducer.isConnected);
+  const token = yield SecureStore.getItemAsync('authToken');
+  const domain = yield SecureStore.getItemAsync('domain');
   yield put({
     type: 'REQUEST',
     payload: {

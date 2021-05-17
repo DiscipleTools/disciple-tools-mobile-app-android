@@ -2,7 +2,7 @@ import * as actions from '../actions/groups.actions';
 import * as userActions from '../actions/user.actions';
 import { Html5Entities } from 'html-entities';
 import { REHYDRATE } from 'redux-persist/lib/constants';
-import sharedTools from '../../shared';
+import utils from 'utils';
 
 const initialState = {
   loading: false,
@@ -113,7 +113,7 @@ export default function groupsReducer(state = initialState, action) {
           if (newFilter.filterOption) {
             delete newFilter.filterOption;
             if (Object.keys(newFilter).length > 0) {
-              filteredGroups = sharedTools.groupsByFilter([...currentGroups], newFilter);
+              filteredGroups = utils.groupsByFilter([...currentGroups], newFilter);
             } else {
               filteredGroups = [...currentGroups];
             }
@@ -137,15 +137,15 @@ export default function groupsReducer(state = initialState, action) {
         newPersistedGroups = [...currentGroups];
       } else {
         // Online
-        let mappedGroups = sharedTools.mapGroups(groups, entities);
+        let mappedGroups = utils.mapGroups(groups, entities);
         let persistedGroups = currentGroups.filter((currentGroup) =>
-          sharedTools.isNumeric(currentGroup.ID),
+          utils.isNumeric(currentGroup.ID),
         );
         // Filter
         if (filter.filtered) {
           // Pagination
           if (filter.offset > 0) {
-            let merge = sharedTools.mergeGroupList(mappedGroups, persistedGroups);
+            let merge = utils.mergeGroupList(mappedGroups, persistedGroups);
             newPersistedGroups = [...merge.persistedGroups, ...merge.newGroups];
             filteredGroups = [...filteredGroups, ...merge.newGroups];
           } else {
@@ -154,7 +154,7 @@ export default function groupsReducer(state = initialState, action) {
         } else {
           // Pagination
           if (filter.offset > 0) {
-            let merge = sharedTools.mergeGroupList(mappedGroups, persistedGroups);
+            let merge = utils.mergeGroupList(mappedGroups, persistedGroups);
             newPersistedGroups = [...merge.persistedGroups, ...merge.newGroups];
           } else {
             newPersistedGroups = [...mappedGroups];
@@ -185,7 +185,7 @@ export default function groupsReducer(state = initialState, action) {
           ...group,
         };
       } else {
-        mappedGroup = sharedTools.mapGroup(group, entities);
+        mappedGroup = utils.mapGroup(group, entities);
       }
       const oldId = mappedGroup.oldID ? mappedGroup.oldID : null;
       newState = {
@@ -374,7 +374,7 @@ export default function groupsReducer(state = initialState, action) {
           };
         }
       } else {
-        group = sharedTools.mapGroup(group, entities);
+        group = utils.mapGroup(group, entities);
         // Update localGroup with dbGroup
         const groupIndex = newState.groups.findIndex(
           (groupItem) => groupItem.ID.toString() === group.ID,
