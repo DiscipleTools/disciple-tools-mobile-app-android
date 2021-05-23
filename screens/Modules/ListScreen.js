@@ -4,31 +4,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Icon } from 'native-base';
 import PropTypes from 'prop-types';
 
+// Expo
 import * as Contacts from 'expo-contacts';
-
-import {
-  getAll as getAllContacts,
-  getContactSettings,
-  getTags,
-  updatePrevious,
-} from 'store/actions/contacts.actions';
-import { getContactFilters } from 'store/actions/users.actions';
-import {
-  getAll as getAllGroups,
-  getGroupSettings,
-  // TODO
-  //updatePrevious
-} from 'store/actions/groups.actions';
-import { getGroupFilters } from 'store/actions/users.actions';
 
 // Helpers
 import Colors from 'constants/Colors';
 import i18n from 'languages';
 import { showToast } from 'helpers';
 
-// TODO: remove?
+// Utils
 import utils from 'utils';
 
+// Custom Hooks
+import useList from 'hooks/useList.js';
+import useSettings from 'hooks/useSettings.js';
+
+// Custom Components
+import SearchBar from 'components/SearchBar';
 import FilterList from 'components/FilterList';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
@@ -36,24 +28,34 @@ import OfflineBar from 'components/OfflineBar';
 // TODO: use Native Base?
 import ActionButton from 'react-native-action-button';
 
-import statusIcon from 'assets/icons/status.png';
 import { styles } from './ListScreen.styles';
 
-// TODO: move to constants
+// TODO: constants
 const POST_TYPE_CONTACT = 'contacts';
 const POST_TYPE_GROUP = 'groups';
 
-const ListScreen = ({ navigation, route }) => {
-  const statusCircleSize = 15;
-  const SWIPE_BTN_WIDTH = 80;
+const STATUS_CIRCLE_SIZE = 15;
+const SWIPE_BTN_WIDTH = 80;
 
+const ListScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
+  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
+  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+
+  // TODO: use SWR Hooks
+  const userData = useSelector((state) => state.userReducer.userData);
+  const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
+
+  let filters = useSelector((state) => state.usersReducer.contactFilters);
+  let totalRecords = 20;
+  let filteredRecords = null;
+
+  // default to contacts type
   const [state, setState] = useState({
-    //isContact: null,
+    moduleType: POST_TYPE_CONTACT,
     isContact: true,
     isGroup: null,
-    dataSourceContact: [],
     offset: 0,
     limit: utils.paginationLimit,
     sort: '-last_modified',
@@ -62,161 +64,38 @@ const ListScreen = ({ navigation, route }) => {
     filterText: null,
     fixFABIndex: false,
     commentsModalVisible: false,
+    dataSourceContact: [],
     importContactsModalVisible: false,
     importContactsList: [],
   });
 
+  // focus effect
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      /* TODO: refresh on every focus?
-      dispatch(getContactSettings());
-      dispatch(getContactFilters());
-      dispatch(getGroupSettings());
-      dispatch(getGroupFilters());
-      dispatch(getTags());
-      dispatch(getAllContacts(state.offset, state.limit, state.sort));
-      dispatch(getAllGroups(state.offset, state.limit, state.sort));
-      */
-      // determine module/post-type and setState
-      if (route?.name?.toLowerCase() === POST_TYPE_CONTACT) {
-        setState({
-          ...state,
-          isContact: true,
-          isGroup: false,
-        });
-      } else if (route?.name?.toLowerCase() === POST_TYPE_GROUP) {
-        setState({
-          ...state,
-          isContact: false,
-          isGroup: true,
-        });
-      } else {
-        return null;
-      }
+      const moduleType = route?.name?.toLowerCase();
+      setModuleType(moduleType);
     });
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {
-    console.log('*** COMPONONENT DID MOUNT ***');
-    // TODO: conditional load by postType
-    dispatch(getContactSettings());
-    dispatch(getContactFilters());
-    dispatch(getGroupSettings());
-    dispatch(getGroupFilters());
-    dispatch(getTags());
-    dispatch(getAllContacts(state.offset, state.limit, state.sort));
-    dispatch(getAllGroups(state.offset, state.limit, state.sort));
-    //dispatch(getActiveQuestionnaires());
-  }, []);
+  // get settings
+  const { settings, error: settingsError } = useSettings(state.moduleType);
+  if (settingsError) showToast(settingsError.message, true);
 
-  let records;
-  let settings;
-  let filters;
-  // TODO:
-  let totalRecords = 20;
-  let filteredRecords = null;
-  let loading;
-  let error;
-  // TODO: move to useEffect 'didFocus' ?
-  if (state.isContact) {
-    records = useSelector((state) => state.contactsReducer.contacts);
-    settings = useSelector((state) => state.contactsReducer.settings);
-    filters = useSelector((state) => state.usersReducer.contactFilters);
-    //totalContacts = useSelector((state) => state.contactsReducer.total);
-    //filteredContacts = useSelector((state) => state.contactsReducer.filteredContacts);
-    loading = useSelector((state) => state.contactsReducer.loading);
-    error = useSelector((state) => state.contactsReducer.error);
-  } else if (state.isGroup) {
-    records = useSelector((state) => state.groupsReducer.groups);
-    settings = useSelector((state) => state.groupsReducer.settings);
-    filters = useSelector((state) => state.usersReducer.groupFilters);
-    //totalRecords = useSelector((state) => state.groupsReducer.total);
-    //filteredRecords = useSelector((state) => state.groupsReducer.filteredGroups);
-    loading = useSelector((state) => state.groupsReducer.loading);
-    error = useSelector((state) => state.groupsReducer.error);
-  } else {
-    return null;
-  }
+  // get records list
+  const { records, error: recordsError } = useList(state.moduleType);
+  if (recordsError) showToast(recordsError.message, true);
 
-  const userData = useSelector((state) => state.userReducer.userData);
-  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
-  const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  let loading = !settings || !records;
 
-  /*
-  componentDidMount() {
-    // Recieve custom filters (tag) as param
-    const { params } = navigation.state;
-    if (params) {
-      const { customFilter } = params;
-      selectOptionFilter(customFilter);
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { contacts, filteredContacts } = nextProps;
-    let { filtered } = prevState;
-
-    let newState = {
-      ...prevState,
-    };
-
-    if (filtered) {
-      newState = {
-        ...newState,
-        dataSourceContact: [...filteredContacts],
-      };
-    } else {
-      newState = {
-        ...newState,
-        dataSourceContact: [...contacts],
-      };
-    }
-
-    return newState;
-  }
-
-  componentDidUpdate(prevProps) {
-    const { error, filteredContacts, isConnected } = 
-    const { filtered } = state;
-
-    if (
-      filteredContacts &&
-      filteredContacts !== prevProps.filteredContacts &&
-      filteredContacts.length === 0 &&
-      filtered &&
-      !isConnected
-    ) {
-      showToast(i18n.t('global.error.noRecords'),true);
-      toastError.show(
-        <View>
-          <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
-            {i18n.t('global.error.text')}
-          </Text>
-          <Text style={{ color: Colors.errorText }}>{i18n.t('global.error.noRecords')}</Text>
-        </View>,
-        6000,
-      );
-    }
-    if (prevProps.error !== error && error) {
-      showToast(i18n.t('global.error.noRecords'),true);
-      toastError.show(
-        <View>
-          <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
-            {i18n.t('global.error.code')}
-          </Text>
-          <Text style={{ color: Colors.errorText }}>{error.code}</Text>
-          <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
-            {i18n.t('global.error.message')}
-          </Text>
-          <Text style={{ color: Colors.errorText }}>{error.message}</Text>
-        </View>,
-        3000,
-      );
-    }
-  }
-  */
+  const setModuleType = (moduleType) => {
+    setState({
+      ...state,
+      moduleType,
+      isContact: moduleType === POST_TYPE_CONTACT,
+      isGroup: moduleType === POST_TYPE_GROUP,
+    });
+  };
 
   const renderFooter = () => {
     return (
@@ -265,10 +144,10 @@ const ListScreen = ({ navigation, route }) => {
             // DISPLAY MODAL TO CONFIRM NAVIGATE TO CONTACT DETAILS
             console.log('*************');
             console.log('ASK THE USER!!');
-            //goToContactDetailScreen(contact)
+            //goToDetailsScreen(contact);
           } else {
             setState({ importContactsModalVisible: false });
-            goToContactDetailScreen(contact, true);
+            goToDetailsScreen(contact, true);
           }
         }}
         style={styles.flatListItem}
@@ -331,6 +210,7 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
+  //TODO{state.isGroup && (
   const Subtitles = ({ record }) => {
     return (
       <View style={{ flexDirection: 'row' }}>
@@ -356,7 +236,7 @@ const ListScreen = ({ navigation, route }) => {
                 : ''}
             </>
           )}
-          {state.isGroup && (
+          {!state.isContact && (
             <>
               {settings.fields.group_status.values[record.group_status]
                 ? settings.fields.group_status.values[record.group_status].label
@@ -385,14 +265,7 @@ const ListScreen = ({ navigation, route }) => {
     return (
       <Pressable
         onPress={() => {
-          // TODO: have a single gotoRecordDetailScreen method?
-          if (state.isContact) {
-            goToContactDetailScreen(record);
-          } else if (state.isGroup) {
-            goToGroupDetailScreen(record);
-          } else {
-            return null;
-          }
+          goToDetailsScreen(record);
         }}
         style={styles.rowFront}
         key={record.ID}>
@@ -409,7 +282,7 @@ const ListScreen = ({ navigation, route }) => {
             style={[
               {
                 flexDirection: 'column',
-                width: statusCircleSize,
+                width: STATUS_CIRCLE_SIZE,
                 paddingTop: 0,
                 marginTop: 'auto',
                 marginBottom: 'auto',
@@ -418,9 +291,9 @@ const ListScreen = ({ navigation, route }) => {
             ]}>
             <View
               style={{
-                width: statusCircleSize,
-                height: statusCircleSize,
-                borderRadius: statusCircleSize / 2,
+                width: STATUS_CIRCLE_SIZE,
+                height: STATUS_CIRCLE_SIZE,
+                borderRadius: STATUS_CIRCLE_SIZE / 2,
                 backgroundColor: utils.getSelectorColor(statusValue),
                 marginTop: 'auto',
                 marginBottom: 'auto',
@@ -532,16 +405,29 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
+  const goToDetailsScreen = (record, isPhoneImport = false) => {
+    if (state.isContact) {
+      goToContactDetailScreen(record, isPhoneImport);
+      return;
+    }
+    if (state.isGroup) {
+      goToGroupDetailScreen(record);
+      return;
+    }
+    return null;
+  };
+
   // TODO: merge with goToGroupDetailScreen
   const goToContactDetailScreen = (contactData = null, isPhoneImport = false) => {
     if (contactData && isPhoneImport) {
-      dispatch(updatePrevious([]));
+      //dispatch(updatePrevious([]));
       navigation.navigate('ContactDetails', {
         onlyView: true,
         importContact: contactData,
         //onGoBack: () => onRefresh(false, true),
       });
     } else if (contactData) {
+      /* TODO: ??
       dispatch(
         updatePrevious([
           {
@@ -552,6 +438,7 @@ const ListScreen = ({ navigation, route }) => {
           },
         ]),
       );
+      */
       // Detail
       navigation.navigate('ContactDetails', {
         contactId: contactData.ID,
@@ -561,7 +448,7 @@ const ListScreen = ({ navigation, route }) => {
         //onGoBack: () => onRefresh(false, true),
       });
     } else {
-      dispatch(updatePrevious([]));
+      //dispatch(updatePrevious([]));
       // Create
       navigation.navigate('ContactDetails', {
         onlyView: true,
@@ -574,6 +461,7 @@ const ListScreen = ({ navigation, route }) => {
   const goToGroupDetailScreen = (groupData = null) => {
     if (groupData) {
       console.log('*** IF GROUP DATA ***');
+      /* TODO: ??
       dispatch(
         updatePrevious([
           {
@@ -583,6 +471,7 @@ const ListScreen = ({ navigation, route }) => {
           },
         ]),
       );
+      */
       // Detail
       navigation.navigate('GroupDetails', {
         groupId: groupData.ID,
@@ -592,7 +481,7 @@ const ListScreen = ({ navigation, route }) => {
       //onGoBack: () => onRefresh(false, true),
     } else {
       console.log('*** ELSE GROUP DATA = null  ***');
-      dispatch(updatePrevious([]));
+      //dispatch(updatePrevious([]));
       // Create
       navigation.navigate('GroupDetails', {
         onlyView: true,
@@ -731,7 +620,7 @@ const ListScreen = ({ navigation, route }) => {
         },
       ],
     };
-    // TODO: ensure that filtering is working as expected
+    // TODO: use FilterList component
     return (
       <>
         <SearchBar
@@ -756,7 +645,6 @@ const ListScreen = ({ navigation, route }) => {
   /*
   const closeRow = (rowMap, rowKey) => {
     if (rowMap[rowKey]) {
-      console.log("** WTF EVER **");
       //rowMap[rowKey].closeRow();
     }
   };
@@ -770,10 +658,12 @@ const ListScreen = ({ navigation, route }) => {
   };
   */
 
+  // TODO:
   const commentsRender = () => {
     return <Text>Hello Comments</Text>;
   };
 
+  // TODO: create FAB component
   const FAB = () => {
     return (
       <ActionButton
@@ -794,7 +684,7 @@ const ListScreen = ({ navigation, route }) => {
         <ActionButton.Item
           title={'Add New Contact'}
           onPress={() => {
-            goToContactDetailScreen();
+            goToDetailsScreen();
           }}
           size={40}
           buttonColor={Colors.tintColor}
@@ -886,6 +776,7 @@ const ListScreen = ({ navigation, route }) => {
         <FilterList
           settings={settings}
           data={records}
+          loading={loading}
           renderRow={renderRow}
           renderHiddenRow={renderHiddenRow}
           leftOpenValue={SWIPE_BTN_WIDTH * 3}

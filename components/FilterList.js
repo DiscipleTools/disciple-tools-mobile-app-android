@@ -28,6 +28,7 @@ const FilterList = ({
   onTextFilter,
   onClearTextFilter,
   onLayout,
+  loading,
   data,
   renderRow,
   renderSkeletonRow,
@@ -43,8 +44,6 @@ const FilterList = ({
 
   const windowWidth = useWindowDimensions().width;
 
-  const loading = useSelector((state) => state.contactsReducer.loading);
-  const error = useSelector((state) => state.contactsReducer.error);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -90,8 +89,10 @@ const FilterList = ({
 
   let listData = data;
   let renderItem = renderRow;
-  if (listData === null) {
+  let renderHiddenItem = renderHiddenRow;
+  if (loading || listData === null) {
     listData = skeletons;
+    renderHiddenItem = null;
     if (renderSkeletonRow === null) {
       renderItem = renderDefaultSkeletonRow;
     } else {
@@ -120,7 +121,7 @@ const FilterList = ({
             data={listData}
             renderItem={(item) => renderItem(item.item)}
             renderHiddenItem={(data, rowMap) =>
-              renderHiddenRow === undefined ? null : renderHiddenRow(data, rowMap)
+              renderHiddenItem ? renderHiddenItem(data, rowMap) : null
             }
             leftOpenValue={leftOpenValue}
             rightOpenValue={leftOpenValue}
@@ -134,7 +135,7 @@ const FilterList = ({
             //keyboardShouldPersistTaps="always"
             //keyExtractor={(item) => item.ID.toString()}
             //extraData={loading}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />}
+            //refreshControl={<RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />}
             style={{ backgroundColor: Colors.mainBackgroundColor }}
             ListFooterComponent={footer}
           />

@@ -8,7 +8,7 @@ import i18n from 'languages';
 import { defaultFaithMilestones } from 'constants';
 
 // TODO: refactor styles
-import { styles } from 'screens/Contact/ContactDetailScreen.styles';
+import { styles } from './FaithMilestones.styles';
 
 const FaithMilestones = ({ state, custom }) => {
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);

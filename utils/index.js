@@ -545,6 +545,7 @@ const getSelectizeValuesToSave = (dbData, selectedValues) => {
 
 const mapContacts = (contacts, entities) => {
   return contacts.map((contact) => {
+    console.log(`contact: ${JSON.stringify(contact)}`);
     const mappedContact = {};
     Object.keys(contact).forEach((key) => {
       const value = contact[key];
