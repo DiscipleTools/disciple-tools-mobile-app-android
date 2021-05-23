@@ -1,10 +1,10 @@
 {
   "global": {
     "error": {
-      "code": "Code",
+      "code": "",
       "message": "Nachricht",
-      "text": "Text",
-      "noRecords": "keine Aufzeichnungen"
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Daten erfolgreich gespeichert!"
@@ -39,9 +39,9 @@
     "activity": "Aktivität",
     "submit": "einreichen",
     "share": "Teilen",
-    "viewOnMobileWeb": "viewOnMobileWeb",
-    "shareSettings": "shareSettings",
-    "searchUsers": "searchUsers",
+    "viewOnMobileWeb": "",
+    "shareSettings": "",
+    "searchUsers": "",
     "noFilters": "keine Filter",
     "searchContacts": "Kontakte durchsuchen",
     "selectLocations": "selectLocations",
@@ -69,16 +69,16 @@
     "errors": {
       "invalidUsername": "Unbekannter Nutzername. Überprüfen Sie es erneut oder versuchen Sie es mit Ihrer E-Mail-Adresse.",
       "incorrectPassword": "Das Passwort, das Sie für den Benutzernamen eingegeben haben, ist falsch",
-      "configurationNeededOn": "configurationNeededOn",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "configurationNeededOn": "",
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
     "contacts": "Kontakte",
-    "noContactPlacheHolder": "Derzeit sind keine Kontakte verfügbar.",
-    "noContactPlacheHolder1": "Möglicherweise ist ein Problem aufgetreten, als Sie diese von Ihrer Website abgerufen haben. Zum Aktualisieren nach unten ziehen und erneut versuchen.",
-    "noContactPlacheHolderOffline": "Sie sind zurzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihre Kontakte zu aktualisieren und zu erhalten."
+    "noContactPlaceHolder": "Derzeit sind keine Kontakte verfügbar.",
+    "noContactPlaceHolder1": "Möglicherweise ist ein Problem aufgetreten, als Sie diese von Ihrer Website abgerufen haben. Zum Aktualisieren nach unten ziehen und erneut versuchen.",
+    "noContactPlaceHolderOffline": "Sie sind zurzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihre Kontakte zu aktualisieren und zu erhalten."
   },
   "settingsScreen": {
     "settings": "Einstellungen",
@@ -117,16 +117,16 @@
     "phoneNumber": "Telefonnummer",
     "initialComment": "Anfangskommentar",
     "socialMedia": "Soziale Medien",
-    "noContactCommentPlacheHolder": "Derzeit sind keine Kontaktkommentare verfügbar.",
+    "noContactCommentPlaceHolder": "Derzeit sind keine Kontaktkommentare verfügbar.",
     "fullName": {
       "label": "Vollständiger Name",
       "error": "Name ist erforderlich"
     },
-    "noContactCommentPlacheHolder1": "Möglicherweise ist ein Problem beim Abrufen von Ihrer Website aufgetreten. Ziehen Sie nach unten, um zu versuchen, zu aktualisieren, und versuchen Sie es erneut.",
-    "noContactCommentPlacheHolderOffline": "Sie sind derzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihren Kontaktkommentar zu aktualisieren und zu erhalten.",
+    "noContactCommentPlaceHolder1": "Möglicherweise ist ein Problem beim Abrufen von Ihrer Website aufgetreten. Ziehen Sie nach unten, um zu versuchen, zu aktualisieren, und versuchen Sie es erneut.",
+    "noContactCommentPlaceHolderOffline": "Sie sind derzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihren Kontaktkommentar zu aktualisieren und zu erhalten.",
     "importContact": "Kontakt importieren",
-    "contactSharedWith": "contactSharedWith",
-    "ageNotSet": "ageNotSet"
+    "contactSharedWith": "",
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "Neue Gruppe Hinzufügen",
@@ -136,11 +136,11 @@
     "childGroup": "Kindergruppe",
     "searchChildGroups": "Kindergruppen Suchen",
     "addMember": "Mitglied Hinzufügen",
-    "noGroupCommentPlacheHolder": "Derzeit sind keine Gruppenkommentare verfügbar.",
-    "noGroupCommentPlacheHolder1": "Möglicherweise ist ein Problem aufgetreten, als Sie diese von Ihrer Website abgerufen haben. Zum Aktualisieren nach unten ziehen und erneut versuchen.",
-    "noGroupCommentPlacheHolderOffline": "Sie sind zurzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihren Gruppenkommentar zu aktualisieren und zu erhalten.",
+    "noGroupCommentPlaceHolder": "Derzeit sind keine Gruppenkommentare verfügbar.",
+    "noGroupCommentPlaceHolder1": "Möglicherweise ist ein Problem aufgetreten, als Sie diese von Ihrer Website abgerufen haben. Zum Aktualisieren nach unten ziehen und erneut versuchen.",
+    "noGroupCommentPlaceHolderOffline": "Sie sind zurzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihren Gruppenkommentar zu aktualisieren und zu erhalten.",
     "selectLocations": "Standorte auswählen",
-    "noMembersMessage": "noMembersMessage",
+    "noMembersMessage": "",
     "groupName": {
       "label": "Gruppenname",
       "error": "Name ist erforderlich"
@@ -150,16 +150,16 @@
       "quick_button_meeting_postponed": "Treffen verschoben",
       "quick_button_meeting_complete": "Besprechung abgeschlossen"
     },
-    "memberCount": "memberCount",
+    "memberCount": "",
     "memberList": "Mitgliederliste",
     "attendance": {
-      "header": "Header",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
-      "groupComment": "groupComment"
+      "header": "",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
+      "groupComment": ""
     },
-    "groupSharedWith": "groupSharedWith"
+    "groupSharedWith": ""
   },
   "notificationsScreen": {
     "notifications": "Benachrichtigungen",
@@ -172,9 +172,9 @@
     "dontHaveNotifications": "Keine Benachrichtigungen"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Derzeit sind keine Gruppen verfügbar.",
-    "noGroupPlacheHolder1": "Möglicherweise ist ein Problem aufgetreten, als Sie diese von Ihrer Website abgerufen haben. Zum Aktualisieren nach unten ziehen und erneut versuchen.",
-    "noGroupPlacheHolderOffline": "Sie sind zurzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihre Gruppen zu aktualisieren und abzurufen."
+    "noGroupPlaceHolder": "Derzeit sind keine Gruppen verfügbar.",
+    "noGroupPlaceHolder1": "Möglicherweise ist ein Problem aufgetreten, als Sie diese von Ihrer Website abgerufen haben. Zum Aktualisieren nach unten ziehen und erneut versuchen.",
+    "noGroupPlaceHolderOffline": "Sie sind zurzeit offline. Stellen Sie sicher, dass Sie mit WLAN oder mobilen Daten verbunden sind, um Ihre Gruppen zu aktualisieren und abzurufen."
   },
   "appRestart": {
     "message": "Die Anwendung wird neu gestartet, um die folgende Konfiguration anzuwenden:",

@@ -1739,18 +1739,18 @@ const GroupDetailScreen = ({ navigation }) => {
           </Row>
           <Row>
             <Text style={styles.noCommentsText}>
-              {i18n.t('groupDetailScreen.noGroupCommentPlacheHolder')}
+              {i18n.t('groupDetailScreen.noGroupCommentPlaceHolder')}
             </Text>
           </Row>
           <Row>
             <Text style={styles.noCommentsText}>
-              {i18n.t('groupDetailScreen.noGroupCommentPlacheHolder1')}
+              {i18n.t('groupDetailScreen.noGroupCommentPlaceHolder1')}
             </Text>
           </Row>
           {!isConnected && (
             <Row>
               <Text style={[styles.noCommentsText, { backgroundColor: '#fff2ac' }]}>
-                {i18n.t('groupDetailScreen.noGroupCommentPlacheHolderOffline')}
+                {i18n.t('groupDetailScreen.noGroupCommentPlaceHolderOffline')}
               </Text>
             </Row>
           )}

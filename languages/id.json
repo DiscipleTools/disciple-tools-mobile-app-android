@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Kontak",
-    "noContactPlacheHolder": "Tidak ada kontak yang tersedia saat ini.",
-    "noContactPlacheHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
-    "noContactPlacheHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan kontak Anda."
+    "noContactPlaceHolder": "Tidak ada kontak yang tersedia saat ini.",
+    "noContactPlaceHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
+    "noContactPlaceHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan kontak Anda."
   },
   "settingsScreen": {
     "settings": "Pengaturan",
@@ -115,13 +115,13 @@
     "phoneNumber": "Nomor telepon",
     "initialComment": "Komentar awal",
     "socialMedia": "Media sosial",
-    "noContactCommentPlacheHolder": "Tidak ada komentar kontak yang tersedia saat ini.",
+    "noContactCommentPlaceHolder": "Tidak ada komentar kontak yang tersedia saat ini.",
     "fullName": {
       "label": "Nama lengkap",
       "error": "Nama harus diisi"
     },
-    "noContactCommentPlacheHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
-    "noContactCommentPlacheHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan komentar kontak Anda.",
+    "noContactCommentPlaceHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
+    "noContactCommentPlaceHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan komentar kontak Anda.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,10 +133,10 @@
     "childGroup": "Kelompok Anak",
     "searchChildGroups": "Cari grup anak",
     "addMember": "Tambahkan anggota",
-    "noGroupCommentPlacheHolder": "Tidak ada komentar grup yang tersedia saat ini.",
-    "noGroupCommentPlacheHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
-    "noGroupCommentPlacheHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan komentar grup Anda.",
-    "noMembersMessage": "noMembersMessage",
+    "noGroupCommentPlaceHolder": "Tidak ada komentar grup yang tersedia saat ini.",
+    "noGroupCommentPlaceHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
+    "noGroupCommentPlaceHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan komentar grup Anda.",
+    "noMembersMessage": "",
     "groupName": {
       "label": "Nama grup",
       "error": "Nama harus diisi"
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Tidak ada pemberitahuan"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Tidak ada grup yang tersedia saat ini.",
-    "noGroupPlacheHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
-    "noGroupPlacheHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan grup Anda."
+    "noGroupPlaceHolder": "Tidak ada grup yang tersedia saat ini.",
+    "noGroupPlaceHolder1": "Mungkin ada masalah saat mendapatkannya dari situs Anda. Seret ke bawah untuk mencoba menyegarkan dan coba lagi.",
+    "noGroupPlaceHolderOffline": "Anda sedang offline. Pastikan Anda terhubung ke wifi atau data seluler untuk menyegarkan dan mendapatkan grup Anda."
   },
   "appRestart": {
     "message": "Aplikasi akan dimulai ulang untuk menerapkan konfigurasi berikut:",

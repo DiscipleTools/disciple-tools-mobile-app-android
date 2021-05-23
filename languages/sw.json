@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Anwani",
-    "noContactPlacheHolder": "Hakuna anwani zozote zinazopatikana kwa sasa.",
-    "noContactPlacheHolder1": "Kunaweza kuwa na shida kuzipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
-    "noContactPlacheHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate anwani zako."
+    "noContactPlaceHolder": "Hakuna anwani zozote zinazopatikana kwa sasa.",
+    "noContactPlaceHolder1": "Kunaweza kuwa na shida kuzipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
+    "noContactPlaceHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate anwani zako."
   },
   "settingsScreen": {
     "settings": "Mipangilio",
@@ -115,13 +115,13 @@
     "phoneNumber": "Nambari ya simu",
     "initialComment": "Maoni ya awali",
     "socialMedia": "Mtandao wa kijamii",
-    "noContactCommentPlacheHolder": "Hakuna maoni yoyote ya mawasiliano yanayopatikana kwa sasa.",
+    "noContactCommentPlaceHolder": "Hakuna maoni yoyote ya mawasiliano yanayopatikana kwa sasa.",
     "fullName": {
       "label": "Jina kamili",
       "error": "Jina inahitajika"
     },
-    "noContactCommentPlacheHolder1": "Kunaweza kuwa na shida kuipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
-    "noContactCommentPlacheHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate maoni yako ya mawasiliano.",
+    "noContactCommentPlaceHolder1": "Kunaweza kuwa na shida kuipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
+    "noContactCommentPlaceHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate maoni yako ya mawasiliano.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Kundi la watoto",
     "searchChildGroups": "Tafuta vikundi vya watoto",
     "addMember": "Ongeza Mwanachama",
-    "noGroupCommentPlacheHolder": "Hakuna maoni yoyote ya kikundi yanayopatikana kwa sasa.",
-    "noGroupCommentPlacheHolder1": "Kunaweza kuwa na shida kuzipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
-    "noGroupCommentPlacheHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate maoni ya kikundi chako.",
+    "noGroupCommentPlaceHolder": "Hakuna maoni yoyote ya kikundi yanayopatikana kwa sasa.",
+    "noGroupCommentPlaceHolder1": "Kunaweza kuwa na shida kuzipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
+    "noGroupCommentPlaceHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate maoni ya kikundi chako.",
     "noMembersMessage": "Hakuna Wajumbe",
     "groupName": {
       "label": "Jina la Kikundi",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Hakuna arifu"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Hakuna vikundi yoyote vinavyopatikana kwa sasa.",
-    "noGroupPlacheHolder1": "Kunaweza kuwa na shida kuzipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
-    "noGroupPlacheHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate vikundi vyako."
+    "noGroupPlaceHolder": "Hakuna vikundi yoyote vinavyopatikana kwa sasa.",
+    "noGroupPlaceHolder1": "Kunaweza kuwa na shida kuzipata kutoka kwa wavuti yako. Buruta chini kujaribu kujaribu kuburudisha na kujaribu tena.",
+    "noGroupPlaceHolderOffline": "Hivi sasa uko nje ya mkondo. Hakikisha umeunganishwa na wifi au data ya rununu ili kuburudisha na upate vikundi vyako."
   },
   "appRestart": {
     "message": "Programu itaanza tena kutumia usanidi ufuatao:",

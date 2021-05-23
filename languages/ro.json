@@ -2,7 +2,9 @@
   "global": {
     "error": {
       "code": "Cod: ",
-      "message": "Mesaj: "
+      "message": "Mesaj: ",
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Datele salvate cu succes!"
@@ -53,9 +55,9 @@
   },
   "contactsScreen": {
     "contacts": "Contacte",
-    "noContactPlacheHolder": "Nu există contacte disponibile în prezent.",
-    "noContactPlacheHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
-    "noContactPlacheHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi contactele."
+    "noContactPlaceHolder": "Nu există contacte disponibile în prezent.",
+    "noContactPlaceHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
+    "noContactPlaceHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi contactele."
   },
   "settingsScreen": {
     "settings": "Setări",
@@ -93,13 +95,13 @@
     "phoneNumber": "Numar de telefon",
     "initialComment": "Comentariu inițial",
     "socialMedia": "Social Media",
-    "noContactCommentPlacheHolder": "Nu există comentarii de contact disponibile în prezent.",
+    "noContactCommentPlaceHolder": "Nu există comentarii de contact disponibile în prezent.",
     "fullName": {
       "label": "Numele complet",
       "error": "Numele este necesar"
     },
-    "noContactCommentPlacheHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
-    "noContactCommentPlacheHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi comentariul de contact."
+    "noContactCommentPlaceHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
+    "noContactCommentPlaceHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi comentariul de contact."
   },
   "groupDetailScreen": {
     "addNewGroup": "Adăugați grup nou",
@@ -109,9 +111,9 @@
     "childGroup": "Grup de copii",
     "searchChildGroups": "Căutați grupuri de copii",
     "addMember": "Adaugă membru",
-    "noGroupCommentPlacheHolder": "Nu există comentarii de grup disponibile în prezent.",
-    "noGroupCommentPlacheHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
-    "noGroupCommentPlacheHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a reîmprospăta și a primi comentarii de grup.",
+    "noGroupCommentPlaceHolder": "Nu există comentarii de grup disponibile în prezent.",
+    "noGroupCommentPlaceHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
+    "noGroupCommentPlaceHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a reîmprospăta și a primi comentarii de grup.",
     "selectLocations": "Selectați Locații",
     "noMembersMessage": "Fără membri. Atingeți aici sau pe Editare pentru a adăuga câțiva membri la acest grup.",
     "groupName": {
@@ -135,9 +137,9 @@
     "dontHaveNotifications": "Nicio notificare"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Nu există grupuri disponibile în prezent.",
-    "noGroupPlacheHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
-    "noGroupPlacheHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi grupuri."
+    "noGroupPlaceHolder": "Nu există grupuri disponibile în prezent.",
+    "noGroupPlaceHolder1": "Este posibil să fi existat o problemă pentru a le primi de pe site-ul dvs. Trageți în jos pentru a încerca să reîmprospătați și să încercați din nou.",
+    "noGroupPlaceHolderOffline": "În prezent sunteți offline. Asigurați-vă că sunteți conectat la date wifi sau mobile pentru a vă reîmprospăta și a primi grupuri."
   },
   "appRestart": {
     "message": "Aplicația va fi repornită pentru a aplica următoarea configurație:",

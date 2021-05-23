@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Bağlantılarım",
-    "noContactPlacheHolder": "Şu anda kullanılabilir kişi yok.",
-    "noContactPlacheHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
-    "noContactPlacheHolderOffline": "Şu anda çevrimdışısınız. Kişilerinizi yenilemek ve almak için wifi veya mobil verilere bağlı olduğunuzdan emin olun."
+    "noContactPlaceHolder": "Şu anda kullanılabilir kişi yok.",
+    "noContactPlaceHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
+    "noContactPlaceHolderOffline": "Şu anda çevrimdışısınız. Kişilerinizi yenilemek ve almak için wifi veya mobil verilere bağlı olduğunuzdan emin olun."
   },
   "settingsScreen": {
     "settings": "Ayarlar",
@@ -115,13 +115,13 @@
     "phoneNumber": "Telefon Numarası",
     "initialComment": "İlk Yorum",
     "socialMedia": "Sosyal Medya",
-    "noContactCommentPlacheHolder": "Şu anda kullanılabilecek kişi yorumu yok.",
+    "noContactCommentPlaceHolder": "Şu anda kullanılabilecek kişi yorumu yok.",
     "fullName": {
       "label": "Ad Soyad",
       "error": "İsim gerekli"
     },
-    "noContactCommentPlacheHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
-    "noContactCommentPlacheHolderOffline": "Şu anda çevrimdışısınız. İrtibat yorumunuzu yenilemek ve almak için wifi veya mobil verilere bağlı olduğunuzdan emin olun.",
+    "noContactCommentPlaceHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
+    "noContactCommentPlaceHolderOffline": "Şu anda çevrimdışısınız. İrtibat yorumunuzu yenilemek ve almak için wifi veya mobil verilere bağlı olduğunuzdan emin olun.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Alt Grup",
     "searchChildGroups": "Alt gruplarda ara",
     "addMember": "Üye Ekle",
-    "noGroupCommentPlacheHolder": "Şu anda hiçbir grup yorumu mevcut değil.",
-    "noGroupCommentPlacheHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
-    "noGroupCommentPlacheHolderOffline": "Şu anda çevrimdışısınız. Grup yorumunuzu yenilemek ve almak için kablosuz bağlantıya veya mobil verilere bağlı olduğunuzdan emin olun.",
+    "noGroupCommentPlaceHolder": "Şu anda hiçbir grup yorumu mevcut değil.",
+    "noGroupCommentPlaceHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
+    "noGroupCommentPlaceHolderOffline": "Şu anda çevrimdışısınız. Grup yorumunuzu yenilemek ve almak için kablosuz bağlantıya veya mobil verilere bağlı olduğunuzdan emin olun.",
     "noMembersMessage": "Üye yok. Bu gruba bazı üyeler eklemek için burayı veya Değiştir'i tıklayın.",
     "groupName": {
       "label": "Grup ismi",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Bildirim yok"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Şu anda kullanılabilir grup yok.",
-    "noGroupPlacheHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
-    "noGroupPlacheHolderOffline": "Şu anda çevrimdışısınız. Gruplarınızı yenilemek ve almak için kablosuz bağlantıya veya mobil verilere bağlı olduğunuzdan emin olun."
+    "noGroupPlaceHolder": "Şu anda kullanılabilir grup yok.",
+    "noGroupPlaceHolder1": "Bunları sitenizden alırken bir sorun olabilir. Yenilemeyi denemek için aşağı sürükleyin ve tekrar deneyin.",
+    "noGroupPlaceHolderOffline": "Şu anda çevrimdışısınız. Gruplarınızı yenilemek ve almak için kablosuz bağlantıya veya mobil verilere bağlı olduğunuzdan emin olun."
   },
   "appRestart": {
     "message": "Aşağıdaki yapılandırmayı uygulamak için uygulama yeniden başlatılacak:",
