@@ -3,8 +3,8 @@
     "error": {
       "code": "Code: ",
       "message": "Mensahe: ",
-      "text": "",
-      "noRecords": ""
+      "text": "text",
+      "noRecords": "noRecords"
     },
     "success": {
       "save": "Matagumpay na na-save ang data!"
@@ -39,7 +39,7 @@
     "activity": "aktibidad",
     "submit": "ipasa",
     "share": "magbahagi",
-    "viewOnMobileWeb": "",
+    "viewOnMobileWeb": "viewOnMobileWeb",
     "shareSettings": "magbahagi ng Mga Setting",
     "searchUsers": "mga gumagamit ng paghahanap",
     "noFilters": "noFilters",
@@ -70,15 +70,15 @@
       "invalidUsername": "Hindi kilalang username. Suriing muli o subukan ang iyong email address.",
       "incorrectPassword": "Ang password na ipinasok mo para sa username ay hindi tama",
       "configurationNeededOn": "pagsasaayosNeededOn",
-      "mobileAppPluginRequiredOne": "",
-      "mobileAppPluginRequiredTwo": ""
+      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
+      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
     }
   },
   "contactsScreen": {
     "contacts": "Mga contact",
-    "noContactPlaceHolder": "Walang anumang mga contact na kasalukuyang magagamit.",
-    "noContactPlaceHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
-    "noContactPlaceHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang iyong mga contact."
+    "noContactPlacheHolder": "Walang anumang mga contact na kasalukuyang magagamit.",
+    "noContactPlacheHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
+    "noContactPlacheHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang iyong mga contact."
   },
   "settingsScreen": {
     "settings": "Mga setting",
@@ -117,16 +117,16 @@
     "phoneNumber": "Numero ng telepono",
     "initialComment": "Paunang Komento",
     "socialMedia": "Social Media",
-    "noContactCommentPlaceHolder": "Walang anumang mga komento sa pakikipag-ugnay na kasalukuyang magagamit.",
+    "noContactCommentPlacheHolder": "Walang anumang mga komento sa pakikipag-ugnay na kasalukuyang magagamit.",
     "fullName": {
       "label": "Buong pangalan",
       "error": "Pangalan ang kailangan"
     },
-    "noContactCommentPlaceHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
-    "noContactCommentPlaceHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang iyong komento sa pakikipag-ugnay.",
-    "importContact": "",
-    "contactSharedWith": "",
-    "ageNotSet": ""
+    "noContactCommentPlacheHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
+    "noContactCommentPlacheHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang iyong komento sa pakikipag-ugnay.",
+    "importContact": "importContact",
+    "contactSharedWith": "contactSharedWith",
+    "ageNotSet": "ageNotSet"
   },
   "groupDetailScreen": {
     "addNewGroup": "Magdagdag ng Bagong Pangkat",
@@ -136,9 +136,9 @@
     "childGroup": "Pangkat ng Bata",
     "searchChildGroups": "Maghanap ng mga pangkat ng bata",
     "addMember": "Magdagdag ng Miyembro",
-    "noGroupCommentPlaceHolder": "Walang anumang mga komento sa pangkat na kasalukuyang magagamit.",
-    "noGroupCommentPlaceHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
-    "noGroupCommentPlaceHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang komento ng iyong pangkat.",
+    "noGroupCommentPlacheHolder": "Walang anumang mga komento sa pangkat na kasalukuyang magagamit.",
+    "noGroupCommentPlacheHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
+    "noGroupCommentPlacheHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang komento ng iyong pangkat.",
     "selectLocations": "Piliin ang Mga Lokasyon",
     "noMembersMessage": "Walang miyembro. Mag-tap dito o sa I-edit upang magdagdag ng ilang mga miyembro sa pangkat na ito.",
     "groupName": {
@@ -150,16 +150,16 @@
       "quick_button_meeting_postponed": "Ipinagpaliban ang pagpupulong",
       "quick_button_meeting_complete": "Kumpleto na ang pagpupulong"
     },
-    "memberCount": "",
+    "memberCount": "memberCount",
     "memberList": "memberList",
     "attendance": {
-      "header": "",
-      "didAttendComment": "",
-      "didNotAttendComment": "",
-      "groupCommentLabel": "",
+      "header": "header",
+      "didAttendComment": "didAttendComment",
+      "didNotAttendComment": "didNotAttendComment",
+      "groupCommentLabel": "groupCommentLabel",
       "groupComment": "pangkatKomento"
     },
-    "groupSharedWith": ""
+    "groupSharedWith": "groupSharedWith"
   },
   "notificationsScreen": {
     "notifications": "Mga Abiso",
@@ -172,9 +172,9 @@
     "dontHaveNotifications": "Walang abiso"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "Walang anumang mga pangkat na kasalukuyang magagamit.",
-    "noGroupPlaceHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
-    "noGroupPlaceHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang iyong mga pangkat."
+    "noGroupPlacheHolder": "Walang anumang mga pangkat na kasalukuyang magagamit.",
+    "noGroupPlacheHolder1": "Maaaring may problema sa pagkuha sa kanila mula sa iyong site. I-drag pababa upang subukang i-refresh at subukang muli.",
+    "noGroupPlacheHolderOffline": "Kasalukuyan kang naka-offline. Tiyaking nakakonekta ka sa wifi o mobile data upang mai-refresh at makuha ang iyong mga pangkat."
   },
   "appRestart": {
     "message": "Ang application ay i-restart upang ilapat ang sumusunod na pagsasaayos:",

@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "聯絡人",
-    "noContactPlaceHolder": "當前沒有任何联係人。",
-    "noContactPlaceHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
-    "noContactPlaceHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並獲取聯繫人。"
+    "noContactPlacheHolder": "當前沒有任何联係人。",
+    "noContactPlacheHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
+    "noContactPlacheHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並獲取聯繫人。"
   },
   "settingsScreen": {
     "settings": "設定值",
@@ -115,13 +115,13 @@
     "phoneNumber": "電話號碼",
     "initialComment": "初步評論",
     "socialMedia": "社交媒體",
-    "noContactCommentPlaceHolder": "當前沒有任何联系方式。",
+    "noContactCommentPlacheHolder": "當前沒有任何联系方式。",
     "fullName": {
       "label": "全名",
       "error": "名稱為必填項"
     },
-    "noContactCommentPlaceHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
-    "noContactCommentPlaceHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並獲取聯繫評論。",
+    "noContactCommentPlacheHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
+    "noContactCommentPlacheHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並獲取聯繫評論。",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "兒童組",
     "searchChildGroups": "搜索子組",
     "addMember": "新增會員",
-    "noGroupCommentPlaceHolder": "當前沒有任何組註釋。",
-    "noGroupCommentPlaceHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
-    "noGroupCommentPlaceHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並獲取群組評論。",
+    "noGroupCommentPlacheHolder": "當前沒有任何組註釋。",
+    "noGroupCommentPlacheHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
+    "noGroupCommentPlacheHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並獲取群組評論。",
     "noMembersMessage": "沒有成員。 單擊此處或單擊“更改”以將一些成員添加到該組。",
     "groupName": {
       "label": "組的名字",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "沒有通知"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "當前沒有任何組。",
-    "noGroupPlaceHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
-    "noGroupPlaceHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並分組。"
+    "noGroupPlacheHolder": "當前沒有任何組。",
+    "noGroupPlacheHolder1": "從您的網站獲取它們可能存在問題。向下拖動以嘗試刷新，然後重試。",
+    "noGroupPlacheHolderOffline": "您目前離線。確保您已連接到wifi或移動數據，以便刷新並分組。"
   },
   "appRestart": {
     "message": "該應用程序將重新啟動以應用以下配置：",

@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Contacten",
-    "noContactPlaceHolder": "Er zijn momenteel geen contacten beschikbaar.",
-    "noContactPlaceHolder1": "Er is mogelijk een probleem opgetreden bij het ophalen van uw site. Sleep omlaag om te proberen te vernieuwen en probeer het opnieuw.",
-    "noContactPlaceHolderOffline": "U bent momenteel offline. Zorg ervoor dat u bent verbonden met wifi of mobiele gegevens om uw contacten te vernieuwen en op te halen."
+    "noContactPlacheHolder": "Er zijn momenteel geen contacten beschikbaar.",
+    "noContactPlacheHolder1": "Er is mogelijk een probleem opgetreden bij het ophalen van uw site. Sleep omlaag om te proberen te vernieuwen en probeer het opnieuw.",
+    "noContactPlacheHolderOffline": "U bent momenteel offline. Zorg ervoor dat u bent verbonden met wifi of mobiele gegevens om uw contacten te vernieuwen en op te halen."
   },
   "settingsScreen": {
     "settings": "instellingen",
@@ -115,13 +115,13 @@
     "phoneNumber": "Telefoonnummer",
     "initialComment": "Eerste opmerking",
     "socialMedia": "Sociale media",
-    "noContactCommentPlaceHolder": "Er zijn momenteel geen contactreacties beschikbaar.",
+    "noContactCommentPlacheHolder": "Er zijn momenteel geen contactreacties beschikbaar.",
     "fullName": {
       "label": "Voor-en achternaam",
       "error": "Naam is vereist"
     },
-    "noContactCommentPlaceHolder1": "Mogelijk is er een probleem opgetreden bij het ophalen van uw site. Sleep naar beneden om te proberen te vernieuwen en probeer het opnieuw.",
-    "noContactCommentPlaceHolderOffline": "Je bent momenteel offline. Zorg ervoor dat je verbonden bent met wifi of mobiele data om te vernieuwen en je contactcommentaar te krijgen.",
+    "noContactCommentPlacheHolder1": "Mogelijk is er een probleem opgetreden bij het ophalen van uw site. Sleep naar beneden om te proberen te vernieuwen en probeer het opnieuw.",
+    "noContactCommentPlacheHolderOffline": "Je bent momenteel offline. Zorg ervoor dat je verbonden bent met wifi of mobiele data om te vernieuwen en je contactcommentaar te krijgen.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Kind groep",
     "searchChildGroups": "Zoek kindgroepen",
     "addMember": "Lid toevoegen",
-    "noGroupCommentPlaceHolder": "Er zijn momenteel geen groepsreacties beschikbaar.",
-    "noGroupCommentPlaceHolder1": "Er is mogelijk een probleem opgetreden bij het ophalen van uw site. Sleep omlaag om te proberen te vernieuwen en probeer het opnieuw.",
-    "noGroupCommentPlaceHolderOffline": "U bent momenteel offline. Zorg ervoor dat je bent verbonden met wifi of mobiele gegevens om te vernieuwen en je groepsreactie te ontvangen.",
+    "noGroupCommentPlacheHolder": "Er zijn momenteel geen groepsreacties beschikbaar.",
+    "noGroupCommentPlacheHolder1": "Er is mogelijk een probleem opgetreden bij het ophalen van uw site. Sleep omlaag om te proberen te vernieuwen en probeer het opnieuw.",
+    "noGroupCommentPlacheHolderOffline": "U bent momenteel offline. Zorg ervoor dat je bent verbonden met wifi of mobiele gegevens om te vernieuwen en je groepsreactie te ontvangen.",
     "noMembersMessage": "Geen leden",
     "groupName": {
       "label": "Groepsnaam",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Geen notificaties"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "Er zijn momenteel geen groepen beschikbaar.",
-    "noGroupPlaceHolder1": "Er is mogelijk een probleem opgetreden bij het ophalen van uw site. Sleep omlaag om te proberen te vernieuwen en probeer het opnieuw.",
-    "noGroupPlaceHolderOffline": "U bent momenteel offline. Zorg ervoor dat u bent verbonden met wifi of mobiele gegevens om uw groepen te vernieuwen en op te halen."
+    "noGroupPlacheHolder": "Er zijn momenteel geen groepen beschikbaar.",
+    "noGroupPlacheHolder1": "Er is mogelijk een probleem opgetreden bij het ophalen van uw site. Sleep omlaag om te proberen te vernieuwen en probeer het opnieuw.",
+    "noGroupPlacheHolderOffline": "U bent momenteel offline. Zorg ervoor dat u bent verbonden met wifi of mobiele gegevens om uw groepen te vernieuwen en op te halen."
   },
   "appRestart": {
     "message": "De applicatie wordt opnieuw gestart om de volgende configuratie toe te passen:",

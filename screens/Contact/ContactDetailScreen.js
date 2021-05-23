@@ -1942,18 +1942,18 @@ const ContactDetailScreen = ({ navigation, route }) => {
           </Row>
           <Row>
             <Text style={styles.noCommentsText}>
-              {i18n.t('contactDetailScreen.noContactCommentPlaceHolder')}
+              {i18n.t('contactDetailScreen.noContactCommentPlacheHolder')}
             </Text>
           </Row>
           <Row>
             <Text style={styles.noCommentsText}>
-              {i18n.t('contactDetailScreen.noContactCommentPlaceHolder1')}
+              {i18n.t('contactDetailScreen.noContactCommentPlacheHolder1')}
             </Text>
           </Row>
           {!isConnected && (
             <Row>
               <Text style={[styles.noCommentsText, { backgroundColor: '#fff2ac' }]}>
-                {i18n.t('contactDetailScreen.noContactCommentPlaceHolderOffline')}
+                {i18n.t('contactDetailScreen.noContactCommentPlacheHolderOffline')}
               </Text>
             </Row>
           )}

@@ -39,14 +39,14 @@
     "activity": "アクティビティ",
     "submit": "参加する",
     "share": "シェア",
-    "viewOnMobileWeb": "",
-    "shareSettings": "",
-    "searchUsers": "",
-    "noFilters": "",
-    "searchContacts": "",
-    "selectLocations": "",
+    "viewOnMobileWeb": "viewOnMobileWeb",
+    "shareSettings": "shareSettings",
+    "searchUsers": "searchUsers",
+    "noFilters": "noFilters",
+    "searchContacts": "searchContacts",
+    "selectLocations": "selectLocations",
     "other": "その他",
-    "chooseOption": "",
+    "chooseOption": "choiceOption",
     "confirm": "確認"
   },
   "loginScreen": {
@@ -69,16 +69,16 @@
     "errors": {
       "invalidUsername": "不明なユーザー名。もう一度確認するか、メールアドレスを試してください。",
       "incorrectPassword": "ユーザー名に入力したパスワードが正しくありません",
-      "configurationNeededOn": "",
-      "mobileAppPluginRequiredOne": "",
-      "mobileAppPluginRequiredTwo": ""
+      "configurationNeededOn": "configurationNeededOn",
+      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
+      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
     }
   },
   "contactsScreen": {
     "contacts": "連絡先",
-    "noContactPlaceHolder": "現在利用可能な連絡先はありません。",
-    "noContactPlaceHolder1": "サイトからそれらを取得する際に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
-    "noContactPlaceHolderOffline": "現在オフラインです。連絡先を更新して取得するには、Wi-Fiまたはモバイルデータに接続していることを確認してください。"
+    "noContactPlacheHolder": "現在利用可能な連絡先はありません。",
+    "noContactPlacheHolder1": "サイトからそれらを取得する際に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
+    "noContactPlacheHolderOffline": "現在オフラインです。連絡先を更新して取得するには、Wi-Fiまたはモバイルデータに接続していることを確認してください。"
   },
   "settingsScreen": {
     "settings": "設定",
@@ -117,16 +117,16 @@
     "phoneNumber": "電話番号",
     "initialComment": "最初のコメント",
     "socialMedia": "ソーシャルメディア",
-    "noContactCommentPlaceHolder": "現在利用可能な連絡先のコメントはありません。",
+    "noContactCommentPlacheHolder": "現在利用可能な連絡先のコメントはありません。",
     "fullName": {
       "label": "フルネーム",
       "error": "名前が必要です"
     },
-    "noContactCommentPlaceHolder1": "サイトからそれらを取得する際に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
-    "noContactCommentPlaceHolderOffline": "現在オフラインです。更新して連絡先コメントを取得するには、Wi-Fiまたはモバイルデータに接続していることを確認してください。",
-    "importContact": "",
-    "contactSharedWith": "",
-    "ageNotSet": ""
+    "noContactCommentPlacheHolder1": "サイトからそれらを取得する際に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
+    "noContactCommentPlacheHolderOffline": "現在オフラインです。更新して連絡先コメントを取得するには、Wi-Fiまたはモバイルデータに接続していることを確認してください。",
+    "importContact": "importContact",
+    "contactSharedWith": "contactSharedWith",
+    "ageNotSet": "ageNotSet"
   },
   "groupDetailScreen": {
     "addNewGroup": "新しいグループを追加",
@@ -136,11 +136,11 @@
     "childGroup": "子グループ",
     "searchChildGroups": "子グループを検索",
     "addMember": "メンバーを追加",
-    "noGroupCommentPlaceHolder": "現在利用可能なグループコメントはありません。",
-    "noGroupCommentPlaceHolder1": "サイトからの取得中に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
-    "noGroupCommentPlaceHolderOffline": "現在オフラインです。グループコメントを更新して取得するには、wifiまたはモバイルデータに接続していることを確認してください。",
+    "noGroupCommentPlacheHolder": "現在利用可能なグループコメントはありません。",
+    "noGroupCommentPlacheHolder1": "サイトからの取得中に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
+    "noGroupCommentPlacheHolderOffline": "現在オフラインです。グループコメントを更新して取得するには、wifiまたはモバイルデータに接続していることを確認してください。",
     "selectLocations": "場所を選択",
-    "noMembersMessage": "",
+    "noMembersMessage": "noMembersMessage",
     "groupName": {
       "label": "グループ名",
       "error": "名前が必要です"
@@ -150,16 +150,16 @@
       "quick_button_meeting_postponed": "会議は延期されました",
       "quick_button_meeting_complete": "会議が完了しました"
     },
-    "memberCount": "",
+    "memberCount": "memberCount",
     "memberList": "メンバーリスト",
     "attendance": {
       "header": "ヘッダ",
-      "didAttendComment": "",
-      "didNotAttendComment": "",
-      "groupCommentLabel": "",
-      "groupComment": ""
+      "didAttendComment": "didAttendComment",
+      "didNotAttendComment": "didNotAttendComment",
+      "groupCommentLabel": "groupCommentLabel",
+      "groupComment": "groupComment"
     },
-    "groupSharedWith": ""
+    "groupSharedWith": "groupSharedWith"
   },
   "notificationsScreen": {
     "notifications": "通知",
@@ -172,9 +172,9 @@
     "dontHaveNotifications": "通知なし"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "現在利用可能なグループはありません。",
-    "noGroupPlaceHolder1": "サイトからの取得中に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
-    "noGroupPlaceHolderOffline": "現在オフラインです。グループを更新して取得するには、wifiまたはモバイルデータに接続していることを確認してください。"
+    "noGroupPlacheHolder": "現在利用可能なグループはありません。",
+    "noGroupPlacheHolder1": "サイトからの取得中に問題が発生した可能性があります。下にドラッグして更新し、再試行してください。",
+    "noGroupPlacheHolderOffline": "現在オフラインです。グループを更新して取得するには、wifiまたはモバイルデータに接続していることを確認してください。"
   },
   "appRestart": {
     "message": "次の構成を適用するために、アプリケーションが再起動されます。",

@@ -81,9 +81,9 @@
   },
   "contactsScreen": {
     "contacts": "Contacts",
-    "noContactPlaceHolder": "There are not any contacts currently available.",
-    "noContactPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-    "noContactPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
+    "noContactPlacheHolder": "There are not any contacts currently available.",
+    "noContactPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+    "noContactPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
   },
   "settingsScreen": {
     "settings": "Settings",
@@ -102,8 +102,8 @@
     "enterPin": "Enter PIN",
     "setPin": "Set new PIN",
     "incorrectPin": "Incorrect PIN",
-    "savedPinCode": "PIN code saved successfully.",
-    "removedPinCode": "PIN code removed successfully.",
+    "savedPinCode": "PIN code saved successfully!.",
+    "removedPinCode": "PIN code removed successfully!.",
     "close": "Close",
     "confirmPin": "Confirm PIN"
   },
@@ -122,13 +122,13 @@
     "phoneNumber": "Phone Number",
     "initialComment": "Initial Comment",
     "socialMedia": "Social Media",
-    "noContactCommentPlaceHolder": "There are not any contact comments currently available.",
+    "noContactCommentPlacheHolder": "There are not any contact comments currently available.",
     "fullName": {
       "label": "Full Name",
       "error": "Name is required"
     },
-    "noContactCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-    "noContactCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment.",
+    "noContactCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+    "noContactCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment.",
     "importContact": "Import Phone Contact",
     "contactSharedWith": "This contact is shared with",
     "ageNotSet": "No age set"
@@ -141,9 +141,9 @@
     "childGroup": "Child Group",
     "searchChildGroups": "Search child groups",
     "addMember": "Add Member",
-    "noGroupCommentPlaceHolder": "There are not any group comments currently available.",
-    "noGroupCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-    "noGroupCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
+    "noGroupCommentPlacheHolder": "There are not any group comments currently available.",
+    "noGroupCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+    "noGroupCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
     "noMembersMessage": "No members. Tap here or on Edit to add some members to this group.",
     "groupName": {
       "label": "Group Name",
@@ -176,9 +176,9 @@
     "dontHaveNotifications": "No notifications"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "There are not any groups currently available.",
-    "noGroupPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-    "noGroupPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
+    "noGroupPlacheHolder": "There are not any groups currently available.",
+    "noGroupPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+    "noGroupPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
   },
   "appRestart": {
     "modalTitle": "Restart App?",

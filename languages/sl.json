@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Stiki",
-    "noContactPlaceHolder": "Trenutno ni na voljo nobenega stika.",
-    "noContactPlaceHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
-    "noContactPlaceHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite stike."
+    "noContactPlacheHolder": "Trenutno ni na voljo nobenega stika.",
+    "noContactPlacheHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
+    "noContactPlacheHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite stike."
   },
   "settingsScreen": {
     "settings": "Nastavitve",
@@ -115,13 +115,13 @@
     "phoneNumber": "Telefonska številka",
     "initialComment": "Začetni komentar",
     "socialMedia": "Socialni mediji",
-    "noContactCommentPlaceHolder": "Trenutno ni na voljo nobenih komentarjev za stike.",
+    "noContactCommentPlacheHolder": "Trenutno ni na voljo nobenih komentarjev za stike.",
     "fullName": {
       "label": "Polno ime",
       "error": "Ime je obvezno"
     },
-    "noContactCommentPlaceHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
-    "noContactCommentPlaceHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite komentar.",
+    "noContactCommentPlacheHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
+    "noContactCommentPlacheHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite komentar.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Otroška skupina",
     "searchChildGroups": "Poiščite otroške skupine",
     "addMember": "Dodaj člana",
-    "noGroupCommentPlaceHolder": "Trenutno ni na voljo nobenih komentarjev skupin.",
-    "noGroupCommentPlaceHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
-    "noGroupCommentPlaceHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite komentar svoje skupine.",
+    "noGroupCommentPlacheHolder": "Trenutno ni na voljo nobenih komentarjev skupin.",
+    "noGroupCommentPlacheHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
+    "noGroupCommentPlacheHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite komentar svoje skupine.",
     "noMembersMessage": "Ni članov",
     "groupName": {
       "label": "Ime skupine",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Brez obvestil"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "Trenutno ni na voljo nobene skupine.",
-    "noGroupPlaceHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
-    "noGroupPlaceHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite svoje skupine."
+    "noGroupPlacheHolder": "Trenutno ni na voljo nobene skupine.",
+    "noGroupPlacheHolder1": "Morda je prišlo do težave pri pridobivanju le-teh z vašega spletnega mesta. Povlecite navzdol, da se poskusite osvežiti in poskusite znova.",
+    "noGroupPlacheHolderOffline": "Trenutno ste brez povezave. Zagotovite, da ste povezani z wifi ali mobilnimi podatki, da osvežite in dobite svoje skupine."
   },
   "appRestart": {
     "message": "Aplikacija se bo znova zagnala, da bo uporabila naslednjo konfiguracijo:",

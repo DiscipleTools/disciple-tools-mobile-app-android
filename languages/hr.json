@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Kontakti",
-    "noContactPlaceHolder": "Trenutno nema dostupnih kontakata.",
-    "noContactPlaceHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
-    "noContactPlaceHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili svoje kontakte."
+    "noContactPlacheHolder": "Trenutno nema dostupnih kontakata.",
+    "noContactPlacheHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
+    "noContactPlacheHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili svoje kontakte."
   },
   "settingsScreen": {
     "settings": "Postavke",
@@ -115,13 +115,13 @@
     "phoneNumber": "Broj telefona",
     "initialComment": "Početni komentar",
     "socialMedia": "Društveni mediji",
-    "noContactCommentPlaceHolder": "Trenutno nema dostupnih komentara na kontakt.",
+    "noContactCommentPlacheHolder": "Trenutno nema dostupnih komentara na kontakt.",
     "fullName": {
       "label": "Puno ime",
       "error": "Ime je obavezno"
     },
-    "noContactCommentPlaceHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
-    "noContactCommentPlaceHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili komentar na kontakt.",
+    "noContactCommentPlacheHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
+    "noContactCommentPlacheHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili komentar na kontakt.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Dječja grupa",
     "searchChildGroups": "Pretražite dječje skupine",
     "addMember": "Dodaj člana",
-    "noGroupCommentPlaceHolder": "Trenutno nema dostupnih komentara grupe.",
-    "noGroupCommentPlaceHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
-    "noGroupCommentPlaceHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili komentar svoje grupe.",
+    "noGroupCommentPlacheHolder": "Trenutno nema dostupnih komentara grupe.",
+    "noGroupCommentPlacheHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
+    "noGroupCommentPlacheHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i dobili komentar svoje grupe.",
     "noMembersMessage": "Nema članova. Dodirnite ovdje ili na Uredi da biste dodali neke članove u ovu grupu.",
     "groupName": {
       "label": "Grupno ime",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Nema obavijesti"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "Trenutno nema dostupnih grupa.",
-    "noGroupPlaceHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
-    "noGroupPlaceHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i prikupili svoje grupe."
+    "noGroupPlacheHolder": "Trenutno nema dostupnih grupa.",
+    "noGroupPlacheHolder1": "Možda je došlo do problema pri preuzimanju s vaše web lokacije. Povucite prema dolje da biste se pokušali osvježiti i pokušajte ponovo.",
+    "noGroupPlacheHolderOffline": "Trenutno ste offline. Provjerite jeste li povezani na WiFi ili mobilne podatke kako biste osvježili i prikupili svoje grupe."
   },
   "appRestart": {
     "message": "Program će se ponovo pokrenuti kako bi primijenio sljedeću konfiguraciju:",

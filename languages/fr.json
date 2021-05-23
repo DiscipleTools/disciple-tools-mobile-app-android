@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Contacts",
-    "noContactPlaceHolder": "Aucun contact n'est actuellement disponible.",
-    "noContactPlaceHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
-    "noContactPlaceHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de rafraîchir et d'obtenir vos contacts."
+    "noContactPlacheHolder": "Aucun contact n'est actuellement disponible.",
+    "noContactPlacheHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
+    "noContactPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de rafraîchir et d'obtenir vos contacts."
   },
   "settingsScreen": {
     "settings": "Paramètres",
@@ -115,13 +115,13 @@
     "phoneNumber": "Numéro de téléphone",
     "initialComment": "Commentaire initial",
     "socialMedia": "Des médias sociaux",
-    "noContactCommentPlaceHolder": "Aucun commentaire de contact n'est actuellement disponible.",
+    "noContactCommentPlacheHolder": "Aucun commentaire de contact n'est actuellement disponible.",
     "fullName": {
       "label": "Nom complet",
       "error": "Nom obligatoire"
     },
-    "noContactCommentPlaceHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
-    "noContactCommentPlaceHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de vous rafraîchir et d'obtenir votre commentaire de contact.",
+    "noContactCommentPlacheHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
+    "noContactCommentPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de vous rafraîchir et d'obtenir votre commentaire de contact.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Groupe d'enfants",
     "searchChildGroups": "Rechercher des groupes d'enfants",
     "addMember": "Ajouter un membre",
-    "noGroupCommentPlaceHolder": "Aucun commentaire de groupe n'est actuellement disponible.",
-    "noGroupCommentPlaceHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
-    "noGroupCommentPlaceHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de vous rafraîchir et d'obtenir les commentaires de votre groupe.",
+    "noGroupCommentPlacheHolder": "Aucun commentaire de groupe n'est actuellement disponible.",
+    "noGroupCommentPlacheHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
+    "noGroupCommentPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de vous rafraîchir et d'obtenir les commentaires de votre groupe.",
     "noMembersMessage": "Aucun membre. Appuyez ici ou sur Modifier pour ajouter des membres à ce groupe.",
     "groupName": {
       "label": "Nom de groupe",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Aucune notification"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "Aucun groupe n'est actuellement disponible.",
-    "noGroupPlaceHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
-    "noGroupPlaceHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de rafraîchir et d'obtenir vos groupes."
+    "noGroupPlacheHolder": "Aucun groupe n'est actuellement disponible.",
+    "noGroupPlacheHolder1": "Il peut y avoir eu un problème pour les obtenir à partir de votre site. Faites glisser vers le bas pour essayer de rafraîchir et réessayez.",
+    "noGroupPlacheHolderOffline": "Vous êtes actuellement hors ligne. Assurez-vous que vous êtes connecté au wifi ou aux données mobiles afin de rafraîchir et d'obtenir vos groupes."
   },
   "appRestart": {
     "modalTitle": "Redémarrer l'app?",

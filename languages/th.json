@@ -3,8 +3,8 @@
     "error": {
       "code": "โค้ด",
       "message": "ข้อความ",
-      "text": "",
-      "noRecords": ""
+      "text": "ข้อความ",
+      "noRecords": "noRecords"
     },
     "success": {
       "save": "บันทึกข้อมูลสําเร็จ"
@@ -40,8 +40,8 @@
     "submit": "ส่ง",
     "share": "แบ่งปัน",
     "viewOnMobileWeb": "ดูบนเว็บบนมือถือ",
-    "shareSettings": "",
-    "searchUsers": "",
+    "shareSettings": "shareSettings",
+    "searchUsers": "searchUsers",
     "noFilters": "noFilters",
     "searchContacts": "ค้นหา",
     "selectLocations": "เลือกสถานที่",
@@ -69,16 +69,16 @@
     "errors": {
       "invalidUsername": "ไม่มีชื่อนี้อยู่ในระบบ ตรวจอีกครั้งหรือลองใช้ที่อยู่อีเมลของคุณ",
       "incorrectPassword": "คุณกรอกรหัสชื่อบัญชีนี้ไม่ถูกต้อง",
-      "configurationNeededOn": "",
-      "mobileAppPluginRequiredOne": "",
-      "mobileAppPluginRequiredTwo": ""
+      "configurationNeededOn": "configurationNeededOn",
+      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
+      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
     }
   },
   "contactsScreen": {
     "contacts": "ลายชื่อผู้ติดต่อ",
-    "noContactPlaceHolder": "ขณะนี้ไม่มีรายชื่อไหนว่าง",
-    "noContactPlaceHolder1": "อาจจะมีปัญหาจากการเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
-    "noContactPlaceHolderOffline": "ขณะนี้คุณกําลังออฟไลน์ ตรวจสอบการเชื่อมต่อ wifi หรืออินเตอร์เน็ตเพื่อโหลดใหม่เเละรับลายชื่อผู้ติดต่อ"
+    "noContactPlacheHolder": "ขณะนี้ไม่มีรายชื่อไหนว่าง",
+    "noContactPlacheHolder1": "อาจจะมีปัญหาจากการเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
+    "noContactPlacheHolderOffline": "ขณะนี้คุณกําลังออฟไลน์ ตรวจสอบการเชื่อมต่อ wifi หรืออินเตอร์เน็ตเพื่อโหลดใหม่เเละรับลายชื่อผู้ติดต่อ"
   },
   "settingsScreen": {
     "settings": "ตั้งค่า",
@@ -117,16 +117,16 @@
     "phoneNumber": "เบอร์โทรศัพท์",
     "initialComment": "ความคิดเห็นเเรก",
     "socialMedia": "สื่อโซเชียล",
-    "noContactCommentPlaceHolder": "ขณะนี้ไม่มีความคิดเห็นของใคร",
+    "noContactCommentPlacheHolder": "ขณะนี้ไม่มีความคิดเห็นของใคร",
     "fullName": {
       "label": "ชื่อเต็ม",
       "error": "ต้องกรอกชื่อ"
     },
-    "noContactCommentPlaceHolder1": "อาจมีข้อผิดพลาดเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
-    "noContactCommentPlaceHolderOffline": "ขณะนี้คุณออฟไลน์ ตรวจสอบให้แน่ใจว่าคุณเชื่อมต่อกับ wifi หรือข้อมูลมือถือเพื่อรีเฟรชและรับความคิดเห็นติดต่อของคุณ",
+    "noContactCommentPlacheHolder1": "อาจมีข้อผิดพลาดเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
+    "noContactCommentPlacheHolderOffline": "ขณะนี้คุณออฟไลน์ ตรวจสอบให้แน่ใจว่าคุณเชื่อมต่อกับ wifi หรือข้อมูลมือถือเพื่อรีเฟรชและรับความคิดเห็นติดต่อของคุณ",
     "importContact": "นำเข้ารายชื่อโทรศัพท์",
-    "contactSharedWith": "",
-    "ageNotSet": ""
+    "contactSharedWith": "contactSharedWith",
+    "ageNotSet": "ageNotSet"
   },
   "groupDetailScreen": {
     "addNewGroup": "เพิ่มกลุ่มใหม่",
@@ -136,9 +136,9 @@
     "childGroup": "กลุ่มเด็ก",
     "searchChildGroups": "ค้นหากลุ่มเด็ก",
     "addMember": "เพิ่มสามาชิก",
-    "noGroupCommentPlaceHolder": "ขณะนี้ไม่มีความคิดเห็นใดๆจากกลุ่ม",
-    "noGroupCommentPlaceHolder1": "อาจมีข้อผิดพลาดเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
-    "noGroupCommentPlaceHolderOffline": "ขณะนี้คุณกําลังออฟไลน์ ตรวจสอบการเชื่อมต่อ wifi หรืออิเตอร์เน็ตเพื่อโหลดใหม่เเละอ่านความคิดเห็นกลุ่มของคุณ",
+    "noGroupCommentPlacheHolder": "ขณะนี้ไม่มีความคิดเห็นใดๆจากกลุ่ม",
+    "noGroupCommentPlacheHolder1": "อาจมีข้อผิดพลาดเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
+    "noGroupCommentPlacheHolderOffline": "ขณะนี้คุณกําลังออฟไลน์ ตรวจสอบการเชื่อมต่อ wifi หรืออิเตอร์เน็ตเพื่อโหลดใหม่เเละอ่านความคิดเห็นกลุ่มของคุณ",
     "selectLocations": "เลือกสถานที่",
     "noMembersMessage": "ไม่มีสามาชิก กดที่นี้หรือกดเเก้ไข้เพื่อเพิ่มสามาชิกในกลุ่มนี้",
     "groupName": {
@@ -150,16 +150,16 @@
       "quick_button_meeting_postponed": "เลื่อนการประชุมออกไป",
       "quick_button_meeting_complete": "การประชุมเสร็จสมบูรณ์"
     },
-    "memberCount": "",
+    "memberCount": "memberCount",
     "memberList": "memberList",
     "attendance": {
       "header": "หัวข้อ",
       "didAttendComment": "ไม่ได้เข้าร่วมแสดงความคิดเห็น",
-      "didNotAttendComment": "",
-      "groupCommentLabel": "",
+      "didNotAttendComment": "didNotAttendComment",
+      "groupCommentLabel": "groupCommentLabel",
       "groupComment": "กลุ่ม"
     },
-    "groupSharedWith": ""
+    "groupSharedWith": "groupSharedWith"
   },
   "notificationsScreen": {
     "notifications": "การเเจ้งเตือน",
@@ -172,9 +172,9 @@
     "dontHaveNotifications": "ไม่มีการเเจ้งเตือน"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "ขณะนี้ไม่มีกลุ่มใดว่าง",
-    "noGroupPlaceHolder1": "อาจมีข้อผิดพลาดเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
-    "noGroupPlaceHolderOffline": "ขณะนี้คุณกําลังออฟไลน์ ตรวจสอบการเชื่อมต่อ wifi หรืออินเตอร์เน็ตเพื่อโหลดใหม่เเละรับกลุ่มของคุณ"
+    "noGroupPlacheHolder": "ขณะนี้ไม่มีกลุ่มใดว่าง",
+    "noGroupPlacheHolder1": "อาจมีข้อผิดพลาดเอาจากไซต์ของคุณ ลากลงเพื่อโหลดใหม่เเละลองอีกครั้ง",
+    "noGroupPlacheHolderOffline": "ขณะนี้คุณกําลังออฟไลน์ ตรวจสอบการเชื่อมต่อ wifi หรืออินเตอร์เน็ตเพื่อโหลดใหม่เเละรับกลุ่มของคุณ"
   },
   "appRestart": {
     "message": "แอปพลิเคชันจะเริ่มต้นใหม่เพื่อใช้การกำหนดค่าต่อไปนี้:",
