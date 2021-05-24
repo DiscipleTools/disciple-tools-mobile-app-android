@@ -5,7 +5,7 @@ const domain = '';
 // TODO: get JWT token from Secure Store
 const token = '';
 const instance = axios.create({
-  baseURL: 'https://${ domain }/wp-json/',
+  baseURL: `http://${domain}/wp-json/`,
   headers: {
     Authorization: `Bearer ${token}`,
   },

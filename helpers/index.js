@@ -32,7 +32,23 @@ export const renderCreationFields = (settings) => {
   return creationFields;
 };
 
-export const getRoutes = (settings) => {
+export const isContact = (moduleType) => {
+  return moduleType === 'contacts';
+};
+
+export const isGroup = (moduleType) => {
+  return moduleType === 'groups';
+};
+
+export const getModuleType = (route) => {
+  // TODO: use string contains?
+  const moduleType = route?.name?.toLowerCase().replace('detail', '');
+  if (moduleType) return moduleType;
+  // default to contact type
+  return 'contacts';
+};
+
+export const getTabRoutes = (settings) => {
   if (!settings?.tiles) return [];
   return [
     ...settings.tiles.map((tile) => {

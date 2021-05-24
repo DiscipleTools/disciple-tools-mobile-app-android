@@ -10,7 +10,7 @@ import * as Contacts from 'expo-contacts';
 // Helpers
 import Colors from 'constants/Colors';
 import i18n from 'languages';
-import { showToast } from 'helpers';
+import { isIOS, isContact, isGroup, getModuleType, showToast } from 'helpers';
 
 // Utils
 import utils from 'utils';
@@ -20,7 +20,6 @@ import useList from 'hooks/useList.js';
 import useSettings from 'hooks/useSettings.js';
 
 // Custom Components
-import SearchBar from 'components/SearchBar';
 import FilterList from 'components/FilterList';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
@@ -40,6 +39,8 @@ const SWIPE_BTN_WIDTH = 80;
 const ListScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
+  const [moduleType, setModuleType] = useState(getModuleType(route));
+
   const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
@@ -53,9 +54,6 @@ const ListScreen = ({ navigation, route }) => {
 
   // default to contacts type
   const [state, setState] = useState({
-    moduleType: POST_TYPE_CONTACT,
-    isContact: true,
-    isGroup: null,
     offset: 0,
     limit: utils.paginationLimit,
     sort: '-last_modified',
@@ -72,30 +70,31 @@ const ListScreen = ({ navigation, route }) => {
   // focus effect
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const moduleType = route?.name?.toLowerCase();
-      setModuleType(moduleType);
+      setModuleType(getModuleType(route));
     });
     return unsubscribe;
   }, [navigation]);
 
   // get settings
-  const { settings, error: settingsError } = useSettings(state.moduleType);
+  const { settings, error: settingsError } = useSettings(moduleType);
   if (settingsError) showToast(settingsError.message, true);
 
   // get records list
-  const { records, error: recordsError } = useList(state.moduleType);
+  const { records, error: recordsError } = useList(moduleType);
   if (recordsError) showToast(recordsError.message, true);
 
   let loading = !settings || !records;
+  if (loading) return <Text>Loading...</Text>;
 
-  const setModuleType = (moduleType) => {
-    setState({
-      ...state,
-      moduleType,
-      isContact: moduleType === POST_TYPE_CONTACT,
-      isGroup: moduleType === POST_TYPE_GROUP,
-    });
-  };
+  // TODO: FilterList requires initialData
+  /*
+  return(
+    <>
+      <Text>{ JSON.stringify(settings) }</Text>
+      <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(records) }</Text>
+    </>
+  );
+  */
 
   const renderFooter = () => {
     return (
@@ -150,7 +149,7 @@ const ListScreen = ({ navigation, route }) => {
             goToDetailsScreen(contact, true);
           }
         }}
-        style={styles.flatListItem}
+        style={styles.rowFront}
         key={contact.idx}>
         <View style={{ flexDirection: 'row', height: '100%' }}>
           <View style={{ flexDirection: 'column', flexGrow: 1 }}>
@@ -210,7 +209,6 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
-  //TODO{state.isGroup && (
   const Subtitles = ({ record }) => {
     return (
       <View style={{ flexDirection: 'row' }}>
@@ -222,7 +220,7 @@ const ListScreen = ({ navigation, route }) => {
               textAlign: 'left',
             },
           ]}>
-          {state.isContact && (
+          {isContact(moduleType) && (
             <>
               {settings.fields.overall_status?.values[record.overall_status]
                 ? settings.fields.overall_status.values[record.overall_status].label
@@ -236,7 +234,7 @@ const ListScreen = ({ navigation, route }) => {
                 : ''}
             </>
           )}
-          {!state.isContact && (
+          {isGroup(moduleType) && (
             <>
               {settings.fields.group_status.values[record.group_status]
                 ? settings.fields.group_status.values[record.group_status].label
@@ -261,7 +259,7 @@ const ListScreen = ({ navigation, route }) => {
 
   const renderRow = (record) => {
     // TODO: better support for expanion of postTypes
-    const statusValue = state.isContact ? record.overall_status : record.group_status;
+    const statusValue = isContact(moduleType) ? record.overall_status : record.group_status;
     return (
       <Pressable
         onPress={() => {
@@ -351,17 +349,6 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
-  const flatListItemSeparator = () => (
-    <View
-      style={{
-        height: 1,
-        width: '100%',
-        backgroundColor: '#dddddd',
-        marginTop: 5,
-      }}
-    />
-  );
-
   const onRefresh = (increasePagination = false, returnFromDetail = false) => {
     let newState = {
       offset: increasePagination ? state.offset + state.limit : 0,
@@ -406,11 +393,17 @@ const ListScreen = ({ navigation, route }) => {
   };
 
   const goToDetailsScreen = (record, isPhoneImport = false) => {
-    if (state.isContact) {
+    /*
+    console.log("*** GO TO DETAILS DECISION ***");
+    console.log(moduleType);
+    console.log(isContact(moduleType));
+    console.log(isGroup(moduleType));
+    */
+    if (isContact(moduleType)) {
       goToContactDetailScreen(record, isPhoneImport);
       return;
     }
-    if (state.isGroup) {
+    if (isGroup) {
       goToGroupDetailScreen(record);
       return;
     }
@@ -420,35 +413,21 @@ const ListScreen = ({ navigation, route }) => {
   // TODO: merge with goToGroupDetailScreen
   const goToContactDetailScreen = (contactData = null, isPhoneImport = false) => {
     if (contactData && isPhoneImport) {
-      //dispatch(updatePrevious([]));
       navigation.navigate('ContactDetails', {
         onlyView: true,
         importContact: contactData,
         //onGoBack: () => onRefresh(false, true),
       });
     } else if (contactData) {
-      /* TODO: ??
-      dispatch(
-        updatePrevious([
-          {
-            contactId: parseInt(contactData.ID),
-            onlyView: true,
-            contactName: contactData.title,
-            importContact: null,
-          },
-        ]),
-      );
-      */
       // Detail
       navigation.navigate('ContactDetails', {
-        contactId: contactData.ID,
+        id: contactData.ID,
         onlyView: true,
-        contactName: contactData.title,
+        name: contactData.title,
         importContact: null,
         //onGoBack: () => onRefresh(false, true),
       });
     } else {
-      //dispatch(updatePrevious([]));
       // Create
       navigation.navigate('ContactDetails', {
         onlyView: true,
@@ -460,28 +439,14 @@ const ListScreen = ({ navigation, route }) => {
 
   const goToGroupDetailScreen = (groupData = null) => {
     if (groupData) {
-      console.log('*** IF GROUP DATA ***');
-      /* TODO: ??
-      dispatch(
-        updatePrevious([
-          {
-            groupId: parseInt(groupData.ID),
-            onlyView: true,
-            groupName: groupData.title,
-          },
-        ]),
-      );
-      */
       // Detail
       navigation.navigate('GroupDetails', {
-        groupId: groupData.ID,
+        id: groupData.ID,
         onlyView: true,
-        groupName: groupData.title,
+        name: groupData.title,
       });
       //onGoBack: () => onRefresh(false, true),
     } else {
-      console.log('*** ELSE GROUP DATA = null  ***');
-      //dispatch(updatePrevious([]));
       // Create
       navigation.navigate('GroupDetails', {
         onlyView: true,
@@ -490,6 +455,7 @@ const ListScreen = ({ navigation, route }) => {
     }
   };
 
+  // TODO: filters
   const selectOptionFilter = (selectedFilter) => {
     setState(
       {
@@ -503,6 +469,7 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
+  // TODO: filters
   const filterByText = utils.debounce((queryText) => {
     if (queryText.length > 0) {
       setState(
@@ -528,14 +495,6 @@ const ListScreen = ({ navigation, route }) => {
       );
     }
   }, 750);
-
-  const onLayout = (fabIndexFix) => {
-    if (fabIndexFix !== state.fixFABIndex) {
-      setState({
-        fixFABIndex: fabIndexFix,
-      });
-    }
-  };
 
   const importContactsRender = () => {
     // NOTE: Contacts are already indexed by most recently modified, so we only need to reverse the array. If ever changes, then just sort by idx (id)
@@ -564,8 +523,6 @@ const ListScreen = ({ navigation, route }) => {
         }
       });
     });
-    //console.log('*********************');
-    //console.log(`IN BOTH COUNT: ${contactsInBothLists.length}`);
     //console.log(JSON.stringify(contactsInBothLists[0]));
     const importContactsFilters = {
       tabs: [
@@ -620,7 +577,16 @@ const ListScreen = ({ navigation, route }) => {
         },
       ],
     };
-    // TODO: use FilterList component
+    return (
+      <FilterList
+        settings={null}
+        filterConfig={importContactsFilters}
+        data={importContactsList}
+        //loading={loading}
+        renderRow={renderImportContactsRow}
+      />
+    );
+    /*
     return (
       <>
         <SearchBar
@@ -640,9 +606,10 @@ const ListScreen = ({ navigation, route }) => {
         />
       </>
     );
+    */
   };
 
-  /*
+  /* TODO?
   const closeRow = (rowMap, rowKey) => {
     if (rowMap[rowKey]) {
       //rowMap[rowKey].closeRow();
@@ -663,7 +630,17 @@ const ListScreen = ({ navigation, route }) => {
     return <Text>Hello Comments</Text>;
   };
 
-  // TODO: create FAB component
+  // TODO: create FAB component?
+  // this FAB is hardcoded, so let the Details FAB drive component
+  /* e.g., FAB items list:
+  [
+    {
+      label: "",
+      component: </>,
+      callback: fn(),
+    }
+  ]
+  */
   const FAB = () => {
     return (
       <ActionButton
