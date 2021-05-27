@@ -4,6 +4,7 @@ import { enableScreens } from 'react-native-screens';
 enableScreens();
 
 import { LogBox, Platform, StatusBar, View } from 'react-native';
+import { SWRConfig } from 'swr';
 
 // React Native Community
 import NetInfo from '@react-native-community/netinfo';
@@ -19,6 +20,7 @@ import { Root } from 'native-base';
 import AppNavigator from 'navigation/AppNavigator';
 import { store, persistor } from 'store/store';
 import utils from 'utils';
+import axios from 'services/axios';
 
 // Third-party components
 import PropTypes from 'prop-types';
@@ -127,12 +129,20 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Root>
-          <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <AppNavigator />
-          </View>
-        </Root>
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            dedupingInterval: 2000,
+            loadingTimeout: 15000,
+            fetcher: (...args) => axios(...args).then((res) => res.data),
+          }}>
+          <Root>
+            <View style={styles.container}>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+              <AppNavigator />
+            </View>
+          </Root>
+        </SWRConfig>
       </PersistGate>
     </Provider>
   );

@@ -27,10 +27,7 @@ import Field from 'components/Field';
 import FieldValue from 'components/FieldValue';
 import FieldIcon from 'components/FieldIcon';
 
-// TODO:
-//import { styles } from './CustomView.styles';
-import { styles } from 'screens/Contact/ContactDetailScreen.styles';
-//import { styles } from './GroupDetailScreen.styles';
+import { styles } from './CustomView.styles';
 
 // TODO: move to constants
 const POST_TYPE_CONTACT = 'contacts';

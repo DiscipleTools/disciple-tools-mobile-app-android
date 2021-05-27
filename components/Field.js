@@ -27,9 +27,7 @@ import utils from 'utils';
 import { isIOS, showToast } from 'helpers';
 
 // TODO: refactor styles
-//import { styles } from './FieldValue.styles';
-import { styles } from 'screens/Contact/ContactDetailScreen.styles';
-//import { styles } from 'screens/Group/GroupDetailScreen.styles';
+import { styles } from './Field.styles';
 
 // TODO: move to constants
 const POST_TYPE_CONTACT = 'contacts';

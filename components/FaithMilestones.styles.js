@@ -1,5 +1,5 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
-import Colors from '../../constants/Colors';
+import Colors from 'constants/Colors';
 
 const containerPadding = 20;
 const windowWidth = Dimensions.get('window').width;

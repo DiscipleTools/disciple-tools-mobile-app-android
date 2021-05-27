@@ -11,11 +11,7 @@ import HomeScreen from 'screens/HomeScreen';
 import PINScreen from 'screens/PINScreen';
 import ListScreen from 'screens/Modules/ListScreen';
 import DetailsScreen from 'screens/Modules/DetailsScreen';
-import ContactsScreen from 'screens/Contact/ContactsScreen';
-import ContactDetailScreen from 'screens/Contact/ContactDetailScreen';
 import QuestionnaireScreen from 'screens/QuestionnaireScreen';
-import GroupsScreen from 'screens/Group/GroupsScreen';
-import GroupDetailScreen from 'screens/Group/GroupDetailScreen';
 import AttendanceScreen from 'screens/AttendanceScreen';
 import NotificationsScreen from 'screens/NotificationsScreen';
 import SettingsScreen from 'screens/SettingsScreen';
@@ -73,7 +69,6 @@ const MainTabNavigator = ({ navigation }) => {
       <Stack.Navigator screenOptions={screenOptionStyle}>
         <Stack.Screen
           name="Contacts"
-          //component={ContactsScreen}
           component={ListScreen}
           options={{
             title: i18n.t('contactsScreen.contacts'),
@@ -96,7 +91,6 @@ const MainTabNavigator = ({ navigation }) => {
       <Stack.Navigator screenOptions={screenOptionStyle}>
         <Stack.Screen
           name="Groups"
-          //component={GroupsScreen}
           component={ListScreen}
           options={{
             title: i18n.t('global.groups'),

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { Html5Entities } from 'html-entities';
 import moment from '../languages/moment';
 
 const diff = (obj1, obj2) => {
@@ -544,6 +545,7 @@ const getSelectizeValuesToSave = (dbData, selectedValues) => {
 };
 
 const mapContacts = (contacts, entities) => {
+  if (!entities) entities = new Html5Entities();
   return contacts.map((contact) => {
     const mappedContact = {};
     Object.keys(contact).forEach((key) => {
@@ -668,6 +670,7 @@ const isNumeric = (string) => {
 };
 
 const mapGroups = (groups, entities) => {
+  if (!entities) entities = new Html5Entities();
   return groups.map((group) => {
     const mappedGroup = {};
     Object.keys(group).forEach((key) => {

@@ -37,6 +37,12 @@ import ParsedText from 'react-native-parsed-text';
 import { CheckBox } from 'react-native-elements';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
+// Custom Hooks
+import useList from 'hooks/useList.js';
+import useDetails from 'hooks/useDetails.js';
+import useSettings from 'hooks/useSettings.js';
+
+// Custom Components
 import CustomView from 'components/CustomView';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
@@ -80,7 +86,15 @@ import { updatePrevious as updatePreviousContacts } from 'store/actions/contacts
 import i18n from 'languages';
 
 import utils from 'utils';
-import { isIOS, getRoutes, renderCreationFields, showToast } from 'helpers';
+import {
+  isIOS,
+  isContact,
+  isGroup,
+  getModuleType,
+  getTabRoutes,
+  renderCreationFields,
+  showToast,
+} from 'helpers';
 import Colors from 'constants/Colors';
 import {
   hasBibleIcon,
@@ -98,9 +112,7 @@ import {
 import { styles } from './DetailsScreen.styles';
 
 const initialState = {
-  isContact: true,
-  isGroup: null,
-  contact: {},
+  record: {},
   unmodifiedContact: {},
   users: [],
   usersContacts: [],
@@ -131,10 +143,6 @@ const initialState = {
   comment: '',
   overallStatusBackgroundColor: '#ffffff',
   loading: false,
-  tabViewConfig: {
-    index: 0,
-    routes: [],
-  },
   foundGeonames: [],
   footerLocation: 0,
   footerHeight: 0,
@@ -186,107 +194,19 @@ const POST_TYPE_CONTACT = 'contacts';
 const POST_TYPE_GROUP = 'groups';
 
 const DetailsScreen = ({ navigation, route }) => {
-  const kebabMenuRef = useRef();
-  const dispatch = useDispatch();
-
-  let keyboardDidShowListener, keyboardDidHideListener, focusListener, hardwareBackPressListener;
-
   const layout = useWindowDimensions();
   const windowWidth = layout.width;
   const milestonesGridSize = windowWidth + 5;
   const windowHeight = layout.height;
 
-  const [state, setState] = useState({
-    ...initialState,
-    tabViewConfig: {
-      ...initialState.tabViewConfig,
-      routes: getRoutes(settings),
-    },
-  });
+  const kebabMenuRef = useRef();
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      console.log('*** COMPONONENT DID MOUNT - FOCUS ***');
-      console.log(JSON.stringify(route));
-      /* TODO: refresh on every focus?
-      dispatch(getContactSettings());
-      dispatch(getContactFilters());
-      dispatch(getGroupSettings());
-      dispatch(getGroupFilters());
-      dispatch(getTags());
-      dispatch(getAllContacts(state.offset, state.limit, state.sort));
-      dispatch(getAllGroups(state.offset, state.limit, state.sort));
-      */
-      // determine module/post-type and setState
-      if (route?.name?.toLowerCase() === POST_TYPE_CONTACT) {
-        setState({
-          ...state,
-          isContact: true,
-          isGroup: false,
-        });
-      } else if (route?.name?.toLowerCase() === POST_TYPE_GROUP) {
-        setState({
-          ...state,
-          isContact: false,
-          isGroup: true,
-        });
-      } else {
-        return null;
-      }
-    });
-    return unsubscribe;
-  }, [navigation]);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.log('*** COMPONONENT DID MOUNT ***');
-    console.log(JSON.stringify(route));
-    //const id = route.
-    //dispatch(getById(id));
-    // TODO: conditional load by postType
-    /*
-    dispatch(getContactSettings());
-    dispatch(getContactFilters());
-    dispatch(getGroupSettings());
-    dispatch(getGroupFilters());
-    dispatch(getTags());
-    dispatch(getAllContacts(state.offset, state.limit, state.sort));
-    dispatch(getAllGroups(state.offset, state.limit, state.sort));
-    */
-    //dispatch(getActiveQuestionnaires());
-  }, []);
-
-  let records;
-  let settings;
-  let filters;
-  // TODO:
-  let totalRecords = 20;
-  let filteredRecords = null;
-  let loading;
-  let error;
-  // TODO: move to useEffect 'didFocus' ?
-  if (state.isContact) {
-    records = useSelector((state) => state.contactsReducer.contacts);
-    settings = useSelector((state) => state.contactsReducer.settings);
-    filters = useSelector((state) => state.usersReducer.contactFilters);
-    //totalContacts = useSelector(state => state.contactsReducer.total);
-    //filteredContacts = useSelector(state => state.contactsReducer.filteredContacts);
-    loading = useSelector((state) => state.contactsReducer.loading);
-    error = useSelector((state) => state.contactsReducer.error);
-  } else if (state.isGroup) {
-    records = useSelector((state) => state.groupsReducer.groups);
-    settings = useSelector((state) => state.groupsReducer.settings);
-    filters = useSelector((state) => state.usersReducer.groupFilters);
-    //totalRecords = useSelector(state => state.groupsReducer.total);
-    //filteredRecords = useSelector(state => state.groupsReducer.filteredGroups);
-    loading = useSelector((state) => state.groupsReducer.loading);
-    error = useSelector((state) => state.groupsReducer.error);
-  } else {
-    return null;
-  }
+  const [moduleType, setModuleType] = useState(getModuleType(route));
 
   const userData = useSelector((state) => state.userReducer.userData);
   const userReducerError = useSelector((state) => state.userReducer.error);
-  const contact = useSelector((state) => state.contactsReducer.contact);
   const comments = useSelector((state) => state.contactsReducer.comments);
   const totalComments = useSelector((state) => state.contactsReducer.totalComments);
   const loadingComments = useSelector((state) => state.contactsReducer.loadingComments);
@@ -311,6 +231,23 @@ const DetailsScreen = ({ navigation, route }) => {
   const savedShare = useSelector((state) => state.contactsReducer.savedShare);
   const tags = useSelector((state) => state.contactsReducer.tags);
 
+  let keyboardDidShowListener, keyboardDidHideListener, focusListener, hardwareBackPressListener;
+
+  const [state, setState] = useState(initialState);
+
+  let filters = useSelector((state) => state.usersReducer.contactFilters);
+  // TODO:
+  let totalRecords = 20;
+  let filteredRecords = null;
+
+  // focus effect
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setModuleType(getModuleType(route));
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   const kebabMenuItems = [
     {
       label: i18n.t('global.share'),
@@ -331,7 +268,8 @@ const DetailsScreen = ({ navigation, route }) => {
   ];
 
   useLayoutEffect(() => {
-    const title = route.params?.contactName ?? i18n.t('contactDetailScreen.addNewContact');
+    // TODO: helper to get either Group or Contact Name
+    const title = route.params?.name ?? i18n.t('contactDetailScreen.addNewContact');
     navigation.setOptions({
       title,
       headerLeft: (props) => (
@@ -378,25 +316,6 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const contactId = route?.params?.contactId ?? null;
-    console.log(`**** CONTACT ID: ${contactId} ****`);
-    dispatch(getById(contactId));
-  }, []);
-
-  useEffect(() => {
-    console.log('*** CONTACT DETAILS LOADED ***');
-    const routes = getRoutes(settings);
-    console.log(routes);
-    setState({
-      ...state,
-      tabViewConfig: {
-        ...state.tabViewConfig,
-        routes,
-      },
-    });
-  }, []);
-
   // componentDidMount
   useEffect(() => {
     /* TODO:
@@ -438,477 +357,6 @@ const DetailsScreen = ({ navigation, route }) => {
     };
   }, []);
 
-  /*
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const {
-      contact,
-      loading,
-      comments,
-      loadingComments,
-      activities,
-      loadingActivities,
-      foundGeonames,
-      loadingShare,
-      shareSettings,
-      navigation,
-    } = nextProps;
-    let newState = {
-      ...prevState,
-      loading: loading || loadingShare,
-      comments: prevState.comments,
-      loadComments: loadingComments,
-      activities: prevState.activities,
-      loadActivities: loadingActivities,
-      contact: prevState.contact,
-      unmodifiedContact: prevState.unmodifiedContact,
-    };
-
-    // SAVE / GET BY ID
-    if (contact) {
-      newState = {
-        ...newState,
-        contact: {
-          ...contact,
-        },
-        unmodifiedContact: {
-          ...contact,
-        },
-      };
-      if (newState.contact.overall_status) {
-        newState = {
-          ...newState,
-          overallStatusBackgroundColor: utils.getSelectorColor(
-            newState.contact.overall_status,
-          ),
-        };
-        let contactReasonStatusKey = `reason_${newState.contact.overall_status}`;
-        // CONTACT HAS STATUS WITH REASON
-        let contactHasStatusReason = Object.prototype.hasOwnProperty.call(
-          newState.contact,
-          contactReasonStatusKey,
-        );
-        if (contactHasStatusReason) {
-          newState = {
-            ...newState,
-            selectedReasonStatus: {
-              key: contactReasonStatusKey,
-              value: newState.contact[contactReasonStatusKey],
-            },
-            unmodifiedSelectedReasonStatus: {
-              key: contactReasonStatusKey,
-              value: newState.contact[contactReasonStatusKey],
-            },
-          };
-        }
-      }
-      if (prevState.contact.initial_comment) {
-        newState = {
-          ...newState,
-          comment: prevState.contact.initial_comment,
-        };
-      }
-      if (newState.contact.location_grid) {
-        newState.contact.location_grid.values.forEach((location) => {
-          const foundLocation = newState.geonames.find(
-            (geoname) => geoname.value === location.value,
-          );
-          if (!foundLocation) {
-            // Add non existent contact location in the geonames list to avoid null exception
-            newState = {
-              ...newState,
-              geonames: [
-                ...newState.geonames,
-                {
-                  name: location.name,
-                  value: location.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.sources) {
-        newState.contact.sources.values.forEach((sourceContact) => {
-          const foundSource = newState.sources.find(
-            (sourceItem) => sourceItem.value === sourceContact.value,
-          );
-          if (!foundSource) {
-            // Add non existent contact source in sources list to avoid null exception
-            newState = {
-              ...newState,
-              sources: [
-                ...newState.sources,
-                {
-                  name: sourceContact.value,
-                  value: sourceContact.value,
-                },
-              ],
-              nonExistingSources: [
-                ...newState.nonExistingSources,
-                {
-                  name: sourceContact.value,
-                  value: sourceContact.value,
-                },
-              ],
-              unmodifiedSources: [
-                ...newState.unmodifiedSources,
-                {
-                  name: sourceContact.value,
-                  value: sourceContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.subassigned) {
-        // Clear collection
-        newState = {
-          ...newState,
-          subAssignedContacts: [],
-        };
-
-        newState.contact.subassigned.values.forEach((subassignedContact) => {
-          const foundSubassigned = newState.usersContacts.find(
-            (user) => user.value === subassignedContact.value,
-          );
-          if (!foundSubassigned) {
-            // Add non existent contact subassigned in subassigned list (user does not have access permission to contacts)
-            newState = {
-              ...newState,
-              subAssignedContacts: [
-                ...newState.subAssignedContacts,
-                {
-                  name: subassignedContact.name,
-                  value: subassignedContact.value,
-                },
-              ],
-              unmodifiedSubAssignedContacts: [
-                ...newState.unmodifiedSubAssignedContacts,
-                {
-                  name: subassignedContact.name,
-                  value: subassignedContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.relation) {
-        // Clear collection
-        newState = {
-          ...newState,
-          relationContacts: [],
-        };
-
-        newState.contact.relation.values.forEach((relationContact) => {
-          const foundRelation = newState.usersContacts.find(
-            (user) => user.value === relationContact.value,
-          );
-          if (!foundRelation) {
-            // Add non existent contact relation in relation list (user does not have access permission to contacts)
-            newState = {
-              ...newState,
-              relationContacts: [
-                ...newState.relationContacts,
-                {
-                  name: relationContact.name,
-                  value: relationContact.value,
-                },
-              ],
-              unmodifiedRelationContacts: [
-                ...newState.unmodifiedRelationContacts,
-                {
-                  name: relationContact.name,
-                  value: relationContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.baptized_by) {
-        // Clear collection
-        newState = {
-          ...newState,
-          baptizedByContacts: [],
-        };
-
-        newState.contact.baptized_by.values.forEach((baptizedByContact) => {
-          const foundBaptized = newState.usersContacts.find(
-            (user) => user.value === baptizedByContact.value,
-          );
-          if (!foundBaptized) {
-            // Add non existent contact relation in relation list (user does not have access permission to contacts)
-            newState = {
-              ...newState,
-              baptizedByContacts: [
-                ...newState.baptizedByContacts,
-                {
-                  name: baptizedByContact.name,
-                  value: baptizedByContact.value,
-                },
-              ],
-              unmodifiedBaptizedByContacts: [
-                ...newState.unmodifiedBaptizedByContacts,
-                {
-                  name: baptizedByContact.name,
-                  value: baptizedByContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.baptized) {
-        // Clear collection
-        newState = {
-          ...newState,
-          baptizedContacts: [],
-        };
-
-        newState.contact.baptized.values.forEach((baptizedContact) => {
-          const foundBaptized = newState.usersContacts.find(
-            (user) => user.value === baptizedContact.value,
-          );
-          if (!foundBaptized) {
-            // Add non existent contact baptized to list (user does not have access permission to contacts)
-            newState = {
-              ...newState,
-              baptizedContacts: [
-                ...newState.baptizedContacts,
-                {
-                  name: baptizedContact.name,
-                  value: baptizedContact.value,
-                },
-              ],
-              unmodifiedBaptizedContacts: [
-                ...newState.unmodifiedBaptizedContacts,
-                {
-                  name: baptizedContact.name,
-                  value: baptizedContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.coached_by) {
-        // Clear collection
-        newState = {
-          ...newState,
-          coachedByContacts: [],
-        };
-
-        newState.contact.coached_by.values.forEach((coachedByContact) => {
-          const foundcoachedBy = newState.usersContacts.find(
-            (user) => user.value === coachedByContact.value,
-          );
-          if (!foundcoachedBy) {
-            // Add non existent contact coachedBy to list (user does not have access permission to contacts)
-            newState = {
-              ...newState,
-              coachedByContacts: [
-                ...newState.coachedByContacts,
-                {
-                  name: coachedByContact.name,
-                  value: coachedByContact.value,
-                },
-              ],
-              unmodifiedCoachedByContacts: [
-                ...newState.unmodifiedCoachedByContacts,
-                {
-                  name: coachedByContact.name,
-                  value: coachedByContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.coaching) {
-        // Clear collection
-        newState = {
-          ...newState,
-          coachedContacts: [],
-        };
-
-        newState.contact.coaching.values.forEach((coachedContact) => {
-          const foundCoached = newState.usersContacts.find(
-            (user) => user.value === coachedContact.value,
-          );
-          if (!foundCoached) {
-            // Add non existent contact coached to list (user does not have access permission to contacts)
-            newState = {
-              ...newState,
-              coachedContacts: [
-                ...newState.coachedContacts,
-                {
-                  name: coachedContact.name,
-                  value: coachedContact.value,
-                },
-              ],
-              unmodifiedCoachedContacts: [
-                ...newState.unmodifiedCoachedContacts,
-                {
-                  name: coachedContact.name,
-                  value: coachedContact.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.groups) {
-        // Clear collection
-        newState = {
-          ...newState,
-          connectionGroups: [],
-        };
-
-        newState.contact.groups.values.forEach((groupConnection) => {
-          const foundGroup = newState.groups.find((group) => group.value === groupConnection.value);
-          if (!foundGroup) {
-            // Add non existent group to list (user does not have access permission to groups)
-            newState = {
-              ...newState,
-              connectionGroups: [
-                ...newState.connectionGroups,
-                {
-                  name: groupConnection.name,
-                  value: groupConnection.value,
-                },
-              ],
-              unmodifiedConnectionGroups: [
-                ...newState.unmodifiedConnectionGroups,
-                {
-                  name: groupConnection.name,
-                  value: groupConnection.value,
-                },
-              ],
-            };
-          }
-        });
-      }
-      if (newState.contact.assigned_to) {
-        // Clear collection
-        newState = {
-          ...newState,
-          assignedToContacts: [],
-        };
-
-        let foundAssigned = newState.users.find(
-          (user) => user.key === newState.contact.assigned_to.key,
-        );
-        if (!foundAssigned) {
-          // Add non existent group to list (user does not have access permission to groups)
-          newState = {
-            ...newState,
-            assignedToContacts: [
-              ...newState.assignedToContacts,
-              {
-                label: newState.contact.assigned_to.label,
-                key: newState.contact.assigned_to.key,
-              },
-            ],
-            unmodifedAssignedToContacts: [
-              ...newState.unmodifedAssignedToContacts,
-              {
-                label: newState.contact.assigned_to.label,
-                key: newState.contact.assigned_to.key,
-              },
-            ],
-          };
-        }
-      }
-    }
-
-    // GET COMMENTS
-    if (comments) {
-      if (
-        navigation.state.params.contactId &&
-        Object.prototype.hasOwnProperty.call(comments, navigation.state.params.contactId)
-      ) {
-        // NEW COMMENTS (PAGINATION)
-        if (comments[navigation.state.params.contactId].pagination.offset > 0) {
-          newState = {
-            ...newState,
-            loadingMoreComments: false,
-          };
-        }
-        // ONLINE MODE: USE STATE PAGINATION - OFFLINE MODE: USE STORE PAGINATION
-        // UPDATE OFFSET
-        newState = {
-          ...newState,
-          comments: {
-            ...comments[navigation.state.params.contactId],
-          },
-        };
-      } else {
-        newState = {
-          ...newState,
-          comments: {
-            ...initialState.comments,
-          },
-        };
-      }
-    }
-
-    // GET ACTIVITIES
-    if (activities) {
-      if (
-        navigation.state.params.contactId &&
-        Object.prototype.hasOwnProperty.call(activities, navigation.state.params.contactId)
-      ) {
-        // NEW ACTIVITIES (PAGINATION)
-        if (activities[navigation.state.params.contactId].pagination.offset > 0) {
-          newState = {
-            ...newState,
-            loadingMoreActivities: false,
-          };
-        }
-        // ONLINE MODE: USE STATE PAGINATION - OFFLINE MODE: USE STORE PAGINATION
-        // UPDATE OFFSET
-        newState = {
-          ...newState,
-          activities: {
-            ...activities[navigation.state.params.contactId],
-          },
-        };
-      } else {
-        newState = {
-          ...newState,
-          activities: {
-            ...initialState.activities,
-          },
-        };
-      }
-    }
-
-    // GET FILTERED LOCATIONS
-    if (foundGeonames) {
-      newState = {
-        ...newState,
-        foundGeonames,
-      };
-    }
-
-    if (shareSettings) {
-      if (
-        navigation.state.params.contactId &&
-        Object.prototype.hasOwnProperty.call(shareSettings, navigation.state.params.contactId)
-      ) {
-        newState = {
-          ...newState,
-          sharedUsers: shareSettings[navigation.state.params.contactId],
-        };
-      }
-    }
-
-    return newState;
-  }
-  */
-
   // componentDidUpdate
   const didMountRef = useRef(false);
   useEffect(() => {
@@ -918,131 +366,44 @@ const DetailsScreen = ({ navigation, route }) => {
     } else didMountRef.current = true;
   });
 
+  // get settings
+  const { settings, error: settingsError } = useSettings(moduleType);
+  if (settingsError) showToast(settingsError.message, true);
+
+  const routes = getTabRoutes(settings);
+  console.log(`*** INITIAL ROUTES: ${JSON.stringify(routes)} ***`);
+  const [tabRoutes, setTabRoutes] = useState({
+    index: 0,
+    routes,
+  });
+
+  // get records list
+  // TODO: why do we need all records here?
+  const { records, error: recordsError } = useList(moduleType);
+  if (recordsError) showToast(recordsError.message, true);
+
+  let loading = !settings || !records;
+
   /*
-  componentDidUpdate(prevProps) {
-    const {
-      userReducerError,
-      contact,
-      navigation,
-      newComment,
-      contactsReducerError,
-      saved,
-      savedShare,
-    } = 
-
-    // NEW COMMENT
-    if (newComment && prevProps.newComment !== newComment) {
-      // Only do scroll when element its rendered
-      if (commentsFlatListRef) {
-        commentsFlatListRef.scrollToOffset({ animated: true, offset: 0 });
-      }
-      setComment('');
-    }
-
-    // CONTACT SAVE / GET BY ID
-    if (contact && prevProps.contact !== contact) {
-      // Update contact data only in these conditions:
-      // Same contact created (offline/online)
-      // Same contact updated (offline/online)
-      // Same offline contact created in DB (AutoID to DBID)
-      if (
-        (Object.prototype.hasOwnProperty.call(contact, 'ID') &&
-          !Object.prototype.hasOwnProperty.call(state.contact, 'ID')) ||
-        (Object.prototype.hasOwnProperty.call(contact, 'ID') &&
-          contact.ID.toString() === state.contact.ID.toString()) ||
-        (Object.prototype.hasOwnProperty.call(contact, 'oldID') &&
-          contact.oldID === state.contact.ID.toString())
-      ) {
-        // Highlight Updates -> Compare state.contact with contact and show differences
-        navigation.setParams({ contactName: contact.name, contactId: contact.ID });
-        if (state.comment && state.comment.length > 0) {
-          onSaveComment();
-        }
-        dispatch(getByIdEnd());
-        // Add contact to 'previousContacts' array on creation
-        if (
-          !previousContacts.find(
-            (previousContact) => previousContact.contactId === parseInt(contact.ID),
-          )
-        ) {
-          dispatch(updatePrevious([
-            ...previousContacts,
-            {
-              contactId: parseInt(contact.ID),
-              onlyView: true,
-              contactName: contact.name,
-            },
-          ]));
-        }
-      }
-    }
-
-    // CONTACT SAVE
-    if (saved && prevProps.saved !== saved) {
-      // Update contact data only in these conditions:
-      // Same contact created (offline/online)
-      // Same contact updated (offline/online)
-      // Same offline contact created in DB (AutoID to DBID)
-      if (
-        (typeof contact.ID !== 'undefined' && typeof state.contact.ID === 'undefined') ||
-        (contact.ID && contact.ID.toString() === state.contact.ID.toString()) ||
-        (contact.oldID && contact.oldID === state.contact.ID.toString())
-      ) {
-        // Highlight Updates -> Compare state.contact with current contact and show differences
-        onRefreshCommentsActivities(contact.ID, true);
-        toastSuccess.show(
-          <View>
-            <Text style={{ color: Colors.sucessText }}>{i18n.t('global.success.save')}</Text>
-          </View>,
-          3000,
-        );
-        onDisableEdit();
-        dispatch(saveEnd());
-      }
-    }
-
-    // Share Contact with user
-    if (savedShare && prevProps.savedShare !== savedShare) {
-      // Highlight Updates -> Compare state.contact with current contact and show differences
-      onRefreshCommentsActivities(state.contact.ID, true);
-      toastSuccess.show(
-        <View>
-          <Text style={{ color: Colors.sucessText }}>{i18n.t('global.success.save')}</Text>
-        </View>,
-        3000,
-      );
-    }
-
-    // ERROR
-    const usersError = prevProps.userReducerError !== userReducerError && userReducerError;
-    let contactsError = prevProps.contactsReducerError !== contactsReducerError;
-    contactsError = contactsError && contactsReducerError;
-    if (usersError || contactsError) {
-      const error = userReducerError || contactsReducerError;
-      toastError.show(
-        <View>
-          <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
-            {i18n.t('global.error.code')}
-          </Text>
-          <Text style={{ color: Colors.errorText }}>{error.code}</Text>
-          <Text style={{ fontWeight: 'bold', color: Colors.errorText }}>
-            {i18n.t('global.error.message')}
-          </Text>
-          <Text style={{ color: Colors.errorText }}>{error.message}</Text>
-        </View>,
-        3000,
-      );
-    }
-    // Fix to press back button in comments tab
-    if (prevProps.navigation.state.params.hideTabBar !== navigation.state.params.hideTabBar) {
-      if (!navigation.state.params.hideTabBar && state.executingBack) {
-        setTimeout(() => {
-          navigation.goBack(null);
-          navigation.state.params.afterBack();
-        }, 1000);
-      }
-    }
-  }
+  console.log("============================");
+  console.log(JSON.stringify(route));
+  console.log("============================");
+  */
+  const id = route?.params?.id ?? null;
+  if (!id) showToast('ERROR!', true);
+  //const { record, error: recordError } = useDetails(moduleType, id);
+  const { record: contact, error: recordError } = useDetails(moduleType, id);
+  if (recordError) showToast(recordError.message, true);
+  //if (!record) return(<Text>Loading...</Text>);
+  if (!contact) return <Text>Loading...</Text>;
+  /*
+  return(
+    <ScrollView>
+      <Text>{ JSON.stringify(contact) }</Text>
+      <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(records) }</Text>
+      <Text>{ JSON.stringify(settings) }</Text>
+    </ScrollView>
+  );
   */
 
   // TODO: ?? delete or merge with Group
@@ -1052,6 +413,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
   // TODO: ?? delete or merge with Group
   const onLoad = () => {
+    // TODO: id, name, route.params
     const { onlyView, contactId, contactName, importContact } = navigation.state.params;
     let newState = {};
     if (importContact) {
@@ -1297,7 +659,7 @@ const DetailsScreen = ({ navigation, route }) => {
     setState(newState, () => {
       // Only execute in detail mode
       if (contactIsCreated()) {
-        onRefresh(state.contact.ID);
+        onRefresh(state.record.ID);
       }
     });
   };
@@ -1355,18 +717,18 @@ const DetailsScreen = ({ navigation, route }) => {
   // TODO: move to helpers
   const onEnableEdit = () => {
     setState((prevState) => {
-      let indexFix = prevState.tabViewConfig.index;
+      let indexFix = prevState.tabRoutes.index;
       // Last tab (comments/activities)
-      if (prevState.tabViewConfig.index === prevState.tabViewConfig.routes.length - 1) {
+      if (prevState.tabRoutes.index === prevState.tabRoutes.routes.length - 1) {
         indexFix = indexFix - 1; // -1 for commentsTab
       }
       return {
         ...state,
         onlyView: false,
-        tabViewConfig: {
-          ...prevState.tabViewConfig,
+        tabRoutes: {
+          ...prevState.tabRoutes,
           index: indexFix,
-          routes: getRoutes(contactSettings).filter(
+          routes: getTabRoutes(settings).filter(
             (route) => route.key !== 'comments', // && route.key !== 'other',
           ),
         },
@@ -1375,7 +737,7 @@ const DetailsScreen = ({ navigation, route }) => {
     navigation.setParams({
       hideTabBar: true,
       onlyView: false,
-      contactName: state.contact.name,
+      contactName: state.record.name,
     });
   };
 
@@ -1396,17 +758,17 @@ const DetailsScreen = ({ navigation, route }) => {
     } = state;
     setState((prevState) => {
       // Set correct index in Tab position according to view mode and current tab position
-      let indexFix = prevState.tabViewConfig.index;
+      let indexFix = prevState.tabRoutes.index;
       let newState = {
         onlyView: true,
         contact: {
           ...unmodifiedContact,
         },
         overallStatusBackgroundColor: utils.getSelectorColor(unmodifiedContact.overall_status),
-        tabViewConfig: {
-          ...prevState.tabViewConfig,
+        tabRoutes: {
+          ...prevState.tabRoutes,
           index: indexFix,
-          routes: getRoutes(contactSettings),
+          routes: getTabRoutes(settings),
         },
         sources: [...unmodifiedSources],
         subAssignedContacts: [...unmodifiedSubAssignedContacts],
@@ -1457,7 +819,7 @@ const DetailsScreen = ({ navigation, route }) => {
       let newState = {
         ...state,
         contact: {
-          ...prevState.contact,
+          ...prevState.record,
           overall_status: value,
         },
         overallStatusBackgroundColor: utils.getSelectorColor(value),
@@ -1489,10 +851,10 @@ const DetailsScreen = ({ navigation, route }) => {
       },
       () => {
         Keyboard.dismiss();
-        if (state.contact.name && state.contact.name.length > 0) {
+        if (state.record.name && state.record.name.length > 0) {
           const { unmodifiedContact } = state;
           let contactToSave = {
-            ...state.contact,
+            ...state.record,
           };
           if (
             Object.prototype.hasOwnProperty.call(quickAction, 'quick_button_no_answer') ||
@@ -1508,7 +870,7 @@ const DetailsScreen = ({ navigation, route }) => {
           }
           contactToSave = {
             ...utils.diff(unmodifiedContact, contactToSave),
-            name: state.contact.name,
+            name: state.record.name,
           };
           // Do not save fields with empty values
           Object.keys(contactToSave)
@@ -1538,10 +900,10 @@ const DetailsScreen = ({ navigation, route }) => {
             }
           });
           //After 'utils.diff()' method, ID is removed, then we add it again
-          if (Object.prototype.hasOwnProperty.call(state.contact, 'ID')) {
+          if (Object.prototype.hasOwnProperty.call(state.record, 'ID')) {
             contactToSave = {
               ...contactToSave,
-              ID: state.contact.ID,
+              ID: state.record.ID,
             };
           }
           if (contactToSave.assigned_to) {
@@ -1591,7 +953,7 @@ const DetailsScreen = ({ navigation, route }) => {
     if (!state.loadComments) {
       if (comment.length > 0) {
         Keyboard.dismiss();
-        dispatch(saveComment(state.contact.ID, { comment }));
+        dispatch(saveComment(state.record.ID, { comment }));
       }
     }
   };
@@ -1638,45 +1000,34 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   // TODO: move to helpers?
-  const goToContactDetailScreen = (contactID, name) => {
-    // Save new contact in 'previousContacts' array
-    if (!previousContacts.find((previousContact) => previousContact.contactId === contactID)) {
-      // Add contact to 'previousContacts' array on creation
-      dispatch(
-        updatePrevious([
-          ...previousContacts,
-          {
-            contactId: contactID,
-            onlyView: true,
-            contactName: name,
-          },
-        ]),
-      );
+  const goToDetailsScreen = (id, name) => {
+    if (isContact(moduleType)) {
+      goToContactDetailScreen(id, name);
+      return;
     }
+    if (isGroup) {
+      goToGroupDetailScreen(id, name);
+      return;
+    }
+    return null;
+  };
+
+  // TODO: merge with Groups?
+  const goToContactDetailScreen = (id, name) => {
     navigation.push('ContactDetail', {
-      contactId: contactID,
+      id,
+      name,
       onlyView: true,
-      contactName: name,
-      afterBack: () => afterBack(),
+      //afterBack: () => afterBack(),
     });
   };
 
-  // TODO: move to helpers?
-  const goToGroupDetailScreen = (groupID, name) => {
-    // Clean 'previousContacts' array
-    dispatch(
-      updatePreviousGroups([
-        {
-          groupId: groupID,
-          onlyView: true,
-          groupName: name,
-        },
-      ]),
-    );
+  // TODO: merge with Contacts?
+  const goToGroupDetailScreen = (id, name) => {
     navigation.navigate('GroupDetail', {
-      groupId: groupID,
+      id,
+      name,
       onlyView: true,
-      groupName: name,
     });
   };
 
@@ -1914,7 +1265,7 @@ const DetailsScreen = ({ navigation, route }) => {
           refreshControl={
             <RefreshControl
               refreshing={state.loadComments || state.loadActivities}
-              onRefresh={() => onRefreshCommentsActivities(state.contact.ID, true)}
+              onRefresh={() => onRefreshCommentsActivities(state.record.ID, true)}
             />
           }
           onScroll={({ nativeEvent }) => {
@@ -1928,8 +1279,8 @@ const DetailsScreen = ({ navigation, route }) => {
                 const heightOffsetSum = layoutMeasurementHeight + contentOffsetY;
                 const distanceToStart = contentSizeHeight - heightOffsetSum;
                 if (distanceToStart < 100) {
-                  getContactComments(state.contact.ID);
-                  getContactActivities(state.contact.ID);
+                  getContactComments(state.record.ID);
+                  getContactActivities(state.record.ID);
                 }
               },
               500,
@@ -2025,7 +1376,7 @@ const DetailsScreen = ({ navigation, route }) => {
       refreshControl={
         <RefreshControl
           refreshing={state.loadComments || state.loadActivities}
-          onRefresh={() => onRefreshCommentsActivities(state.contact.ID, true)}
+          onRefresh={() => onRefreshCommentsActivities(state.record.ID, true)}
         />
       }>
       <Grid style={{ transform: [{ scaleY: -1 }] }}>
@@ -2191,17 +1542,6 @@ const DetailsScreen = ({ navigation, route }) => {
     </View>
   );
 
-  // TODO: move to Tab component
-  const tabChanged = (index) => {
-    setState((prevState) => ({
-      ...state,
-      tabViewConfig: {
-        ...prevState.tabViewConfig,
-        index,
-      },
-    }));
-  };
-
   // TODO: move to FAB component
   const onMeetingComplete = () => {
     onSaveQuickAction('quick_button_meeting_complete');
@@ -2226,7 +1566,7 @@ const DetailsScreen = ({ navigation, route }) => {
             routeName: 'Question',
             params: {
               userData: userData,
-              contact: state.contact,
+              contact: state.record,
               q_id,
             },
           }),
@@ -2238,8 +1578,8 @@ const DetailsScreen = ({ navigation, route }) => {
 
   // TODO: move to FAB component
   const onSaveQuickAction = (quickActionPropertyName) => {
-    let newActionValue = state.contact[quickActionPropertyName]
-      ? parseInt(state.contact[quickActionPropertyName], 10) + 1
+    let newActionValue = state.record[quickActionPropertyName]
+      ? parseInt(state.record[quickActionPropertyName], 10) + 1
       : 1;
     if (isConnected) {
       onSaveContact({
@@ -2267,12 +1607,12 @@ const DetailsScreen = ({ navigation, route }) => {
           break;
         }
       }
-      if (seekerPathValue && state.contact.seeker_path != 'met') {
+      if (seekerPathValue && state.record.seeker_path != 'met') {
         setState(
           (prevState) => ({
             ...state,
             contact: {
-              ...prevState.contact,
+              ...prevState.record,
               seeker_path: seekerPathValue,
             },
           }),
@@ -2393,7 +1733,7 @@ const DetailsScreen = ({ navigation, route }) => {
         newState = {
           ...newState,
           contact: {
-            ...prevState.contact,
+            ...prevState.record,
             [prevState.selectedReasonStatus.key]: prevState.selectedReasonStatus.value,
           },
         };
@@ -2403,8 +1743,8 @@ const DetailsScreen = ({ navigation, route }) => {
           ...state,
           ...newState,
           selectedReasonStatus: {
-            key: `reason_${state.contact.overall_status}`,
-            value: state.contact[`reason_${state.contact.overall_status}`],
+            key: `reason_${state.record.overall_status}`,
+            value: state.record[`reason_${state.record.overall_status}`],
           },
         };
       }
@@ -2453,7 +1793,7 @@ const DetailsScreen = ({ navigation, route }) => {
                     iconStyle={iconStyle}
                     onClose={(props) => {
                       // TODO: parseInt?
-                      dispatch(removeUserToShare(state.contact.ID, item.value));
+                      dispatch(removeUserToShare(state.record.ID, item.value));
                       onClose(props);
                     }}
                     text={item.name}
@@ -2465,7 +1805,7 @@ const DetailsScreen = ({ navigation, route }) => {
                     activeOpacity={0.6}
                     key={id}
                     onPress={(props) => {
-                      dispatch(addUserToShare(state.contact.ID, parseInt(item.value)));
+                      dispatch(addUserToShare(state.record.ID, parseInt(item.value)));
                       onPress(props);
                     }}
                     style={{
@@ -2521,10 +1861,10 @@ const DetailsScreen = ({ navigation, route }) => {
           <Row>
             <View>
               <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 20 }}>
-                {contactSettings.fields[`reason_${state.contact.overall_status}`].name}
+                {contactSettings.fields[`reason_${state.record.overall_status}`].name}
               </Text>
               <Text style={{ marginBottom: 20 }}>
-                {contactSettings.fields[`reason_${state.contact.overall_status}`].description}
+                {contactSettings.fields[`reason_${state.record.overall_status}`].description}
               </Text>
               <Text style={{ marginBottom: 20 }}>{i18n.t('global.chooseOption')}:</Text>
               <View style={styles.contactTextRoundField}>
@@ -2534,13 +1874,13 @@ const DetailsScreen = ({ navigation, route }) => {
                     setState({
                       ...state,
                       selectedReasonStatus: {
-                        key: `reason_${state.contact.overall_status}`,
+                        key: `reason_${state.record.overall_status}`,
                         value,
                       },
                     });
                   }}>
                   {renderReasonStatusPickerItems(
-                    contactSettings.fields[`reason_${state.contact.overall_status}`].values,
+                    contactSettings.fields[`reason_${state.record.overall_status}`].values,
                   )}
                 </Picker>
               </View>
@@ -2655,7 +1995,7 @@ const DetailsScreen = ({ navigation, route }) => {
                 block
                 style={[styles.dialogButton, { backgroundColor: Colors.buttonDelete }]}
                 onPress={() => {
-                  dispatch(deleteComment(state.contact.ID, state.commentDialog.data.ID));
+                  dispatch(deleteComment(state.record.ID, state.commentDialog.data.ID));
                   onCloseCommentDialog();
                 }}>
                 <Text style={{ color: Colors.buttonText }}>{i18n.t('global.delete')}</Text>
@@ -2665,7 +2005,7 @@ const DetailsScreen = ({ navigation, route }) => {
                 block
                 style={styles.dialogButton}
                 onPress={() => {
-                  dispatch(saveComment(state.contact.ID, state.commentDialog.data));
+                  dispatch(saveComment(state.record.ID, state.commentDialog.data));
                   onCloseCommentDialog();
                 }}>
                 <Text style={{ color: Colors.buttonText }}>{i18n.t('global.save')}</Text>
@@ -2699,7 +2039,7 @@ const DetailsScreen = ({ navigation, route }) => {
     return (
       <TabView
         lazy
-        navigationState={state.tabViewConfig}
+        navigationState={tabRoutes}
         renderTabBar={(props) => (
           <TabBar
             {...props}
@@ -2729,7 +2069,12 @@ const DetailsScreen = ({ navigation, route }) => {
         renderLazyPlaceholder={({ route }) => {
           return null;
         }}
-        onIndexChange={tabChanged}
+        onIndexChange={(index) => {
+          setTabRoutes({
+            ...tabRoutes,
+            index,
+          });
+        }}
         initialLayout={{ width: windowWidth }}
       />
     );
@@ -2741,11 +2086,11 @@ const DetailsScreen = ({ navigation, route }) => {
       <>
         {!isConnected && <OfflineBar />}
         <Tabs />
-        {true && state.tabViewConfig?.index !== state.tabViewConfig?.routes?.length - 1 && <FAB />}
+        {true && state.tabRoutes?.index !== state.tabRoutes?.routes?.length - 1 && <FAB />}
       </>
     );
   };
-  //{state.onlyView && state.tabViewConfig?.index !== state.tabViewConfig?.routes?.length-1 && (
+  //{state.onlyView && state.tabRoutes?.index !== state.tabRoutes?.routes?.length-1 && (
 
   // TODO: componentize?
   const Modals = () => {
