@@ -75,9 +75,9 @@
   },
   "contactsScreen": {
     "contacts": "Contatos",
-    "noContactPlacheHolder": "Não há muitos contatos disponíveis atualmente",
-    "noContactPlacheHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente.",
-    "noContactPlacheHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus contatos"
+    "noContactPlaceHolder": "Não há muitos contatos disponíveis atualmente",
+    "noContactPlaceHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente.",
+    "noContactPlaceHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus contatos"
   },
   "settingsScreen": {
     "settings": "Configurações",
@@ -115,13 +115,13 @@
     "phoneNumber": "Telefone",
     "initialComment": "Comentário Inicial",
     "socialMedia": "Mídia Social",
-    "noContactCommentPlacheHolder": "Não há comentários de contatos disponíveis atualmente",
+    "noContactCommentPlaceHolder": "Não há comentários de contatos disponíveis atualmente",
     "fullName": {
       "label": "Nome completo",
       "error": "Nome é necessário"
     },
-    "noContactCommentPlacheHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente.  ",
-    "noContactCommentPlacheHolderOffline": "Você está atualmente offline. Verifique se você está conectado a dados móveis ou Wi-Fi para atualizar e obter seu comentário de contato.",
+    "noContactCommentPlaceHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente.  ",
+    "noContactCommentPlaceHolderOffline": "Você está atualmente offline. Verifique se você está conectado a dados móveis ou Wi-Fi para atualizar e obter seu comentário de contato.",
     "contactSharedWith": "",
     "ageNotSet": ""
   },
@@ -133,9 +133,9 @@
     "childGroup": "Grupo de crianças",
     "searchChildGroups": "Buscar por grupos de crianças",
     "addMember": "Adicionar Membro",
-    "noGroupCommentPlacheHolder": "Não há comentários de grupos disponíveis atualmente.",
-    "noGroupCommentPlacheHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente. ",
-    "noGroupCommentPlacheHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus comentários de grupos. ",
+    "noGroupCommentPlaceHolder": "Não há comentários de grupos disponíveis atualmente.",
+    "noGroupCommentPlaceHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente. ",
+    "noGroupCommentPlaceHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus comentários de grupos. ",
     "noMembersMessage": "Não há membros. Clique aqui em Editar para adicionar membros a este grupo.",
     "groupName": {
       "label": "Nome do Grupo",
@@ -168,9 +168,9 @@
     "dontHaveNotifications": "Não há notificações"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Não há grupos disponíveis no momento",
-    "noGroupPlacheHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente. ",
-    "noGroupPlacheHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus grupos."
+    "noGroupPlaceHolder": "Não há grupos disponíveis no momento",
+    "noGroupPlaceHolder1": "Pode haver um problema ao removê-los do seu local. Arraste-os para tentar atualizar e tente novamente. ",
+    "noGroupPlaceHolderOffline": "Você está offline. Certifique-se de que está conectado à rede Wifi ou dados móveis para atualizar e obter seus grupos."
   },
   "appRestart": {
     "message": "O aplicativo será reiniciado para aplicar a seguinte configuração:",

@@ -2,7 +2,9 @@
   "global": {
     "error": {
       "code": "Mã số: ",
-      "message": "Thông điệp: "
+      "message": "Thông điệp: ",
+      "text": "",
+      "noRecords": ""
     },
     "success": {
       "save": "Đã lưu dữ liệu thành công!"
@@ -53,9 +55,9 @@
   },
   "contactsScreen": {
     "contacts": "Liên lạc",
-    "noContactPlacheHolder": "Hiện tại không có bất kỳ liên hệ có sẵn.",
-    "noContactPlacheHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
-    "noContactPlacheHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận danh bạ của bạn."
+    "noContactPlaceHolder": "Hiện tại không có bất kỳ liên hệ có sẵn.",
+    "noContactPlaceHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
+    "noContactPlaceHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận danh bạ của bạn."
   },
   "settingsScreen": {
     "settings": "Cài đặt",
@@ -93,13 +95,13 @@
     "phoneNumber": "Số điện thoại",
     "initialComment": "Nhận xét ban đầu",
     "socialMedia": "Truyền thông xã hội",
-    "noContactCommentPlacheHolder": "Hiện tại không có bất kỳ ý kiến liên hệ có sẵn.",
+    "noContactCommentPlaceHolder": "Hiện tại không có bất kỳ ý kiến liên hệ có sẵn.",
     "fullName": {
       "label": "Họ và tên",
       "error": "Tên là bắt buộc"
     },
-    "noContactCommentPlacheHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
-    "noContactCommentPlacheHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận được liên hệ nhận xét của bạn."
+    "noContactCommentPlaceHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
+    "noContactCommentPlaceHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận được liên hệ nhận xét của bạn."
   },
   "groupDetailScreen": {
     "addNewGroup": "Thêm nhóm mới",
@@ -109,9 +111,9 @@
     "childGroup": "Nhóm trẻ em",
     "searchChildGroups": "Tìm kiếm nhóm trẻ",
     "addMember": "Thêm thành viên",
-    "noGroupCommentPlacheHolder": "Hiện tại không có bất kỳ ý kiến nhóm nào có sẵn.",
-    "noGroupCommentPlacheHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
-    "noGroupCommentPlacheHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận xét nhóm của bạn.",
+    "noGroupCommentPlaceHolder": "Hiện tại không có bất kỳ ý kiến nhóm nào có sẵn.",
+    "noGroupCommentPlaceHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
+    "noGroupCommentPlaceHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận xét nhóm của bạn.",
     "selectLocations": "Chọn địa điểm",
     "noMembersMessage": "Không có thành viên",
     "groupName": {
@@ -135,9 +137,9 @@
     "dontHaveNotifications": "Không có thông báo"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "Hiện tại không có bất kỳ nhóm nào có sẵn.",
-    "noGroupPlacheHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
-    "noGroupPlacheHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận các nhóm của bạn."
+    "noGroupPlaceHolder": "Hiện tại không có bất kỳ nhóm nào có sẵn.",
+    "noGroupPlaceHolder1": "Có thể đã có một vấn đề nhận được chúng từ trang web của bạn. Kéo xuống để thử làm mới và thử lại.",
+    "noGroupPlaceHolderOffline": "Bạn hiện đang ngoại tuyến. Đảm bảo bạn được kết nối với wifi hoặc dữ liệu di động để làm mới và nhận các nhóm của bạn."
   },
   "appRestart": {
     "message": "Ứng dụng sẽ được khởi động lại để áp dụng cấu hình sau:",

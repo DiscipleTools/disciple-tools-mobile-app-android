@@ -10,7 +10,10 @@
       "global": {
         "error": {
           "code": "Code: ",
-          "message": "Message: "
+          "message": "Message: ",
+          "text": "Error: ",
+          "noRecords": "Unable to locate your record in local device storage. Either: 1) Create a new record and merge once online, or 2) Get online and try your search again.",
+          "recordData": "Unable to retrieve the required data. Please reload this record before trying again."
         },
         "success": {
           "save": "Data saved successfully!"
@@ -80,9 +83,9 @@
       },
       "contactsScreen": {
         "contacts": "Contacts",
-        "noContactPlacheHolder": "There are not any contacts currently available.",
-        "noContactPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-        "noContactPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
+        "noContactPlaceHolder": "There are not any contacts currently available.",
+        "noContactPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+        "noContactPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
       },
       "settingsScreen": {
         "settings": "Settings",
@@ -119,13 +122,13 @@
         "phoneNumber": "Phone Number",
         "initialComment": "Initial Comment",
         "socialMedia": "Social Media",
-        "noContactCommentPlacheHolder": "There are not any contact comments currently available.",
+        "noContactCommentPlaceHolder": "There are not any contact comments currently available.",
         "fullName": {
           "label": "Full Name",
           "error": "Name is required"
         },
-        "noContactCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-        "noContactCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment."
+        "noContactCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+        "noContactCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment."
       },
       "groupDetailScreen": {
         "addNewGroup": "Add New Group",
@@ -135,9 +138,9 @@
         "childGroup": "Child Group",
         "searchChildGroups": "Search child groups",
         "addMember": "Add Member",
-        "noGroupCommentPlacheHolder": "There are not any group comments currently available.",
-        "noGroupCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-        "noGroupCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
+        "noGroupCommentPlaceHolder": "There are not any group comments currently available.",
+        "noGroupCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+        "noGroupCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
         "noMembersMessage": "No members. Tap here or on Edit to add some members to this group.",
         "groupName": {
           "label": "Group Name",
@@ -155,9 +158,9 @@
         "dontHaveNotifications": "No notifications"
       },
       "groupsScreen": {
-        "noGroupPlacheHolder": "There are not any groups currently available.",
-        "noGroupPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-        "noGroupPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
+        "noGroupPlaceHolder": "There are not any groups currently available.",
+        "noGroupPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+        "noGroupPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
       }
     }
   ],
@@ -707,16 +710,16 @@
       "examples": [
         {
           "contacts": "Contacts",
-          "noContactPlacheHolder": "There are not any contacts currently available.",
-          "noContactPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-          "noContactPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
+          "noContactPlaceHolder": "There are not any contacts currently available.",
+          "noContactPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+          "noContactPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
         }
       ],
       "required": [
         "contacts",
-        "noContactPlacheHolder",
-        "noContactPlacheHolder1",
-        "noContactPlacheHolderOffline"
+        "noContactPlaceHolder",
+        "noContactPlaceHolder1",
+        "noContactPlaceHolderOffline"
       ],
       "additionalProperties": true,
       "properties": {
@@ -728,28 +731,28 @@
           "default": "",
           "examples": ["Contacts"]
         },
-        "noContactPlacheHolder": {
-          "$id": "#/properties/contactsScreen/properties/noContactPlacheHolder",
+        "noContactPlaceHolder": {
+          "$id": "#/properties/contactsScreen/properties/noContactPlaceHolder",
           "type": "string",
-          "title": "The noContactPlacheHolder schema",
+          "title": "The noContactPlaceHolder schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": ["There are not any contacts currently available."]
         },
-        "noContactPlacheHolder1": {
-          "$id": "#/properties/contactsScreen/properties/noContactPlacheHolder1",
+        "noContactPlaceHolder1": {
+          "$id": "#/properties/contactsScreen/properties/noContactPlaceHolder1",
           "type": "string",
-          "title": "The noContactPlacheHolder1 schema",
+          "title": "The noContactPlaceHolder1 schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
             "There may have been a problem getting them from your site. Drag down to try to refresh and try again."
           ]
         },
-        "noContactPlacheHolderOffline": {
-          "$id": "#/properties/contactsScreen/properties/noContactPlacheHolderOffline",
+        "noContactPlaceHolderOffline": {
+          "$id": "#/properties/contactsScreen/properties/noContactPlaceHolderOffline",
           "type": "string",
-          "title": "The noContactPlacheHolderOffline schema",
+          "title": "The noContactPlaceHolderOffline schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
@@ -976,13 +979,13 @@
           "phoneNumber": "Phone Number",
           "initialComment": "Initial Comment",
           "socialMedia": "Social Media",
-          "noContactCommentPlacheHolder": "There are not any contact comments currently available.",
+          "noContactCommentPlaceHolder": "There are not any contact comments currently available.",
           "fullName": {
             "label": "Full Name",
             "error": "Name is required"
           },
-          "noContactCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-          "noContactCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment."
+          "noContactCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+          "noContactCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment."
         }
       ],
       "required": [
@@ -1000,10 +1003,10 @@
         "phoneNumber",
         "initialComment",
         "socialMedia",
-        "noContactCommentPlacheHolder",
+        "noContactCommentPlaceHolder",
         "fullName",
-        "noContactCommentPlacheHolder1",
-        "noContactCommentPlacheHolderOffline"
+        "noContactCommentPlaceHolder1",
+        "noContactCommentPlaceHolderOffline"
       ],
       "additionalProperties": true,
       "properties": {
@@ -1119,10 +1122,10 @@
           "default": "",
           "examples": ["Social Media"]
         },
-        "noContactCommentPlacheHolder": {
-          "$id": "#/properties/contactDetailScreen/properties/noContactCommentPlacheHolder",
+        "noContactCommentPlaceHolder": {
+          "$id": "#/properties/contactDetailScreen/properties/noContactCommentPlaceHolder",
           "type": "string",
-          "title": "The noContactCommentPlacheHolder schema",
+          "title": "The noContactCommentPlaceHolder schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": ["There are not any contact comments currently available."]
@@ -1160,20 +1163,20 @@
             }
           }
         },
-        "noContactCommentPlacheHolder1": {
-          "$id": "#/properties/contactDetailScreen/properties/noContactCommentPlacheHolder1",
+        "noContactCommentPlaceHolder1": {
+          "$id": "#/properties/contactDetailScreen/properties/noContactCommentPlaceHolder1",
           "type": "string",
-          "title": "The noContactCommentPlacheHolder1 schema",
+          "title": "The noContactCommentPlaceHolder1 schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
             "There may have been a problem getting them from your site. Drag down to try to refresh and try again."
           ]
         },
-        "noContactCommentPlacheHolderOffline": {
-          "$id": "#/properties/contactDetailScreen/properties/noContactCommentPlacheHolderOffline",
+        "noContactCommentPlaceHolderOffline": {
+          "$id": "#/properties/contactDetailScreen/properties/noContactCommentPlaceHolderOffline",
           "type": "string",
-          "title": "The noContactCommentPlacheHolderOffline schema",
+          "title": "The noContactCommentPlaceHolderOffline schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
@@ -1197,9 +1200,9 @@
           "childGroup": "Child Group",
           "searchChildGroups": "Search child groups",
           "addMember": "Add Member",
-          "noGroupCommentPlacheHolder": "There are not any group comments currently available.",
-          "noGroupCommentPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-          "noGroupCommentPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
+          "noGroupCommentPlaceHolder": "There are not any group comments currently available.",
+          "noGroupCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+          "noGroupCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your group comment.",
           "noMembersMessage": "No members. Tap here or on Edit to add some members to this group.",
           "groupName": {
             "label": "Group Name",
@@ -1215,9 +1218,9 @@
         "childGroup",
         "searchChildGroups",
         "addMember",
-        "noGroupCommentPlacheHolder",
-        "noGroupCommentPlacheHolder1",
-        "noGroupCommentPlacheHolderOffline",
+        "noGroupCommentPlaceHolder",
+        "noGroupCommentPlaceHolder1",
+        "noGroupCommentPlaceHolderOffline",
         "noMembersMessage",
         "groupName"
       ],
@@ -1279,28 +1282,28 @@
           "default": "",
           "examples": ["Add Member"]
         },
-        "noGroupCommentPlacheHolder": {
-          "$id": "#/properties/groupDetailScreen/properties/noGroupCommentPlacheHolder",
+        "noGroupCommentPlaceHolder": {
+          "$id": "#/properties/groupDetailScreen/properties/noGroupCommentPlaceHolder",
           "type": "string",
-          "title": "The noGroupCommentPlacheHolder schema",
+          "title": "The noGroupCommentPlaceHolder schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": ["There are not any group comments currently available."]
         },
-        "noGroupCommentPlacheHolder1": {
-          "$id": "#/properties/groupDetailScreen/properties/noGroupCommentPlacheHolder1",
+        "noGroupCommentPlaceHolder1": {
+          "$id": "#/properties/groupDetailScreen/properties/noGroupCommentPlaceHolder1",
           "type": "string",
-          "title": "The noGroupCommentPlacheHolder1 schema",
+          "title": "The noGroupCommentPlaceHolder1 schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
             "There may have been a problem getting them from your site. Drag down to try to refresh and try again."
           ]
         },
-        "noGroupCommentPlacheHolderOffline": {
-          "$id": "#/properties/groupDetailScreen/properties/noGroupCommentPlacheHolderOffline",
+        "noGroupCommentPlaceHolderOffline": {
+          "$id": "#/properties/groupDetailScreen/properties/noGroupCommentPlaceHolderOffline",
           "type": "string",
-          "title": "The noGroupCommentPlacheHolderOffline schema",
+          "title": "The noGroupCommentPlaceHolderOffline schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
@@ -1454,36 +1457,36 @@
       "default": {},
       "examples": [
         {
-          "noGroupPlacheHolder": "There are not any groups currently available.",
-          "noGroupPlacheHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
-          "noGroupPlacheHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
+          "noGroupPlaceHolder": "There are not any groups currently available.",
+          "noGroupPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
+          "noGroupPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
         }
       ],
-      "required": ["noGroupPlacheHolder", "noGroupPlacheHolder1", "noGroupPlacheHolderOffline"],
+      "required": ["noGroupPlaceHolder", "noGroupPlaceHolder1", "noGroupPlaceHolderOffline"],
       "additionalProperties": true,
       "properties": {
-        "noGroupPlacheHolder": {
-          "$id": "#/properties/groupsScreen/properties/noGroupPlacheHolder",
+        "noGroupPlaceHolder": {
+          "$id": "#/properties/groupsScreen/properties/noGroupPlaceHolder",
           "type": "string",
-          "title": "The noGroupPlacheHolder schema",
+          "title": "The noGroupPlaceHolder schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": ["There are not any groups currently available."]
         },
-        "noGroupPlacheHolder1": {
-          "$id": "#/properties/groupsScreen/properties/noGroupPlacheHolder1",
+        "noGroupPlaceHolder1": {
+          "$id": "#/properties/groupsScreen/properties/noGroupPlaceHolder1",
           "type": "string",
-          "title": "The noGroupPlacheHolder1 schema",
+          "title": "The noGroupPlaceHolder1 schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [
             "There may have been a problem getting them from your site. Drag down to try to refresh and try again."
           ]
         },
-        "noGroupPlacheHolderOffline": {
-          "$id": "#/properties/groupsScreen/properties/noGroupPlacheHolderOffline",
+        "noGroupPlaceHolderOffline": {
+          "$id": "#/properties/groupsScreen/properties/noGroupPlaceHolderOffline",
           "type": "string",
-          "title": "The noGroupPlacheHolderOffline schema",
+          "title": "The noGroupPlaceHolderOffline schema",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
           "examples": [

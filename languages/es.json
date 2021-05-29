@@ -76,9 +76,9 @@
   },
   "contactsScreen": {
     "contacts": "Contactos",
-    "noContactPlacheHolder": "No hay contactos disponibles actualmente.",
-    "noContactPlacheHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
-    "noContactPlacheHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener sus contactos."
+    "noContactPlaceHolder": "No hay contactos disponibles actualmente.",
+    "noContactPlaceHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
+    "noContactPlaceHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener sus contactos."
   },
   "settingsScreen": {
     "settings": "Configuraciones",
@@ -116,13 +116,13 @@
     "phoneNumber": "Telefono",
     "initialComment": "Primer Comentario",
     "socialMedia": "Redes Sociales",
-    "noContactCommentPlacheHolder": "No hay comentarios de contacto disponibles actualmente.",
+    "noContactCommentPlaceHolder": "No hay comentarios de contacto disponibles actualmente.",
     "fullName": {
       "label": "Nombre",
       "error": "El nombre es requerido"
     },
-    "noContactCommentPlacheHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
-    "noContactCommentPlacheHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener su comentario de contacto.",
+    "noContactCommentPlaceHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
+    "noContactCommentPlaceHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener su comentario de contacto.",
     "contactSharedWith": "Este contacto se comparte con",
     "ageNotSet": "Edad no asignado"
   },
@@ -134,9 +134,9 @@
     "childGroup": "Grupos Subsiguientes",
     "searchChildGroups": "Buscar grupos subsiguientes",
     "addMember": "Añadir miembro",
-    "noGroupCommentPlacheHolder": "No hay comentarios del grupo disponibles actualmente.",
-    "noGroupCommentPlacheHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
-    "noGroupCommentPlacheHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener los comentarios del grupo.",
+    "noGroupCommentPlaceHolder": "No hay comentarios del grupo disponibles actualmente.",
+    "noGroupCommentPlaceHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
+    "noGroupCommentPlaceHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener los comentarios del grupo.",
     "noMembersMessage": "No hay miembros Toque aquí o en Editar para agregar algunos miembros a este grupo",
     "groupName": {
       "label": "Nombre del Grupo",
@@ -169,9 +169,9 @@
     "dontHaveNotifications": "No tienes notificaciones"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "No hay grupos disponibles actualmente.",
-    "noGroupPlacheHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
-    "noGroupPlacheHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener sus grupos."
+    "noGroupPlaceHolder": "No hay grupos disponibles actualmente.",
+    "noGroupPlaceHolder1": "Es posible que haya habido un problema para obtenerlos de su sitio. Arrastre hacia abajo para intentar actualizar e intente nuevamente.",
+    "noGroupPlaceHolderOffline": "Actualmente estás desconectado. Asegúrese de estar conectado a wifi o datos móviles para actualizar y obtener sus grupos."
   },
   "appRestart": {
     "message": "La aplicación sera reiniciada para aplicar la siguiente configuración:",

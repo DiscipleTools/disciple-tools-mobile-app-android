@@ -1386,18 +1386,18 @@ const DetailsScreen = ({ navigation, route }) => {
           </Row>
           <Row>
             <Text style={styles.noCommentsText}>
-              {i18n.t('contactDetailScreen.noContactCommentPlacheHolder')}
+              {i18n.t('contactDetailScreen.noContactCommentPlaceHolder')}
             </Text>
           </Row>
           <Row>
             <Text style={styles.noCommentsText}>
-              {i18n.t('contactDetailScreen.noContactCommentPlacheHolder1')}
+              {i18n.t('contactDetailScreen.noContactCommentPlaceHolder1')}
             </Text>
           </Row>
           {!isConnected && (
             <Row>
               <Text style={[styles.noCommentsText, { backgroundColor: '#fff2ac' }]}>
-                {i18n.t('contactDetailScreen.noContactCommentPlacheHolderOffline')}
+                {i18n.t('contactDetailScreen.noContactCommentPlaceHolderOffline')}
               </Text>
             </Row>
           )}

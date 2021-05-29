@@ -70,15 +70,15 @@
       "invalidUsername": "अज्ञात उपयोगकर्ता नाम। फिर से जांचें या अपना ईमेल पता आज़माएं।",
       "incorrectPassword": "आपके द्वारा उपयोगकर्ता नाम दर्ज किया गया पासवर्ड गलत है",
       "configurationNeededOn": "कॉन्फ़िगरेशननएडऑन",
-      "mobileAppPluginRequiredOne": "mobileAppPluginRequiredOne",
-      "mobileAppPluginRequiredTwo": "mobileAppPluginRequiredTwo"
+      "mobileAppPluginRequiredOne": "",
+      "mobileAppPluginRequiredTwo": ""
     }
   },
   "contactsScreen": {
     "contacts": "संपर्क",
-    "noContactPlacheHolder": "वर्तमान में कोई संपर्क उपलब्ध नहीं हैं।",
-    "noContactPlacheHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
-    "noContactPlacheHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने संपर्कों को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।"
+    "noContactPlaceHolder": "वर्तमान में कोई संपर्क उपलब्ध नहीं हैं।",
+    "noContactPlaceHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
+    "noContactPlaceHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने संपर्कों को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।"
   },
   "settingsScreen": {
     "settings": "सेटिंग्स",
@@ -117,16 +117,16 @@
     "phoneNumber": "फ़ोन नंबर",
     "initialComment": "प्रारंभिक टिप्पणी",
     "socialMedia": "सामाजिक मीडिया",
-    "noContactCommentPlacheHolder": "वर्तमान में कोई भी संपर्क टिप्पणी उपलब्ध नहीं है।",
+    "noContactCommentPlaceHolder": "वर्तमान में कोई भी संपर्क टिप्पणी उपलब्ध नहीं है।",
     "fullName": {
       "label": "पूरा नाम",
       "error": "नाम आवश्यक है"
     },
-    "noContactCommentPlacheHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
-    "noContactCommentPlacheHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने संपर्क टिप्पणी को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।",
+    "noContactCommentPlaceHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
+    "noContactCommentPlaceHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने संपर्क टिप्पणी को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।",
     "importContact": "आयात",
     "contactSharedWith": "संपर्क करें",
-    "ageNotSet": "ageNotSet"
+    "ageNotSet": ""
   },
   "groupDetailScreen": {
     "addNewGroup": "नया समूह जोड़ें",
@@ -136,11 +136,11 @@
     "childGroup": "बाल समूह",
     "searchChildGroups": "बाल समूह खोजें",
     "addMember": "सदस्य जोड़ें",
-    "noGroupCommentPlacheHolder": "वर्तमान में कोई समूह टिप्पणी उपलब्ध नहीं है।",
-    "noGroupCommentPlacheHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
-    "noGroupCommentPlacheHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने समूह की टिप्पणी को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।",
+    "noGroupCommentPlaceHolder": "वर्तमान में कोई समूह टिप्पणी उपलब्ध नहीं है।",
+    "noGroupCommentPlaceHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
+    "noGroupCommentPlaceHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने समूह की टिप्पणी को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।",
     "selectLocations": "स्थान चुनें",
-    "noMembersMessage": "noMembersMessage",
+    "noMembersMessage": "",
     "groupName": {
       "label": "समूह का नाम",
       "error": "नाम आवश्यक है"
@@ -154,9 +154,9 @@
     "memberList": "सदस्य सूची",
     "attendance": {
       "header": "हैडर",
-      "didAttendComment": "didAttendComment",
-      "didNotAttendComment": "didNotAttendComment",
-      "groupCommentLabel": "groupCommentLabel",
+      "didAttendComment": "",
+      "didNotAttendComment": "",
+      "groupCommentLabel": "",
       "groupComment": "समूहसमूह"
     },
     "groupSharedWith": "समूहीकृत करें"
@@ -172,9 +172,9 @@
     "dontHaveNotifications": "कोई सूचनाएं नहीं"
   },
   "groupsScreen": {
-    "noGroupPlacheHolder": "वर्तमान में कोई समूह उपलब्ध नहीं हैं।",
-    "noGroupPlacheHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
-    "noGroupPlacheHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने समूहों को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।"
+    "noGroupPlaceHolder": "वर्तमान में कोई समूह उपलब्ध नहीं हैं।",
+    "noGroupPlaceHolder1": "आपकी साइट से उन्हें प्राप्त करने में समस्या हो सकती है। ताज़ा करने और फिर से प्रयास करने के लिए नीचे खींचें।",
+    "noGroupPlaceHolderOffline": "आप वर्तमान में ऑफ़लाइन हैं। सुनिश्चित करें कि आप अपने समूहों को ताज़ा करने और प्राप्त करने के लिए वाईफाई या मोबाइल डेटा से जुड़े हुए हैं।"
   },
   "appRestart": {
     "message": "निम्नलिखित कॉन्फ़िगरेशन को लागू करने के लिए आवेदन को फिर से शुरू किया जाएगा:",
