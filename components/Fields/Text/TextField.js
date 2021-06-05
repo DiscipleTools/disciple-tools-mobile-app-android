@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ViewPropTypes,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 import * as Icon from '@expo/vector-icons';
 
@@ -60,10 +54,7 @@ function TextField(props) {
       </View>
       <View style={styles.inputRow}>
         {icon}
-        <TextInput
-          style={[styles.inputRowTextInput, textInputStyle]}
-          {...props}
-        />
+        <TextInput style={[styles.inputRowTextInput, textInputStyle]} {...props} />
       </View>
     </View>
   );

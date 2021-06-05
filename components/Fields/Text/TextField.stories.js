@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-} from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { storiesOf } from '@storybook/react-native';
 
@@ -28,9 +25,7 @@ const styles = StyleSheet.create({
   customIcon: {
     color: colors.accent,
   },
-  customLabel: {
-
-  },
+  customLabel: {},
   customLabelText: {
     color: '#ffffff',
   },
@@ -43,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 storiesOf('Text Field', module)
-  .addDecorator(getStory => <CenterView>{getStory()}</CenterView>)
+  .addDecorator((getStory) => <CenterView>{getStory()}</CenterView>)
   .add('Basic', () => (
     <TextField
       label="Basic Form Field"

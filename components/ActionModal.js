@@ -36,7 +36,8 @@ const ActionModal = ({ visible, onClose, title, fullScreen, width, height, child
         <View style={styles.centeredView}>
           <View style={[styles.modalView, dynamicSizeStyle]}>
             <View style={{ flexDirection: 'row' }}>
-              <View style={{ flex: 1 }}>
+              {/* TODO: use Grid */}
+              <View style={{ flex: 2 }}>
                 <Text style={styles.textHeader}>{title}</Text>
               </View>
               <View style={{ flex: 1 }}>

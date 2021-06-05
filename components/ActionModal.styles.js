@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     //textAlign: 'center',
     top: 10,
     left: 25,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   modalContent: {

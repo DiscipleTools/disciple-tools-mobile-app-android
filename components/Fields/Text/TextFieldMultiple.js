@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ViewPropTypes,
-} from 'react-native';
+import { View, Text, StyleSheet, ViewPropTypes } from 'react-native';
 
 import { Icon, Input } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
-
   removeIcon: {
     fontSize: 30,
     color: 'black',
@@ -39,12 +33,11 @@ const styles = StyleSheet.create({
   },
 });
 
-
 class TextFieldMultiple extends Component {
   constructor(props) {
     super(props);
     const { items } = this.props;
-    const existValues = (items || []).filter(value => !value.delete);
+    const existValues = (items || []).filter((value) => !value.delete);
     if (!existValues || !existValues.length || existValues[existValues.length - 1].value) {
       items.push({
         value: '',
@@ -94,7 +87,7 @@ class TextFieldMultiple extends Component {
     }
 
     // if all items are deleted, add a blank item
-    const existValues = values.filter(value => !value.delete);
+    const existValues = values.filter((value) => !value.delete);
     if (!existValues.length) {
       values.push({
         value: '',
@@ -106,59 +99,44 @@ class TextFieldMultiple extends Component {
     this.props.onChange(values, textField);
   }
 
-    render = () => {
-      const {
-        containerStyle,
-        textInputStyle,
-        placeholder,
+  render = () => {
+    const { containerStyle, textInputStyle, placeholder } = this.props;
 
-      } = this.props;
+    const textInput = this.state.values.map((inputValue, index) => {
+      if (!inputValue.delete) {
+        return (
+          <Row key={index.toString()} style={styles.input}>
+            <Input
+              value={inputValue.value}
+              placeholder={placeholder}
+              onChangeText={(value) => {
+                this.onFieldChange(value, index);
+              }}
+              style={[styles.textInputStyle, textInputStyle]}
+            />
+            <Col style={styles.formIconLabel}>
+              <Icon
+                android="md-remove"
+                ios="ios-remove"
+                onPress={() => {
+                  this.onRemoveField(index);
+                }}
+                style={styles.removeIcon}
+              />
+            </Col>
+          </Row>
+        );
+      }
+      return null;
+    });
 
-      const textInput = this.state.values.map(
-        (inputValue, index) => {
-          if (!inputValue.delete) {
-            return (
-              <Row
-                key={index.toString()}
-                style={styles.input}
-              >
-                <Input
-                  value={inputValue.value}
-                  placeholder={placeholder}
-                  onChangeText={(value) => {
-                    this.onFieldChange(
-                      value,
-                      index,
-                    );
-                  }}
-                  style={[styles.textInputStyle, textInputStyle]}
-                />
-                <Col style={styles.formIconLabel}>
-                  <Icon
-                    android="md-remove"
-                    ios="ios-remove"
-                    onPress={() => {
-                      this.onRemoveField(
-                        index,
-                      );
-                    }}
-                    style={styles.removeIcon}
-                  />
-                </Col>
-              </Row>
-            );
-          }
-          return null;
-        },
-      );
-
-      return (
-        <View style={[styles.containerStyle, containerStyle]}>
-          {textInput}
-          <View style={styles.formDivider} />
-        </View>
-      );
-    }
+    return (
+      <View style={[styles.containerStyle, containerStyle]}>
+        {textInput}
+        <View style={styles.formDivider} />
+      </View>
+    );
+  };
 }
 
 TextFieldMultiple.propTypes = {
@@ -175,7 +153,6 @@ TextFieldMultiple.propTypes = {
   ),
   placeholder: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-
 };
 
 TextFieldMultiple.defaultProps = {
@@ -183,6 +160,5 @@ TextFieldMultiple.defaultProps = {
   textInputStyle: null,
   items: [],
   placeholder: null,
-
 };
 export default TextFieldMultiple;

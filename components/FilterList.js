@@ -14,6 +14,10 @@ import i18n from 'languages';
 import { showToast } from 'helpers';
 // custom components
 import SearchBar from 'components/SearchBar';
+
+// Custom Hooks
+import useSettings from 'hooks/useSettings.js';
+
 // third-party components
 // NOTE: native base does not have a skeleton component, and the SVG support is useful for future use
 import ContentLoader, { Rect, Circle, Path } from 'react-content-loader/native';
@@ -21,7 +25,6 @@ import ContentLoader, { Rect, Circle, Path } from 'react-content-loader/native';
 import { styles } from './FilterList.styles';
 
 const FilterList = ({
-  settings,
   onRefresh,
   filterConfig,
   onSelectFilter,
@@ -39,6 +42,7 @@ const FilterList = ({
   onRowDidClose,
   footer,
 }) => {
+  // TODO: constants
   const statusCircleSize = 15;
   const SWIPE_BTN_WIDTH = 80;
 
@@ -47,6 +51,9 @@ const FilterList = ({
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const { settings, error: settingsError } = useSettings();
+  if (settingsError) showToast(settingsError.message, true);
 
   const _onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -90,10 +97,14 @@ const FilterList = ({
   let listData = data;
   let renderItem = renderRow;
   let renderHiddenItem = renderHiddenRow;
+  console.log('*** FILTER LIST ***');
+  //console.log(listData);
   if (loading || listData === null) {
     listData = skeletons;
+    console.log('*** SHOULD BE SKELETONS ***');
     renderHiddenItem = null;
     if (renderSkeletonRow === null) {
+      console.log('*** ER, SHOULD BE *** DEFAULT *** SKELETONS ***');
       renderItem = renderDefaultSkeletonRow;
     } else {
       renderItem = renderSkeletonRow;
@@ -105,7 +116,7 @@ const FilterList = ({
   // TODO: nicer placeholder and use translated text
   return (
     <>
-      {listData.length === 0 ? (
+      {listData?.length < 0 ? (
         <Text>Placeholder</Text>
       ) : (
         <>
