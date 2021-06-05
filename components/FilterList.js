@@ -1,27 +1,31 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Pressable, RefreshControl, Text, View, useWindowDimensions } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { RefreshControl, Text, View, useWindowDimensions } from 'react-native';
 import PropTypes from 'prop-types';
-// component library (native base)
-// recommended by native base (https://docs.nativebase.io/Components.html#swipeable-multi-def-headref)
+
+// Component Library (Native Base)
+// (recommended by native base (https://docs.nativebase.io/Components.html#swipeable-multi-def-headref))
 import { SwipeListView } from 'react-native-swipe-list-view';
-// expo
-// redux
+
+// Expo
+
+// Redux
 import { useSelector } from 'react-redux';
-// actions
-// helpers/utils
-import Colors from 'constants/Colors';
+
+// Helpers/Utils
 import i18n from 'languages';
-import { showToast } from 'helpers';
-// custom components
-import SearchBar from 'components/SearchBar';
 
 // Custom Hooks
+import usePostType from 'hooks/usePostType.js';
 import useSettings from 'hooks/useSettings.js';
 
-// third-party components
-// NOTE: native base does not have a skeleton component, and the SVG support is useful for future use
+// Custom Components
+import SearchBar from 'components/SearchBar';
+
+// Third-party Components
+// (native base does not have a Skeleton component)
 import ContentLoader, { Rect, Circle, Path } from 'react-content-loader/native';
-// styles/assets
+
+// Styles/Assets
 import { styles } from './FilterList.styles';
 
 const FilterList = ({
@@ -32,7 +36,7 @@ const FilterList = ({
   onClearTextFilter,
   onLayout,
   loading,
-  data,
+  posts,
   renderRow,
   renderSkeletonRow,
   renderHiddenRow,
@@ -42,33 +46,22 @@ const FilterList = ({
   onRowDidClose,
   footer,
 }) => {
-  // TODO: constants
-  const statusCircleSize = 15;
-  const SWIPE_BTN_WIDTH = 80;
-
   const windowWidth = useWindowDimensions().width;
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const { settings, error: settingsError } = useSettings();
-  if (settingsError) showToast(settingsError.message, true);
+  const { isContact, isGroup, postType } = usePostType();
+  const { settings } = useSettings();
 
   const _onRefresh = useCallback(() => {
     setRefreshing(true);
     onRefresh();
     setTimeout(() => {
       setRefreshing(false);
-    }, 3000);
+    }, 1000);
   });
-
-  // TODO: only auto-refresh is empty?
-  /*
-  useEffect(() => {
-    _onRefresh();
-  }, []);
-  */
 
   const skeletons = Array(10)
     .fill('')
@@ -94,69 +87,65 @@ const FilterList = ({
     );
   };
 
-  let listData = data;
-  let renderItem = renderRow;
-  let renderHiddenItem = renderHiddenRow;
-  console.log('*** FILTER LIST ***');
-  //console.log(listData);
-  if (loading || listData === null) {
-    listData = skeletons;
-    console.log('*** SHOULD BE SKELETONS ***');
-    renderHiddenItem = null;
-    if (renderSkeletonRow === null) {
-      console.log('*** ER, SHOULD BE *** DEFAULT *** SKELETONS ***');
-      renderItem = renderDefaultSkeletonRow;
-    } else {
-      renderItem = renderSkeletonRow;
-    }
-  }
-
   const listItemSeparator = () => <View style={styles.listItemSeparator} />;
 
-  // TODO: nicer placeholder and use translated text
+  let placeholder = i18n.t('global.placeholder');
+  if (isContact) placeholder = i18n.t('contactsScreen.noContactPlaceHolder');
+  if (isGroup) placeholder = i18n.t('groupsScreen.noGroupPlaceHolder');
+
+  // TODO: make the placeholder prettier (reuse from comments?)
   return (
     <>
-      {listData?.length < 0 ? (
-        <Text>Placeholder</Text>
+      <SearchBar
+        settings={settings}
+        filterConfig={filterConfig}
+        onSelectFilter={onSelectFilter}
+        onTextFilter={onTextFilter}
+        onClearTextFilter={onClearTextFilter}
+        onLayout={onLayout}
+      />
+      {posts?.length < 1 ? (
+        <View style={styles.background}>
+          <Text style={styles.placeholder}>{placeholder}</Text>
+        </View>
       ) : (
-        <>
-          <SearchBar
-            settings={settings}
-            filterConfig={filterConfig}
-            onSelectFilter={onSelectFilter}
-            onTextFilter={onTextFilter}
-            onClearTextFilter={onClearTextFilter}
-            onLayout={onLayout}
-          />
-          <SwipeListView
-            data={listData}
-            renderItem={(item) => renderItem(item.item)}
-            renderHiddenItem={(data, rowMap) =>
-              renderHiddenItem ? renderHiddenItem(data, rowMap) : null
-            }
-            leftOpenValue={leftOpenValue}
-            rightOpenValue={leftOpenValue}
-            onRowDidOpen={(item) => {
-              onRowDidOpen === undefined ? null : onRowDidOpen(item);
-            }}
-            onRowDidClose={(item) => {
-              onRowDidClose === undefined ? null : onRowDidClose(item);
-            }}
-            ItemSeparatorComponent={listItemSeparator}
-            //keyboardShouldPersistTaps="always"
-            //keyExtractor={(item) => item.ID.toString()}
-            //extraData={loading}
-            //refreshControl={<RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />}
-            style={{ backgroundColor: Colors.mainBackgroundColor }}
-            ListFooterComponent={footer}
-          />
-        </>
+        <SwipeListView
+          data={posts ?? skeletons}
+          renderItem={(item) => {
+            const isSkeletons = item?.item?.text?.includes('item #');
+            // render normal
+            if (!loading && !isSkeletons && renderRow) return renderRow(item.item);
+            // render component provided skeletons
+            if (item && renderSkeletonRow) return renderSkeletonRow(item.item);
+            // render default skeletons
+            return renderDefaultSkeletonRow(item.item);
+          }}
+          renderHiddenItem={(item, rowMap) => {
+            const isSkeletons = item?.item?.text?.includes('item #');
+            // confirm is not skeletons and render fn exists, else return null
+            return !isSkeletons && renderHiddenRow ? renderHiddenRow(item, rowMap) : null;
+          }}
+          leftOpenValue={leftOpenValue}
+          rightOpenValue={leftOpenValue}
+          onRowDidOpen={(item) => {
+            onRowDidOpen === undefined ? null : onRowDidOpen(item);
+          }}
+          onRowDidClose={(item) => {
+            onRowDidClose === undefined ? null : onRowDidClose(item);
+          }}
+          ItemSeparatorComponent={listItemSeparator}
+          keyExtractor={(item) => item?.ID?.toString()}
+          extraData={settings}
+          ListFooterComponent={footer}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />}
+          style={styles.background}
+        />
       )}
     </>
   );
 };
-/* TODO
 FilterList.propTypes = {
+  posts: PropTypes.arrayOf(PropTypes.object).isRequired,
+  renderRow: PropTypes.func.isRequired,
 };
-*/
 export default FilterList;
