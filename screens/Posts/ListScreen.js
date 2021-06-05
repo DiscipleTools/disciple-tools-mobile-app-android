@@ -10,36 +10,33 @@ import * as Contacts from 'expo-contacts';
 // Helpers
 import Colors from 'constants/Colors';
 import i18n from 'languages';
-import { isIOS, isContact, isGroup, getModuleType, showToast } from 'helpers';
+import { isIOS, showToast } from 'helpers';
 
 // Utils
 import utils from 'utils';
 
 // Custom Hooks
+import usePostType from 'hooks/usePostType.js';
 import useList from 'hooks/useList.js';
-import useSettings from 'hooks/useSettings.js';
 
 // Custom Components
 import FilterList from 'components/FilterList';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
 
+import Subtitles from 'components/Subtitles';
+
 // TODO: use Native Base?
 import ActionButton from 'react-native-action-button';
 
 import { styles } from './ListScreen.styles';
 
-// TODO: constants
-const POST_TYPE_CONTACT = 'contacts';
-const POST_TYPE_GROUP = 'groups';
-
-const STATUS_CIRCLE_SIZE = 15;
-const SWIPE_BTN_WIDTH = 80;
+import Constants from 'constants';
 
 const ListScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
-  const [moduleType, setModuleType] = useState(getModuleType(route));
+  const { isContact, isGroup } = usePostType();
 
   const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
@@ -49,8 +46,8 @@ const ListScreen = ({ navigation, route }) => {
   const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
 
   let filters = useSelector((state) => state.usersReducer.contactFilters);
-  let totalRecords = 20;
-  let filteredRecords = null;
+  let totalPosts = 20;
+  let filteredPosts = null;
 
   // default to contacts type
   const [state, setState] = useState({
@@ -70,36 +67,31 @@ const ListScreen = ({ navigation, route }) => {
   // focus effect
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setModuleType(getModuleType(route));
+      //setModuleType(getModuleType(route));
     });
     return unsubscribe;
   }, [navigation]);
 
-  // get settings
-  const { settings, error: settingsError } = useSettings(moduleType);
-  if (settingsError) showToast(settingsError.message, true);
+  // get posts
+  const { posts, error: listError, isLoading, isValidating, mutate } = useList();
+  if (listError) showToast(listError.message, true);
 
-  // get records list
-  const { records, error: recordsError } = useList(moduleType);
-  if (recordsError) showToast(recordsError.message, true);
-
-  let loading = !settings || !records;
-  if (loading) return <Text>Loading...</Text>;
+  let loading = !posts;
+  // TODO
+  //let loading = !settings || !posts;
+  //if (loading) return <Text>Loading...</Text>;
 
   // TODO: FilterList requires initialData
   /*
   return(
-    <>
-      <Text>{ JSON.stringify(settings) }</Text>
-      <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(records) }</Text>
-    </>
+    <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(posts) }</Text>
   );
   */
 
   const renderFooter = () => {
     return (
       <View style={styles.loadMoreFooterText}>
-        {isConnected && state.offset + state.limit < totalRecords && (
+        {isConnected && state.offset + state.limit < totalPosts && (
           <Pressable
             onPress={() => {
               onRefresh(true);
@@ -209,57 +201,9 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
-  const Subtitles = ({ record }) => {
-    return (
-      <View style={{ flexDirection: 'row' }}>
-        <Text
-          style={[
-            // TODO: rename to just 'styles.subtitle'
-            styles.contactSubtitle,
-            {
-              textAlign: 'left',
-            },
-          ]}>
-          {isContact(moduleType) && (
-            <>
-              {settings.fields.overall_status?.values[record.overall_status]
-                ? settings.fields.overall_status.values[record.overall_status].label
-                : ''}
-              {settings.fields.overall_status?.values[record.overall_status] &&
-              settings.fields.seeker_path.values[record.seeker_path]
-                ? ' • '
-                : ''}
-              {settings.fields.seeker_path?.values[record.seeker_path]
-                ? settings.fields.seeker_path.values[record.seeker_path].label
-                : ''}
-            </>
-          )}
-          {isGroup(moduleType) && (
-            <>
-              {settings.fields.group_status.values[record.group_status]
-                ? settings.fields.group_status.values[record.group_status].label
-                : ''}
-              {settings.fields.group_status.values[record.group_status] &&
-              settings.fields.group_type.values[record.group_type]
-                ? ' • '
-                : ''}
-              {settings.fields.group_type.values[record.group_type]
-                ? settings.fields.group_type.values[record.group_type].label
-                : ''}
-              {settings.fields.group_type.values[record.group_type] && record.member_count
-                ? ' • '
-                : ''}
-              {record.member_count ? record.member_count : ''}
-            </>
-          )}
-        </Text>
-      </View>
-    );
-  };
-
   const renderRow = (record) => {
-    // TODO: better support for expanion of postTypes
-    const statusValue = isContact(moduleType) ? record.overall_status : record.group_status;
+    // TODO: better support for expansion of postTypes
+    const statusValue = isContact ? record.overall_status : record.group_status;
     return (
       <Pressable
         onPress={() => {
@@ -280,7 +224,7 @@ const ListScreen = ({ navigation, route }) => {
             style={[
               {
                 flexDirection: 'column',
-                width: STATUS_CIRCLE_SIZE,
+                width: Constants.STATUS_CIRCLE_SIZE,
                 paddingTop: 0,
                 marginTop: 'auto',
                 marginBottom: 'auto',
@@ -289,9 +233,9 @@ const ListScreen = ({ navigation, route }) => {
             ]}>
             <View
               style={{
-                width: STATUS_CIRCLE_SIZE,
-                height: STATUS_CIRCLE_SIZE,
-                borderRadius: STATUS_CIRCLE_SIZE / 2,
+                width: Constants.STATUS_CIRCLE_SIZE,
+                height: Constants.STATUS_CIRCLE_SIZE,
+                borderRadius: Constants.STATUS_CIRCLE_SIZE / 2,
                 backgroundColor: utils.getSelectorColor(statusValue),
                 marginTop: 'auto',
                 marginBottom: 'auto',
@@ -303,21 +247,23 @@ const ListScreen = ({ navigation, route }) => {
   };
 
   const renderHiddenRow = (data, rowMap) => {
-    const btn1Style = isRTL ? { left: SWIPE_BTN_WIDTH * 2 } : { left: 0 };
-    const btn2Style = isRTL ? { left: SWIPE_BTN_WIDTH } : { left: SWIPE_BTN_WIDTH };
-    const btn3Style = isRTL ? { left: 0 } : { left: SWIPE_BTN_WIDTH * 2 };
-    //const btn3Style = isRTL ? { right: 0 } : { right: SWIPE_BTN_WIDTH };
-    //const btn4Style = isRTL ? { right: SWIPE_BTN_WIDTH } : { right: 0 };
+    const btn1Style = isRTL ? { left: Constants.SWIPE_BTN_WIDTH * 2 } : { left: 0 };
+    const btn2Style = isRTL
+      ? { left: Constants.SWIPE_BTN_WIDTH }
+      : { left: Constants.SWIPE_BTN_WIDTH };
+    const btn3Style = isRTL ? { left: 0 } : { left: Constants.SWIPE_BTN_WIDTH * 2 };
+    //const btn3Style = isRTL ? { right: 0 } : { right: Constants.SWIPE_BTN_WIDTH };
+    //const btn4Style = isRTL ? { right: Constants.SWIPE_BTN_WIDTH } : { right: 0 };
     return (
       <View style={styles.rowBack}>
         <Pressable
-          style={[styles.backBtn, styles.backBtn1, btn1Style, { width: SWIPE_BTN_WIDTH }]}
+          style={[styles.backBtn, styles.backBtn1, btn1Style, { width: Constants.SWIPE_BTN_WIDTH }]}
           onPress={() => console.log('*** BUTTON 1 CLICKED ***')}>
           <Icon type="MaterialCommunityIcons" name="check" style={styles.backBtnIcon} />
           <Text style={styles.backBtnText}>Update Status</Text>
         </Pressable>
         <Pressable
-          style={[styles.backBtn, styles.backBtn2, btn2Style, { width: SWIPE_BTN_WIDTH }]}
+          style={[styles.backBtn, styles.backBtn2, btn2Style, { width: Constants.SWIPE_BTN_WIDTH }]}
           onPress={() => {
             console.log('*** BUTTON 2 CLICKED ***');
             console.log(JSON.stringify(questionnaires));
@@ -326,7 +272,7 @@ const ListScreen = ({ navigation, route }) => {
           <Text style={styles.backBtnText}>Meeting Complete</Text>
         </Pressable>
         <Pressable
-          style={[styles.backBtn, styles.backBtn3, btn3Style, { width: SWIPE_BTN_WIDTH }]}
+          style={[styles.backBtn, styles.backBtn3, btn3Style, { width: Constants.SWIPE_BTN_WIDTH }]}
           onPress={() => {
             console.log('*** BUTTON 3 CLICKED ***');
             //setState({ ...state, commentsModalVisible: true });
@@ -336,7 +282,7 @@ const ListScreen = ({ navigation, route }) => {
         </Pressable>
         {/*
         <Pressable
-          style={[styles.backBtn, styles.backBtn4, btn4Style, { width: SWIPE_BTN_WIDTH }]}
+          style={[styles.backBtn, styles.backBtn4, btn4Style, { width: Constants.SWIPE_BTN_WIDTH }]}
           onPress={() => {
             console.log('*** BUTTON 4 CLICKED ***');
             //setState({ ...state, commentsModalVisible: true })
@@ -349,6 +295,11 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
+  const onRefresh = (increasePagination = false, returnFromDetail = false) => {
+    console.log('*** ON REFRESH - ListScreen ***');
+    mutate();
+  };
+  /*
   const onRefresh = (increasePagination = false, returnFromDetail = false) => {
     let newState = {
       offset: increasePagination ? state.offset + state.limit : 0,
@@ -391,15 +342,10 @@ const ListScreen = ({ navigation, route }) => {
       },
     );
   };
+  */
 
   const goToDetailsScreen = (record, isPhoneImport = false) => {
-    /*
-    console.log("*** GO TO DETAILS DECISION ***");
-    console.log(moduleType);
-    console.log(isContact(moduleType));
-    console.log(isGroup(moduleType));
-    */
-    if (isContact(moduleType)) {
+    if (isContact) {
       goToContactDetailScreen(record, isPhoneImport);
       return;
     }
@@ -579,9 +525,9 @@ const ListScreen = ({ navigation, route }) => {
     };
     return (
       <FilterList
-        settings={null}
+        //settings={null}
         filterConfig={importContactsFilters}
-        data={importContactsList}
+        posts={importContactsList}
         //loading={loading}
         renderRow={renderImportContactsRow}
       />
@@ -751,12 +697,15 @@ const ListScreen = ({ navigation, route }) => {
           </ActionModal>
         )}
         <FilterList
-          settings={settings}
-          data={records}
-          loading={loading}
+          settings={null}
+          posts={posts}
+          //posts={[]}
+          //posts={null}
           renderRow={renderRow}
+          loading={loading}
+          onRefresh={onRefresh}
           renderHiddenRow={renderHiddenRow}
-          leftOpenValue={SWIPE_BTN_WIDTH * 3}
+          leftOpenValue={Constants.SWIPE_BTN_WIDTH * 3}
         />
         <FAB />
       </View>
