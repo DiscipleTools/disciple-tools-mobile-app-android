@@ -1,22 +1,28 @@
-import useRequest from 'hooks/useRequest';
+import useResource from 'hooks/useResource';
 import utils from 'utils';
 
 const useList = (moduleType, filter) => {
   // TODO: merge mapContacts and mapGroups?
-  const mapRecords = (records) => {
+  const mapPosts = (posts) => {
+    // TODO: use constant
     if (moduleType === 'groups') {
-      return utils.mapGroups(records);
+      return utils.mapGroups(posts);
     } else {
-      return utils.mapContacts(records);
+      return utils.mapContacts(posts);
     }
   };
 
+  // getAll
+
   //const url = `/dt-posts/v2/${moduleType}${utils.recursivelyMapFilterOnQueryParams(
   const url = `/dt-posts/v2/${moduleType}`;
-  const initialData = null;
-  const { data: records, error } = useRequest({ url }, { initialData });
+  // TODO: useSelect for initialData?
+  //const initialData = null;
+
+  let { data, error } = useResource(url);
+
   return {
-    records: records?.posts ? mapRecords(records.posts) : null,
+    posts: data?.posts ? mapPosts(data.posts) : null,
     error,
   };
 };

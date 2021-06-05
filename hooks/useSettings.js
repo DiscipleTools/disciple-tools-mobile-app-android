@@ -1,6 +1,9 @@
+import useModuleType from 'hooks/useModuleType';
 import useRequest from 'hooks/useRequest';
 
-const useSettings = (moduleType) => {
+const useSettings = () => {
+  const { moduleType } = useModuleType();
+
   const mapSettings = (settings) => {
     let fieldList = {};
     // Get fieldlist
@@ -144,8 +147,7 @@ const useSettings = (moduleType) => {
   };
 
   const url = `/dt-posts/v2/${moduleType}/settings`;
-  const initialData = null;
-  const { data: settings, error } = useRequest({ url }, { initialData });
+  const { data: settings, error } = useRequest({ url });
   return {
     settings: settings?.fields ? mapSettings(settings) : null,
     error,

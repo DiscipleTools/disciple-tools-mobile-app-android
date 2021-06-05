@@ -1,25 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useSelector } from 'react-redux';
 
 const useNetworkStatus = () => {
-  const [isOnline, setIsOnline] = useState(false);
-
-  const online = () => {
-    setStatus(true);
-  };
-  const offline = () => {
-    setStatus(false);
-  };
-
-  useEffect(() => {
-    // TODO: implement for React Native
-    window.addEventListener('online', online);
-    window.addEventListener('offline', offline);
-    return () => {
-      window.removeEventListener('online', online);
-      window.removeEventListener('offline', offline);
-    };
-    //}, [setIsOnline]);
-  }, []);
-  return isOnline;
+  const netInfo = useNetInfo();
+  const isConnected = netInfo.isConnected.toString() === 'true';
+  // user specified offline in settings
+  const isConnectedUser = useSelector((state) => state.networkConnectivityReducer.isConnected);
+  return isConnected && isConnectedUser;
 };
 export default useNetworkStatus;
