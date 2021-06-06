@@ -225,6 +225,52 @@ const NotificationsScreen = ({ navigation }) => {
       );
     };
     // TODO: replace with FilterList and filter is All or Unread :-)
+    /*
+  const dataArray = [
+    {
+      title: 'By Type',
+      count: 2,
+      content: [
+        {
+          ID: 0,
+          name: 'All',
+          count: 2,
+          query: '',
+        },
+        {
+          ID: 1,
+          name: 'Read',
+          count: 1,
+          query: '',
+        },
+        {
+          ID: 2,
+          name: 'Unread',
+          count: 1,
+          query: '',
+        },
+      ],
+    },
+    {
+      title: 'By User',
+      count: 2,
+      content: [
+        {
+          ID: 0,
+          name: 'Farzin Shariati',
+          count: 1,
+          query: '',
+        },
+        {
+          ID: 1,
+          name: 'Elias Alvarado',
+          count: 1,
+          query: '',
+        },
+      ],
+    },
+  ];
+    */
     return (
       <FilterList
         onRefresh={onRefresh}

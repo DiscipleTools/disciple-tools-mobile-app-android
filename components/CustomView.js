@@ -23,9 +23,9 @@ import { isIOS, showToast } from 'helpers';
 import Colors from 'constants/Colors';
 import i18n from 'languages';
 
-import Field from 'components/Field';
-import FieldValue from 'components/FieldValue';
-import FieldIcon from 'components/FieldIcon';
+import Field from 'components/Fields/Field';
+import FieldValue from 'components/Fields/FieldValue';
+import FieldIcon from 'components/Fields/FieldIcon';
 
 import { styles } from './CustomView.styles';
 

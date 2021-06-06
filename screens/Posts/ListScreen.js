@@ -41,11 +41,24 @@ const ListScreen = ({ navigation, route }) => {
   const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  // TODO: use SWR Hooks
-  const userData = useSelector((state) => state.userReducer.userData);
-  const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
+  const defaultFilter = {
+    text: '',
+    sort: '-last_modified',
+  };
+  const [filter, setFilter] = useState(defaultFilter);
+  /*
+  const zztestfilter = {
+    text: '', //"and",
+    sort: "-last_modified",
+    //contact_phone: ["123", "-234"] // good test to force fail groups
+  };
+  */
 
-  let filters = useSelector((state) => state.usersReducer.contactFilters);
+  //const userData = useSelector((state) => state.userReducer.userData);
+  //const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
+
+  // TODO: useFilters() in FiltersPanel
+  //let filters = useSelector((state) => state.usersReducer.contactFilters);
   let totalPosts = 20;
   let filteredPosts = null;
 
@@ -64,6 +77,7 @@ const ListScreen = ({ navigation, route }) => {
     importContactsList: [],
   });
 
+  /*
   // focus effect
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -71,17 +85,11 @@ const ListScreen = ({ navigation, route }) => {
     });
     return unsubscribe;
   }, [navigation]);
+*/
 
   // get posts
-  const { posts, error: listError, isLoading, isValidating, mutate } = useList();
+  const { posts, error: listError, isLoading, isValidating, mutate } = useList(filter);
   if (listError) showToast(listError.message, true);
-
-  let loading = !posts;
-  // TODO
-  //let loading = !settings || !posts;
-  //if (loading) return <Text>Loading...</Text>;
-
-  // TODO: FilterList requires initialData
   /*
   return(
     <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(posts) }</Text>
@@ -295,10 +303,10 @@ const ListScreen = ({ navigation, route }) => {
     );
   };
 
-  const onRefresh = (increasePagination = false, returnFromDetail = false) => {
-    console.log('*** ON REFRESH - ListScreen ***');
+  const onRefresh = () => {
     mutate();
   };
+
   /*
   const onRefresh = (increasePagination = false, returnFromDetail = false) => {
     let newState = {
@@ -526,50 +534,13 @@ const ListScreen = ({ navigation, route }) => {
     return (
       <FilterList
         //settings={null}
-        filterConfig={importContactsFilters}
+        //filterConfig={importContactsFilters}
         posts={importContactsList}
-        //loading={loading}
+        //loading={isLoading}
         renderRow={renderImportContactsRow}
       />
     );
-    /*
-    return (
-      <>
-        <SearchBar
-          filterConfig={importContactsFilters}
-          onSelectFilter={selectOptionFilter}
-          onTextFilter={filterByText}
-          onClearTextFilter={filterByText}
-          onLayout={(idx) => onLayout(idx)}
-          count={importContactsList.length}
-        />
-        <FlatList
-          data={importContactsList}
-          renderItem={(item) => renderImportContactsRow(item.item)}
-          ItemSeparatorComponent={flatListItemSeparator}
-          keyboardShouldPersistTaps="always"
-          keyExtractor={(item) => item.index}
-        />
-      </>
-    );
-    */
   };
-
-  /* TODO?
-  const closeRow = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-      //rowMap[rowKey].closeRow();
-    }
-  };
-
-  const deleteRow = (rowMap, rowKey) => {
-    closeRow(rowMap, rowKey);
-    const newData = [...listData];
-    const prevIndex = listData.findIndex(item => item.key === rowKey);
-    newData.splice(prevIndex, 1);
-    //setListData(newData);
-  };
-  */
 
   // TODO:
   const commentsRender = () => {
@@ -697,15 +668,15 @@ const ListScreen = ({ navigation, route }) => {
           </ActionModal>
         )}
         <FilterList
-          settings={null}
+          filter={filter}
+          setFilter={setFilter}
+          resetFilter={() => setFilter(defaultFilter)}
           posts={posts}
-          //posts={[]}
-          //posts={null}
           renderRow={renderRow}
-          loading={loading}
+          loading={isLoading}
           onRefresh={onRefresh}
-          renderHiddenRow={renderHiddenRow}
-          leftOpenValue={Constants.SWIPE_BTN_WIDTH * 3}
+          renderHiddenRow={isContact ? renderHiddenRow : null}
+          leftOpenValue={isContact ? Constants.SWIPE_BTN_WIDTH * 3 : null}
         />
         <FAB />
       </View>

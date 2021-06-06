@@ -21,3 +21,8 @@ export const defaultHealthMilestones = [
   'church_prayer',
   'church_sharing',
 ];
+
+export default {
+  STATUS_CIRCLE_SIZE: 15,
+  SWIPE_BTN_WIDTH: 80,
+};

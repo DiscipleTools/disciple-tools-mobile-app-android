@@ -6,10 +6,10 @@ import useNetworkStatus from 'hooks/useNetworkStatus';
 
 const useRequest = (request, { initialData, ...config } = {}) => {
   const isConnected = useNetworkStatus();
-  console.log(`isConnected? ${isConnected}`);
+  //console.log(`isConnected? ${isConnected}`);
 
   // TODO: is the [request, id] correct?
-  console.log(`*** REQ: ${JSON.stringify(request)} ***`);
+  //console.log(`*** REQ: ${JSON.stringify(request)} ***`);
 
   let { data, error } = useSWR(
     isConnected ? request && JSON.stringify(request) : null,
@@ -35,7 +35,7 @@ const useRequest = (request, { initialData, ...config } = {}) => {
     }
     */
   }
-  console.log(data);
+  //console.log(data);
   return {
     data,
     error,

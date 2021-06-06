@@ -25,14 +25,14 @@ import {
 import Toast from 'react-native-easy-toast';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
-import Colors from '../constants/Colors';
-import i18n from '../languages';
+import Colors from 'constants/Colors';
+import i18n from 'languages';
 import {
   getQuestionnaireById,
   resetState,
   setQuestion,
   submitQuestionnaire,
-} from '../store/actions/questionnaire.actions';
+} from 'store/actions/questionnaire.actions';
 
 const propTypes = {
   navigation: PropTypes.shape({

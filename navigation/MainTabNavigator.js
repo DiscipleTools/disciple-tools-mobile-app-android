@@ -9,9 +9,9 @@ import { useNavigation } from '@react-navigation/native';
 
 import HomeScreen from 'screens/HomeScreen';
 import PINScreen from 'screens/PINScreen';
-import ListScreen from 'screens/Modules/ListScreen';
-import DetailsScreen from 'screens/Modules/DetailsScreen';
-import QuestionnaireScreen from 'screens/QuestionnaireScreen';
+import ListScreen from 'screens/Posts/ListScreen';
+import DetailsScreen from 'screens/Posts/DetailsScreen';
+import QuestionnaireScreen from 'screens/Posts/QuestionnaireScreen';
 import AttendanceScreen from 'screens/AttendanceScreen';
 import NotificationsScreen from 'screens/NotificationsScreen';
 import SettingsScreen from 'screens/SettingsScreen';
@@ -123,7 +123,7 @@ const MainTabNavigator = ({ navigation }) => {
     );
   };
 
-  // TODO: Dynamically generate Module/PostType Screens based on availablility
+  // TODO: Dynamically generate Post Screens based on availablility
   // For anything non-Contact/Group, pass in Route param to identify the POST_TYPE
   const MoreStack = () => {
     return (

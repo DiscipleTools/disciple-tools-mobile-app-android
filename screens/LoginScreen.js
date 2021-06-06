@@ -28,7 +28,7 @@ import i18n from 'languages';
 import { renderLanguagePickerItems, showToast } from 'helpers';
 // custom components
 import Locale from 'components/Locale';
-import TextField from 'components/TextField';
+import TextField from 'components/Fields/Text/TextField';
 // third-party components
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // styles/assets

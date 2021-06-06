@@ -1,14 +1,10 @@
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-} from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 
 import { storiesOf } from '@storybook/react-native';
 import colors from '../constants/Colors';
 import CenterView from '../storybook/stories/CenterView';
-import TextFieldMultiple from './TextFieldMultiple';
+import TextFieldMultiple from './Fields/Text/TextFieldMultiple';
 import FormField from './FormField';
 
 const styles = StyleSheet.create({
@@ -25,16 +21,14 @@ const styles = StyleSheet.create({
   customIcon: {
     color: colors.tintColor,
   },
-  customLabel: {
-
-  },
+  customLabel: {},
   customInput: {
     color: '#ffffff',
   },
 });
 
 storiesOf('Form Field', module)
-  .addDecorator(getStory => <CenterView>{getStory()}</CenterView>)
+  .addDecorator((getStory) => <CenterView>{getStory()}</CenterView>)
 
   .add('Inline', () => (
     <FormField
@@ -42,31 +36,27 @@ storiesOf('Form Field', module)
       iconName={Platform.OS === 'ios' ? 'ios-contact' : 'md-contact'}
       containerStyle={styles.customContainer}
       iconStyle={styles.customIcon}
-      inline
-    >
-      <Text>
-        1, 2, 3
-      </Text>
+      inline>
+      <Text>1, 2, 3</Text>
     </FormField>
   ))
 
   .add('Block', () => (
-    <FormField
-      label="Assigned to"
-      iconName={Platform.OS === 'ios' ? 'ios-contact' : 'md-contact'}
-    >
+    <FormField label="Assigned to" iconName={Platform.OS === 'ios' ? 'ios-contact' : 'md-contact'}>
       <TextFieldMultiple
         placeholder="Agent name"
-        textInputValue={[{
-          key: 999,
-          value: 'my sample value',
-        }, {
-          key: 998,
-          value: 'you should not see this',
-          delete: true,
-        }]}
+        textInputValue={[
+          {
+            key: 999,
+            value: 'my sample value',
+          },
+          {
+            key: 998,
+            value: 'you should not see this',
+            delete: true,
+          },
+        ]}
         onChange={() => {}}
-
       />
     </FormField>
   ))
@@ -76,21 +66,22 @@ storiesOf('Form Field', module)
       label="Assigned to"
       iconName={Platform.OS === 'ios' ? 'ios-contact' : 'md-contact'}
       containerStyle={styles.customContainer}
-      iconStyle={styles.customIcon}
-    >
+      iconStyle={styles.customIcon}>
       <TextFieldMultiple
         placeholder="Agent name"
-        textInputValue={[{
-          key: 999,
-          value: 'my sample value',
-        }, {
-          key: 998,
-          value: 'you should not see this',
-          delete: true,
-        }]}
+        textInputValue={[
+          {
+            key: 999,
+            value: 'my sample value',
+          },
+          {
+            key: 998,
+            value: 'you should not see this',
+            delete: true,
+          },
+        ]}
         textInputStyle={{ color: 'green' }}
         onChange={() => {}}
-
       />
     </FormField>
   ));

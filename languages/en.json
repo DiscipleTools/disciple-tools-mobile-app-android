@@ -48,7 +48,8 @@
     "selectLocations": "Select Locations",
     "other": "Other",
     "chooseOption": "Choose an option",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "placeholder": "No Posts currently available"
   },
   "modal": {
     "action": "Action Required",
@@ -81,7 +82,7 @@
   },
   "contactsScreen": {
     "contacts": "Contacts",
-    "noContactPlaceHolder": "There are not any contacts currently available.",
+    "noContactPlaceHolder": "No Contacts currently available.\n\nPress the FAB Button (+) to add a new Contact",
     "noContactPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
     "noContactPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contacts."
   },
@@ -176,7 +177,7 @@
     "dontHaveNotifications": "No notifications"
   },
   "groupsScreen": {
-    "noGroupPlaceHolder": "There are not any groups currently available.",
+    "noGroupPlaceHolder": "No Groups currently available.\n\nPress the FAB Button (+) to add a new Group",
     "noGroupPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
     "noGroupPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your groups."
   },

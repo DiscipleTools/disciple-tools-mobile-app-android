@@ -25,19 +25,18 @@ import SearchBar from 'components/SearchBar';
 // (native base does not have a Skeleton component)
 import ContentLoader, { Rect, Circle, Path } from 'react-content-loader/native';
 
-// Styles/Assets
+// Assets
+// Styles
 import { styles } from './FilterList.styles';
 
 const FilterList = ({
-  onRefresh,
-  filterConfig,
-  onSelectFilter,
-  onTextFilter,
-  onClearTextFilter,
-  onLayout,
-  loading,
+  filter,
+  setFilter,
+  resetFilter,
   posts,
   renderRow,
+  loading,
+  onRefresh,
   renderSkeletonRow,
   renderHiddenRow,
   leftOpenValue,
@@ -48,6 +47,8 @@ const FilterList = ({
 }) => {
   const windowWidth = useWindowDimensions().width;
 
+  const [showSearchBar, setShowSearchBar] = useState(true);
+
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -55,8 +56,24 @@ const FilterList = ({
   const { isContact, isGroup, postType } = usePostType();
   const { settings } = useSettings();
 
+  const setSearchFilter = (searchString) => {
+    setFilter({
+      ...filter,
+      text: searchString,
+    });
+  };
+
+  const setOptionsFilter = (newFilter) => {
+    setFilter({
+      ...filter,
+      ...newFilter,
+    });
+  };
+
   const _onRefresh = useCallback(() => {
     setRefreshing(true);
+    // TODO: some other mechanism to reset?
+    resetFilter();
     onRefresh();
     setTimeout(() => {
       setRefreshing(false);
@@ -96,14 +113,9 @@ const FilterList = ({
   // TODO: make the placeholder prettier (reuse from comments?)
   return (
     <>
-      <SearchBar
-        settings={settings}
-        filterConfig={filterConfig}
-        onSelectFilter={onSelectFilter}
-        onTextFilter={onTextFilter}
-        onClearTextFilter={onClearTextFilter}
-        onLayout={onLayout}
-      />
+      {showSearchBar && (
+        <SearchBar setFilter={setSearchFilter} setOptionsFilter={setOptionsFilter} />
+      )}
       {posts?.length < 1 ? (
         <View style={styles.background}>
           <Text style={styles.placeholder}>{placeholder}</Text>

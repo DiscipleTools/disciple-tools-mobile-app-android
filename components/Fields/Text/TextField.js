@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 import * as Icon from '@expo/vector-icons';
 
-import i18n from '../languages';
+import i18n from 'languages';
 
 const styles = StyleSheet.create({
   inputContainer: {

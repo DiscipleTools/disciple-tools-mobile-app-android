@@ -204,7 +204,8 @@ const AppNavigator = () => {
       // valid LoginCNonces && valid Token/Domain
       // TODO: why is this broke and re-rendering?
       //if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
-      if (state.hasValidAuthToken && state.hasDomain) {
+      //if (state.hasValidAuthToken && state.hasDomain) {
+      if (true) {
         return <MainTabNavigator />;
       } else {
         return <LoginStack />;

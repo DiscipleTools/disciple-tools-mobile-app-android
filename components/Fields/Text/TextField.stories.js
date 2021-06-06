@@ -3,8 +3,8 @@ import { Platform, StyleSheet } from 'react-native';
 
 import { storiesOf } from '@storybook/react-native';
 
-import colors from '../constants/Colors';
-import CenterView from '../storybook/stories/CenterView';
+import colors from 'constants/Colors';
+import CenterView from 'storybook/stories/CenterView';
 import TextField from './TextField';
 
 const styles = StyleSheet.create({

@@ -2,31 +2,10 @@ import { StyleSheet } from 'react-native';
 import Colors from 'constants/Colors';
 
 export const styles = StyleSheet.create({
-  searchSection: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    minHeight: 60,
-  },
-  searchIcon: {
-    padding: 10,
-    fontSize: 20,
-  },
-  input: {
-    flex: 1,
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
-    backgroundColor: '#fff',
-    color: '#424242',
-  },
   searchBarContainer: {
-    borderBottomWidth: 1,
+    //borderBottomWidth: 1,
     backgroundColor: Colors.tabBar,
-    borderBottomColor: '#FFF',
+    //borderBottomColor: '#FFF',
     marginTop: 10,
   },
   searchBarScrollView: {

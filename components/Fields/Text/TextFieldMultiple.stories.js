@@ -1,8 +1,8 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
-import FormField from './FormField';
-import CenterView from '../storybook/stories/CenterView';
+import FormField from 'components/FormField';
+import CenterView from 'storybook/stories/CenterView';
 import TextFieldMultiple from './TextFieldMultiple';
 
 storiesOf('Text Field Multiple', module)

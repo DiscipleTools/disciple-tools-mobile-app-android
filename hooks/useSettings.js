@@ -1,8 +1,8 @@
-import useModuleType from 'hooks/useModuleType';
+import usePostType from 'hooks/usePostType';
 import useRequest from 'hooks/useRequest';
 
 const useSettings = () => {
-  const { moduleType } = useModuleType();
+  const { postType } = usePostType();
 
   const mapSettings = (settings) => {
     let fieldList = {};
@@ -146,11 +146,13 @@ const useSettings = () => {
     };
   };
 
-  const url = `/dt-posts/v2/${moduleType}/settings`;
-  const { data: settings, error } = useRequest({ url });
+  const url = `/dt-posts/v2/${postType}/settings`;
+  const { data: settings, error, isLoading, isValidating } = useRequest(url);
   return {
     settings: settings?.fields ? mapSettings(settings) : null,
     error,
+    isLoading,
+    isValidating,
   };
 };
 export default useSettings;
