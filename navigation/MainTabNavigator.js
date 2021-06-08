@@ -36,8 +36,8 @@ const MainTabNavigator = ({ navigation }) => {
   console.log('$$$$$          MAIN TAB NAVIGATOR             $$$$$');
   console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
+  /*
   const dispatch = useDispatch();
-
   useEffect(() => {
     // TODO: batch?
     // TODO: caching?
@@ -46,6 +46,7 @@ const MainTabNavigator = ({ navigation }) => {
     dispatch(getLocations());
     dispatch(getPeopleGroups());
   }, []);
+  */
 
   const notifications = useSelector((state) => state.notificationsReducer.notifications);
   let unreadNotifications = [];

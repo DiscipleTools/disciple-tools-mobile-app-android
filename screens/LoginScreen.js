@@ -21,11 +21,13 @@ import * as Localization from 'expo-localization';
 // redux
 import { useSelector, useDispatch } from 'react-redux';
 // actions
-import { login } from 'store/actions/user.actions';
+//import { login } from 'store/actions/user.actions';
 // helpers/utils
 import Colors from 'constants/Colors';
 import i18n from 'languages';
 import { renderLanguagePickerItems, showToast } from 'helpers';
+// custom hooks
+import useMyUser from 'hooks/useMyUser.js';
 // custom components
 import Locale from 'components/Locale';
 import TextField from 'components/Fields/Text/TextField';
@@ -34,7 +36,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 // styles/assets
 import { styles } from './LoginScreen.styles';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   const userData = useSelector((state) => state.userReducer.userData);
@@ -53,6 +55,8 @@ const LoginScreen = ({ navigation }) => {
     locale, // use Redux
   });
 
+  const { login } = useMyUser();
+
   useEffect(() => {
     if (locale === null) {
       // use device settings
@@ -64,6 +68,7 @@ const LoginScreen = ({ navigation }) => {
     }
   }, []);
 
+  /*
   useEffect(() => {
     console.log('***** Login Screen - useEffect - LOCALE CHANGED *****');
     console.log(userData.locale);
@@ -72,6 +77,7 @@ const LoginScreen = ({ navigation }) => {
       locale: userData.locale,
     });
   }, [userData]);
+  */
 
   const setPasswordVisibility = () => {
     setState({
@@ -89,7 +95,7 @@ const LoginScreen = ({ navigation }) => {
     Keyboard.dismiss();
     if (state.domain && state.username && state.password) {
       const cleanedDomain = cleanDomain(state.domain);
-      dispatch(login(cleanedDomain, state.username, state.password));
+      login(cleanedDomain, state.username, state.password);
     } else {
       // if any of the required fields are not set, then update state to show error
       setState({
@@ -284,6 +290,7 @@ const LoginScreen = ({ navigation }) => {
                   style={{ marginBottom: 'auto', marginTop: 'auto' }}
                 />
                 <TextInput
+                  value={state.password} // TODO: remove
                   accessibilityLabel={i18n.t('loginScreen.password.label', { locale })}
                   underlineColorAndroid="transparent"
                   secureTextEntry={state.hidePassword}

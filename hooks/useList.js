@@ -34,7 +34,7 @@ const useList = (filter) => {
         }
       }
     });
-    console.log(`queryParams: ${queryParams}`);
+    //console.log(`queryParams: ${queryParams}`);
     return queryParams;
   };
 

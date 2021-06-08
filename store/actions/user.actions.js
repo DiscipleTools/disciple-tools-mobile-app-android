@@ -38,6 +38,8 @@ export const DELETE_PIN = 'DELETE_PIN';
 export const DELETE_PIN_SUCCESS = 'DELETE_PIN_SUCCESS';
 export const DELETE_PIN_FAILURE = 'DELETE_PIN_FAILURE';
 
+export const SET_CNONCE_LOGIN = 'SET_CNONCE_LOGIN';
+
 export const GENERATE_PIN_CNONCE = 'GENERATE_PIN_CNONCE';
 export const GENERATE_PIN_CNONCE_SUCCESS = 'GENERATE_PIN_CNONCE_SUCCESS';
 export const GENERATE_PIN_CNONCE_FAILURE = 'GENERATE_PIN_CNONCE_FAILURE';
@@ -89,6 +91,13 @@ export function deletePIN() {
 
 export function generatePINCNonce() {
   return { type: GENERATE_PIN_CNONCE };
+}
+
+export function setCNonceLogin(cnonceLogin) {
+  return {
+    type: SET_CNONCE_LOGIN,
+    cnonceLogin,
+  };
 }
 
 export function updateUserInfo(userInfo) {

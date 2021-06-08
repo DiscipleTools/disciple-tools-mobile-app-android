@@ -25,7 +25,7 @@ import * as Updates from 'expo-updates';
 import { useDispatch, useSelector } from 'react-redux';
 // actions
 import {
-  logout,
+  //logout,
   toggleAutoLogin,
   toggleRememberLoginDetails,
   updateUserInfo,
@@ -34,6 +34,8 @@ import { toggleNetworkConnectivity } from 'store/actions/networkConnectivity.act
 // helpers/utils
 import i18n from 'languages';
 import { renderLanguagePickerItems, showToast, withPropsValidation } from 'helpers';
+// custom hooks
+import useMyUser from 'hooks/useMyUser.js';
 // custom components
 import OfflineBar from 'components/OfflineBar';
 import Locale from 'components/Locale';
@@ -44,6 +46,8 @@ import gravatar from 'assets/images/gravatar-default.png';
 const SettingsScreen = ({ navigation, route }) => {
   const isIOS = Platform.OS === 'ios';
   const dispatch = useDispatch();
+
+  const { logout } = useMyUser();
 
   // TODO: implement PropType validation on selectors? e.g.:
   const userData = withPropsValidation(
@@ -346,7 +350,7 @@ const SettingsScreen = ({ navigation, route }) => {
       <ListItem
         icon
         onPress={() => {
-          dispatch(logout());
+          logout();
         }}>
         <Left>
           <NbButton style={styles.button}>

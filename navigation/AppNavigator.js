@@ -37,7 +37,7 @@ const AppNavigator = () => {
   const _isTimelyCNonce = (cnonce, threshold) => {
     if (cnonce === null) return false;
     const delta = new Date() - Date.parse(cnonce);
-    console.log(`*** DELTA: ${delta} ***`);
+    //console.log(`*** DELTA: ${delta} ***`);
     return delta < threshold;
   };
 
@@ -53,9 +53,13 @@ const AppNavigator = () => {
     return isTimelyCNonce && isMatchingCNonce;
   };
 
+  // TODO: disable until we work out what do do when server datetime is off
+  // eg, 1621782129 -> 1970-01-19T18:29:42.129Z
   const _checkIsAuthTokenExpired = (token) => {
     const decoded = jwt_decode(token); //, {complete: true});
+    console.log(decoded);
     let exp = decoded.exp; //decoded.payload.exp;
+    console.log(`exp: ${JSON.stringify(new Date(exp))}`);
     if (exp < 10000000000) exp *= 1000;
     const now = Date.now();
     if (now <= exp) {
@@ -100,8 +104,11 @@ const AppNavigator = () => {
       const hasAuthToken = await _hasSecureStoreItem('authToken');
       if (hasAuthToken === true) {
         const authToken = await SecureStore.getItemAsync('authToken');
-        const isAuthTokenExpired = _checkIsAuthTokenExpired(authToken);
-        hasValidAuthToken = hasAuthToken === true && isAuthTokenExpired === false;
+        // TODO: disable until we work out what do do when server datetime is off
+        // eg, 1621782129 -> 1970-01-19T18:29:42.129Z
+        //const isAuthTokenExpired = _checkIsAuthTokenExpired(authToken);
+        //hasValidAuthToken = hasAuthToken === true && isAuthTokenExpired === false;
+        hasValidAuthToken = true;
       } else {
         hasValidAuthToken = false;
       }
@@ -111,7 +118,6 @@ const AppNavigator = () => {
     } catch (e) {
       console.warn(e);
     } finally {
-      console.log('**** setState - INIT ****');
       setState({
         ...state,
         hasPIN,
@@ -125,39 +131,8 @@ const AppNavigator = () => {
   };
 
   useEffect(() => {
-    console.log(`USE EFFECT: cnonceLogin: ${cnonceLogin}`);
-    console.log(`USE EFFECT: cnoncePIN: ${cnoncePIN}`);
     init();
-    //}, [cnonceLogin, cnoncePIN]);
-  }, []);
-
-  useEffect(() => {
-    console.log('*** cnonce change occurred ***');
   }, [cnonceLogin, cnoncePIN]);
-
-  /*
-  useEffect(() => {
-    const onChange = async() => {
-      let hasValidPINCNonces = null;
-      try {
-        hasValidPINCNonces = await _validateCNonces("PIN", cnoncePIN);
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        console.log("**** setState - cnoncePIN ****");
-        setState({
-          ...state,
-          hasValidPINCNonces
-        });
-      };
-    };
-    onChange();
-  }, [cnoncePIN]);
-
-  useEffect(() => {
-    init();
-  }, [cnonceLogin]);
-  */
 
   const onReady = useCallback(async () => {
     if (state.appIsReady) {
@@ -202,10 +177,8 @@ const AppNavigator = () => {
     else if (!state.hasPIN && !state.hasAutoLogin) {
       console.log('*** AUTH 3 - Login ***');
       // valid LoginCNonces && valid Token/Domain
-      // TODO: why is this broke and re-rendering?
-      //if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
-      //if (state.hasValidAuthToken && state.hasDomain) {
-      if (true) {
+      if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
+        //if (true) {
         return <MainTabNavigator />;
       } else {
         return <LoginStack />;
@@ -262,10 +235,10 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{
-            // when logging out, a pop animation feels intuitive
-            animationTypeForReplace: state.hasValidLoginCNonces ? 'push' : 'pop',
-          }}
+          //options={{
+          // when logging out, a pop animation feels intuitive
+          //  animationTypeForReplace: state.hasValidLoginCNonces ? 'push' : 'pop',
+          //}}
         />
       </Stack.Navigator>
     );

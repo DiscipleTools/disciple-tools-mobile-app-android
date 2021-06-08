@@ -1,19 +1,20 @@
 import axios from 'axios';
 
-// TODO: get domain from Secure Store
-const domain = '';
-// TODO: get JWT token from Secure Store
-const token = '';
+// 15 sec default timeout for all requests
+const timeout = 15000;
+const protocol = 'http'; //"https";
 
-//const domain = yield SecureStore.getItemAsync('domain');
-//const token = yield SecureStore.getItemAsync('authToken');
+export const getBaseUrl = (domain) => {
+  return `${protocol}://${domain}/wp-json/`;
+};
 
+// NOTE: the baseURL and Authorization Header will be set upon successful login,
+// for subsequent reuse with JWT, etc... (see: hooks/useMyUser::login(..))
 const instance = axios.create({
-  baseURL: `http://${domain}/wp-json/`,
   headers: {
-    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
   },
-  // TODO: intercept timeout error and provide better message (in useResource/useRequest)?
-  timeout: 15000,
+  timeout,
 });
+// TODO: intercept timeout error and provide better message (useResource/useRequest)
 export default instance;

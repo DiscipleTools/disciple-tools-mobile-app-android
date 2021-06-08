@@ -47,6 +47,11 @@ export default function userReducer(state = initialState, action) {
         ...newState,
         hasPIN: false,
       };
+    case actions.SET_CNONCE_LOGIN:
+      return {
+        ...newState,
+        cnonceLogin: action.cnonceLogin,
+      };
     case actions.GENERATE_PIN_CNONCE_SUCCESS:
       return {
         ...newState,
