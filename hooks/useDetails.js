@@ -1,14 +1,16 @@
+import usePostType from 'hooks/usePostType';
 import useResource from 'hooks/useResource';
-import utils from 'utils';
+import helpers from 'helpers';
 
-const useDetails = (moduleType, id) => {
+const useDetails = (id) => {
+  const { isContact, isGroup, postType } = usePostType();
+
   // TODO: merge mapContact and mapGroup?
   const mapPost = (post) => {
-    // TODO: use constant
-    if (moduleType === 'groups') {
-      return utils.mapGroup(post);
+    if (isContact) {
+      return helpers.mapContact(post);
     } else {
-      return utils.mapContact(post);
+      return helpers.mapGroup(post);
     }
   };
 
@@ -16,12 +18,11 @@ const useDetails = (moduleType, id) => {
   // getById
   // saveComment
 
-  const url = `/dt-posts/v2/${moduleType}/${id}`;
+  const url = `/dt-posts/v2/${postType}/${id}`;
   // TODO: useSelect for initialData?
   //const initialData = null;
-  const { data, error, isLoading, isValidating, mutate, create, update, destroy } = useResource(
-    url,
-  );
+  const { data, error, isLoading, isValidating, mutate, create, update, destroy } =
+    useResource(url);
 
   const save = (post) => {
     // TODO:
@@ -78,11 +79,11 @@ const useDetails = (moduleType, id) => {
   };
 
   return {
-    mutate,
-    post: post ? mapPost(post) : null,
+    post: data ? mapPost(data) : null,
     error,
     isLoading,
     isValidating,
+    mutate,
     //save
   };
 };

@@ -34,22 +34,6 @@ export const renderCreationFields = (settings) => {
   return creationFields;
 };
 
-export const getTabRoutes = (settings) => {
-  if (!settings?.tiles) return [];
-  return [
-    ...settings.tiles.map((tile) => {
-      return {
-        key: tile.name,
-        title: tile.label,
-      };
-    }),
-    {
-      key: 'comments',
-      title: i18n.t('global.commentsActivity'),
-    },
-  ];
-};
-
 // TODO: refactor to use renderPickerItems above?
 //renderPickerItem({ key: locale.code, label: locale.name, value: locale.code })
 export const renderLanguagePickerItems = locales.map((locale) => (

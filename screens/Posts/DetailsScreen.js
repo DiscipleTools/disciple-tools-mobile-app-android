@@ -17,16 +17,23 @@ import {
   KeyboardAvoidingView,
   useWindowDimensions,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
 import PropTypes from 'prop-types';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+// Redux
+//import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+
+// Component Library (Native Base)
 import { Label, Input, Icon, Picker, DatePicker, Textarea, Button } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+
+// Expo
+import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
+
 // TODO: replace with Native Base FAB?
 import ActionButton from 'react-native-action-button';
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Chip, Selectize } from 'react-native-material-selectize';
 import { TabView, TabBar } from 'react-native-tab-view';
 //import { NavigationActions, StackActions } from 'react-navigation';
@@ -38,7 +45,7 @@ import { CheckBox } from 'react-native-elements';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 // Custom Hooks
-import useList from 'hooks/useList.js';
+import usePostType from 'hooks/usePostType.js';
 import useDetails from 'hooks/useDetails.js';
 import useSettings from 'hooks/useSettings.js';
 
@@ -49,6 +56,7 @@ import OfflineBar from 'components/OfflineBar';
 import HeaderLeft from 'components/HeaderLeft';
 import HeaderRight from 'components/HeaderRight';
 import KebabMenu from 'components/KebabMenu';
+
 import {
   save,
   getCommentsByContact,
@@ -86,15 +94,7 @@ import { updatePrevious as updatePreviousContacts } from 'store/actions/contacts
 import i18n from 'languages';
 
 import utils from 'utils';
-import {
-  isIOS,
-  isContact,
-  isGroup,
-  getModuleType,
-  getTabRoutes,
-  renderCreationFields,
-  showToast,
-} from 'helpers';
+import { isIOS, renderCreationFields, showToast } from 'helpers';
 import Colors from 'constants/Colors';
 import {
   hasBibleIcon,
@@ -189,10 +189,6 @@ const initialState = {
   },
 };
 
-// TODO: move to constants
-const POST_TYPE_CONTACT = 'contacts';
-const POST_TYPE_GROUP = 'groups';
-
 const DetailsScreen = ({ navigation, route }) => {
   const layout = useWindowDimensions();
   const windowWidth = layout.width;
@@ -201,10 +197,45 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const kebabMenuRef = useRef();
 
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
-  const [moduleType, setModuleType] = useState(getModuleType(route));
+  const { isContact, isGroup, postType } = usePostType();
 
+  const id = route?.params?.id ?? null;
+  if (!id) showToast('ERROR!', true);
+  console.log(`**** ID: ${id} ****`);
+
+  const { post, error: postError } = useDetails(id);
+  if (postError) showToast(postError.message, true);
+
+  // get settings
+  const { settings, error: settingsError } = useSettings();
+  if (settingsError) showToast(settingsError.message, true);
+
+  const mapTabRoutes = () => {
+    if (!settings?.tiles) return [];
+    return [
+      ...settings.tiles.map((tile) => {
+        return {
+          key: tile.name,
+          title: tile.label,
+        };
+      }),
+      {
+        key: 'comments',
+        title: i18n.t('global.commentsActivity'),
+      },
+    ];
+  };
+
+  const routes = mapTabRoutes(settings);
+  //console.log(`*** INITIAL ROUTES: ${JSON.stringify(routes)} ***`);
+  const [tabRoutes, setTabRoutes] = useState({
+    index: 0,
+    routes,
+  });
+
+  // TODO: replace with hooks
   const userData = useSelector((state) => state.userReducer.userData);
   const userReducerError = useSelector((state) => state.userReducer.error);
   const comments = useSelector((state) => state.contactsReducer.comments);
@@ -218,7 +249,8 @@ const DetailsScreen = ({ navigation, route }) => {
   //const loading = useSelector(state => state.contactsReducer.loading);
   const saved = useSelector((state) => state.contactsReducer.saved);
   const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
-  const contactSettings = useSelector((state) => state.contactsReducer.settings);
+  //const contactSettings = useSelector((state) => state.contactsReducer.settings);
+  const contactSettings = { ...settings };
   const foundGeonames = useSelector((state) => state.groupsReducer.foundGeonames);
   const groupsList = useSelector((state) => state.groupsReducer.groups);
   const contactsList = useSelector((state) => state.contactsReducer.contacts);
@@ -240,13 +272,15 @@ const DetailsScreen = ({ navigation, route }) => {
   let totalRecords = 20;
   let filteredRecords = null;
 
+  /*
   // focus effect
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setModuleType(getModuleType(route));
+      // something onFocus
     });
     return unsubscribe;
   }, [navigation]);
+  */
 
   const kebabMenuItems = [
     {
@@ -257,9 +291,9 @@ const DetailsScreen = ({ navigation, route }) => {
       label: i18n.t('global.viewOnMobileWeb'),
       callback: () => {
         const domain = userData?.domain;
-        const id = contact?.ID;
+        const id = post?.ID;
         if (domain && id) {
-          Linking.openURL(`https://${domain}/contacts/${id}/`);
+          Linking.openURL(`https://${domain}/${postType}/${id}/`);
         } else {
           showToast(i18n.t('global.error.recordData'), true);
         }
@@ -272,18 +306,7 @@ const DetailsScreen = ({ navigation, route }) => {
     const title = route.params?.name ?? i18n.t('contactDetailScreen.addNewContact');
     navigation.setOptions({
       title,
-      headerLeft: (props) => (
-        <HeaderLeft
-          {...props}
-          onPress={() => {
-            console.log('*** HEADER LEFT WAS PRESSED ***');
-            /*
-              //backButtonTap();
-              //onDisableEdit();
-            */
-          }}
-        />
-      ),
+      headerLeft: (props) => <HeaderLeft {...props} onPress={() => navigation.goBack()} />,
       headerRight: (props) => (
         <HeaderRight
           menu=<KebabMenu menuRef={kebabMenuRef} menuItems={kebabMenuItems} />
@@ -357,6 +380,7 @@ const DetailsScreen = ({ navigation, route }) => {
     };
   }, []);
 
+  /*
   // componentDidUpdate
   const didMountRef = useRef(false);
   useEffect(() => {
@@ -365,42 +389,12 @@ const DetailsScreen = ({ navigation, route }) => {
       console.log('*** COMPONENT DID UPDATE ***');
     } else didMountRef.current = true;
   });
-
-  // get settings
-  const { settings, error: settingsError } = useSettings(moduleType);
-  if (settingsError) showToast(settingsError.message, true);
-
-  const routes = getTabRoutes(settings);
-  console.log(`*** INITIAL ROUTES: ${JSON.stringify(routes)} ***`);
-  const [tabRoutes, setTabRoutes] = useState({
-    index: 0,
-    routes,
-  });
-
-  // get records list
-  // TODO: why do we need all records here?
-  const { records, error: recordsError } = useList(moduleType);
-  if (recordsError) showToast(recordsError.message, true);
-
-  let loading = !settings || !records;
-
-  /*
-  console.log("============================");
-  console.log(JSON.stringify(route));
-  console.log("============================");
   */
-  const id = route?.params?.id ?? null;
-  if (!id) showToast('ERROR!', true);
-  //const { record, error: recordError } = useDetails(moduleType, id);
-  const { record: contact, error: recordError } = useDetails(moduleType, id);
-  if (recordError) showToast(recordError.message, true);
-  //if (!record) return(<Text>Loading...</Text>);
-  if (!contact) return <Text>Loading...</Text>;
+
   /*
   return(
     <ScrollView>
-      <Text>{ JSON.stringify(contact) }</Text>
-      <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(records) }</Text>
+      <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(post) }</Text>
       <Text>{ JSON.stringify(settings) }</Text>
     </ScrollView>
   );
@@ -524,9 +518,9 @@ const DetailsScreen = ({ navigation, route }) => {
   const afterBack = () => {
     let newPreviousContacts = [...previousContacts];
     newPreviousContacts.pop();
-    dispatch(updatePrevious(newPreviousContacts));
+    //dispatch(updatePrevious(newPreviousContacts));
     if (newPreviousContacts.length > 0) {
-      dispatch(loadingFalse());
+      //dispatch(loadingFalse());
       let currentParams = {
         ...newPreviousContacts[newPreviousContacts.length - 1],
       };
@@ -557,7 +551,7 @@ const DetailsScreen = ({ navigation, route }) => {
         actions: [NavigationActions.navigate({ routeName: 'ContactList' })],
       });
       */
-      navigation.dispatch(resetAction);
+      //navigation.dispatch(resetAction);
       navigation.navigate('NotificationList');
     } else {
       // Prevent error when view loaded from GroupDetailScreen.js
@@ -573,9 +567,9 @@ const DetailsScreen = ({ navigation, route }) => {
     if (!state.loading || forceRefresh) {
       const contactId = route?.params?.contactId ?? null;
       console.log(`**** CONTACT ID: ${contactId} ****`);
-      dispatch(getById(contactId));
+      //dispatch(getById(contactId));
       onRefreshCommentsActivities(contactId, true);
-      dispatch(getShareSettings(contactId));
+      //dispatch(getShareSettings(contactId));
       if (state.showShareView) {
         toggleShareView();
       }
@@ -674,19 +668,21 @@ const DetailsScreen = ({ navigation, route }) => {
   const getContactComments = (contactId, resetPagination = false) => {
     if (isConnected) {
       if (resetPagination) {
+        /*
         dispatch(
           getCommentsByContact(contactId, {
             offset: 0,
             limit: 10,
           }),
         );
+        */
       } else {
         //ONLY GET DATA IF THERE IS MORE DATA TO GET
         if (
           !state.loadComments &&
           state.comments.pagination.offset < state.comments.pagination.total
         ) {
-          dispatch(getCommentsByContact(contactId, state.comments.pagination));
+          //dispatch(getCommentsByContact(contactId, state.comments.pagination));
         }
       }
     }
@@ -696,19 +692,21 @@ const DetailsScreen = ({ navigation, route }) => {
   const getContactActivities = (contactId, resetPagination = false) => {
     if (isConnected) {
       if (resetPagination) {
+        /*
         dispatch(
           getActivitiesByContact(contactId, {
             offset: 0,
             limit: 10,
           }),
         );
+        */
       } else {
         //ONLY GET DATA IF THERE IS MORE DATA TO GET
         if (
           !state.loadActivities &&
           state.activities.pagination.offset < state.activities.pagination.total
         ) {
-          dispatch(getActivitiesByContact(contactId, state.activities.pagination));
+          //dispatch(getActivitiesByContact(contactId, state.activities.pagination));
         }
       }
     }
@@ -728,7 +726,7 @@ const DetailsScreen = ({ navigation, route }) => {
         tabRoutes: {
           ...prevState.tabRoutes,
           index: indexFix,
-          routes: getTabRoutes(settings).filter(
+          routes: mapTabRoutes(settings).filter(
             (route) => route.key !== 'comments', // && route.key !== 'other',
           ),
         },
@@ -768,7 +766,7 @@ const DetailsScreen = ({ navigation, route }) => {
         tabRoutes: {
           ...prevState.tabRoutes,
           index: indexFix,
-          routes: getTabRoutes(settings),
+          routes: mapTabRoutes(settings),
         },
         sources: [...unmodifiedSources],
         subAssignedContacts: [...unmodifiedSubAssignedContacts],
@@ -916,7 +914,7 @@ const DetailsScreen = ({ navigation, route }) => {
               assigned_to: `user-${assignedToID}`,
             };
           }
-          dispatch(save(contactToSave));
+          //dispatch(save(contactToSave));
         } else {
           //Empty contact name
           setState({
@@ -953,7 +951,7 @@ const DetailsScreen = ({ navigation, route }) => {
     if (!state.loadComments) {
       if (comment.length > 0) {
         Keyboard.dismiss();
-        dispatch(saveComment(state.record.ID, { comment }));
+        //dispatch(saveComment(state.record.ID, { comment }));
       }
     }
   };
@@ -1001,7 +999,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
   // TODO: move to helpers?
   const goToDetailsScreen = (id, name) => {
-    if (isContact(moduleType)) {
+    if (isContact) {
       goToContactDetailScreen(id, name);
       return;
     }
@@ -1793,7 +1791,7 @@ const DetailsScreen = ({ navigation, route }) => {
                     iconStyle={iconStyle}
                     onClose={(props) => {
                       // TODO: parseInt?
-                      dispatch(removeUserToShare(state.record.ID, item.value));
+                      //dispatch(removeUserToShare(state.record.ID, item.value));
                       onClose(props);
                     }}
                     text={item.name}
@@ -1805,7 +1803,7 @@ const DetailsScreen = ({ navigation, route }) => {
                     activeOpacity={0.6}
                     key={id}
                     onPress={(props) => {
-                      dispatch(addUserToShare(state.record.ID, parseInt(item.value)));
+                      //dispatch(addUserToShare(state.record.ID, parseInt(item.value)));
                       onPress(props);
                     }}
                     style={{
@@ -1995,7 +1993,7 @@ const DetailsScreen = ({ navigation, route }) => {
                 block
                 style={[styles.dialogButton, { backgroundColor: Colors.buttonDelete }]}
                 onPress={() => {
-                  dispatch(deleteComment(state.record.ID, state.commentDialog.data.ID));
+                  //dispatch(deleteComment(state.record.ID, state.commentDialog.data.ID));
                   onCloseCommentDialog();
                 }}>
                 <Text style={{ color: Colors.buttonText }}>{i18n.t('global.delete')}</Text>
@@ -2005,7 +2003,7 @@ const DetailsScreen = ({ navigation, route }) => {
                 block
                 style={styles.dialogButton}
                 onPress={() => {
-                  dispatch(saveComment(state.record.ID, state.commentDialog.data));
+                  //dispatch(saveComment(state.record.ID, state.commentDialog.data));
                   onCloseCommentDialog();
                 }}>
                 <Text style={{ color: Colors.buttonText }}>{i18n.t('global.save')}</Text>
