@@ -30,26 +30,26 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 // Expo
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
 
-// TODO: replace with Native Base FAB?
-import ActionButton from 'react-native-action-button';
-
+// 3rd-party Components
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Chip, Selectize } from 'react-native-material-selectize';
 import { TabView, TabBar } from 'react-native-tab-view';
-//import { NavigationActions, StackActions } from 'react-navigation';
 import MentionsTextInput from 'react-native-mentions';
 import ParsedText from 'react-native-parsed-text';
-// TODO: re-implement?
+// TODO
 //import * as Sentry from 'sentry-expo';
 import { CheckBox } from 'react-native-elements';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 // Custom Hooks
+import useNetworkStatus from 'hooks/useNetworkStatus';
 import usePostType from 'hooks/usePostType.js';
 import useDetails from 'hooks/useDetails.js';
 import useSettings from 'hooks/useSettings.js';
+import useMyUser from 'hooks/useMyUser.js';
 
 // Custom Components
+import FAB from 'components/FAB';
 import CustomView from 'components/CustomView';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
@@ -197,20 +197,20 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const kebabMenuRef = useRef();
 
-  //const dispatch = useDispatch();
+  const isConnected = useNetworkStatus();
 
   const { isContact, isGroup, postType } = usePostType();
 
   const id = route?.params?.id ?? null;
-  if (!id) showToast('ERROR!', true);
-  console.log(`**** ID: ${id} ****`);
-
   const { post, error: postError } = useDetails(id);
-  if (postError) showToast(postError.message, true);
-
-  // get settings
   const { settings, error: settingsError } = useSettings();
-  if (settingsError) showToast(settingsError.message, true);
+  const { userData, error: userError } = useMyUser();
+
+  if (postError || settingsError || userError || !id)
+    showToast(
+      postError?.message || settingsError?.message || userError?.message || 'ZZError',
+      true,
+    );
 
   const mapTabRoutes = () => {
     if (!settings?.tiles) return [];
@@ -229,15 +229,22 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   const routes = mapTabRoutes(settings);
-  //console.log(`*** INITIAL ROUTES: ${JSON.stringify(routes)} ***`);
   const [tabRoutes, setTabRoutes] = useState({
     index: 0,
     routes,
   });
+  const [index, setIndex] = React.useState(0);
+  /*
+  const [routes] = React.useState([
+    { key: 'first', title: 'First' },
+    { key: 'second', title: 'Second' },
+  ]);
+  */
+
+  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   // TODO: replace with hooks
-  const userData = useSelector((state) => state.userReducer.userData);
-  const userReducerError = useSelector((state) => state.userReducer.error);
+  //const userData = useSelector((state) => state.userReducer.userData);
   const comments = useSelector((state) => state.contactsReducer.comments);
   const totalComments = useSelector((state) => state.contactsReducer.totalComments);
   const loadingComments = useSelector((state) => state.contactsReducer.loadingComments);
@@ -245,16 +252,12 @@ const DetailsScreen = ({ navigation, route }) => {
   const totalActivities = useSelector((state) => state.contactsReducer.totalActivities);
   const loadingActivities = useSelector((state) => state.contactsReducer.loadingActivities);
   const newComment = useSelector((state) => state.contactsReducer.newComment);
-  const contactsReducerError = useSelector((state) => state.contactsReducer.error);
-  //const loading = useSelector(state => state.contactsReducer.loading);
   const saved = useSelector((state) => state.contactsReducer.saved);
-  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
   //const contactSettings = useSelector((state) => state.contactsReducer.settings);
   const contactSettings = { ...settings };
   const foundGeonames = useSelector((state) => state.groupsReducer.foundGeonames);
   const groupsList = useSelector((state) => state.groupsReducer.groups);
   const contactsList = useSelector((state) => state.contactsReducer.contacts);
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
   const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
   const previousContacts = useSelector((state) => state.contactsReducer.previousContacts);
   const previousGroups = useSelector((state) => state.groupsReducer.previousGroups);
@@ -1540,186 +1543,6 @@ const DetailsScreen = ({ navigation, route }) => {
     </View>
   );
 
-  // TODO: move to FAB component
-  const onMeetingComplete = () => {
-    onSaveQuickAction('quick_button_meeting_complete');
-    var isQuestionnaireEnabled = false;
-    var q_id = null;
-    // loop thru all (active) questionnaires, and check whether 'contact'->'meeting_complete' is enabled
-    questionnaires.map((questionnaire) => {
-      if (
-        questionnaire.trigger_type == 'contact' &&
-        questionnaire.trigger_value == 'meeting_complete'
-      ) {
-        isQuestionnaireEnabled = true;
-        q_id = questionnaire.id;
-      }
-    });
-    /* TODO
-    if (isQuestionnaireEnabled) {
-      navigation.navigate(
-        NavigationActions.navigate({
-          routeName: 'Questionnaire',
-          action: NavigationActions.navigate({
-            routeName: 'Question',
-            params: {
-              userData: userData,
-              contact: state.record,
-              q_id,
-            },
-          }),
-        }),
-      );
-    }
-    */
-  };
-
-  // TODO: move to FAB component
-  const onSaveQuickAction = (quickActionPropertyName) => {
-    let newActionValue = state.record[quickActionPropertyName]
-      ? parseInt(state.record[quickActionPropertyName], 10) + 1
-      : 1;
-    if (isConnected) {
-      onSaveContact({
-        [quickActionPropertyName]: newActionValue,
-      });
-    } else {
-      // Update Seeker Path in OFFLINE mode
-      let seekerPathValue = null;
-      let quickActionName = quickActionPropertyName.replace('quick_button_', '');
-      switch (quickActionName) {
-        case 'no_answer': {
-          seekerPathValue = 'attempted';
-          break;
-        }
-        case 'contact_established': {
-          seekerPathValue = 'established';
-          break;
-        }
-        case 'meeting_scheduled': {
-          seekerPathValue = 'scheduled';
-          break;
-        }
-        case 'meeting_complete': {
-          seekerPathValue = 'met';
-          break;
-        }
-      }
-      if (seekerPathValue && state.record.seeker_path != 'met') {
-        setState(
-          (prevState) => ({
-            ...state,
-            contact: {
-              ...prevState.record,
-              seeker_path: seekerPathValue,
-            },
-          }),
-          () => {
-            onSaveContact({
-              [quickActionPropertyName]: newActionValue,
-            });
-          },
-        );
-      } else {
-        onSaveContact({
-          [quickActionPropertyName]: newActionValue,
-        });
-      }
-    }
-  };
-
-  // TODO: refactor to shared component AND dynamic list
-  const FAB = () => {
-    return (
-      <ActionButton
-        buttonColor={Colors.primaryRGBA}
-        renderIcon={(active) =>
-          active ? (
-            <Icon
-              type="MaterialCommunityIcons"
-              name="close"
-              style={{ color: 'white', fontSize: 22 }}
-            />
-          ) : (
-            <Icon
-              type="MaterialCommunityIcons"
-              name="comment-plus"
-              style={{ color: 'white', fontSize: 25 }}
-            />
-          )
-        }
-        degrees={0}
-        activeOpacity={0}
-        bgColor="rgba(0,0,0,0.5)"
-        nativeFeedbackRippleColor="rgba(0,0,0,0)">
-        <ActionButton.Item
-          title={contactSettings.fields.quick_button_no_answer.name}
-          onPress={() => {
-            onSaveQuickAction('quick_button_no_answer');
-          }}
-          size={40}
-          buttonColor={Colors.colorNo}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon type="Feather" name="phone-off" style={styles.contactFABIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          title={contactSettings.fields.quick_button_contact_established.name}
-          onPress={() => {
-            onSaveQuickAction('quick_button_contact_established');
-          }}
-          size={40}
-          buttonColor={Colors.colorYes}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon type="MaterialCommunityIcons" name="phone-in-talk" style={styles.contactFABIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          title={contactSettings.fields.quick_button_meeting_scheduled.name}
-          onPress={() => {
-            onSaveQuickAction('quick_button_meeting_scheduled');
-          }}
-          buttonColor={Colors.colorWait}
-          size={40}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon type="MaterialCommunityIcons" name="calendar-plus" style={styles.contactFABIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          title={contactSettings.fields.quick_button_meeting_complete.name}
-          onPress={() => {
-            onMeetingComplete();
-          }}
-          size={40}
-          buttonColor={Colors.colorYes}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon type="MaterialCommunityIcons" name="calendar-check" style={styles.contactFABIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          title={contactSettings.fields.quick_button_no_show.name}
-          onPress={() => {
-            onSaveQuickAction('quick_button_no_show');
-          }}
-          size={40}
-          buttonColor={Colors.colorNo}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon
-            type="MaterialCommunityIcons"
-            name="calendar-remove"
-            style={styles.contactFABIcon}
-          />
-        </ActionButton.Item>
-      </ActionButton>
-    );
-  };
-
   // TODO: move with renderShowReasonStatusView = () => {
   const toggleReasonStatusView = (confirmReasonChange = false) => {
     setState((prevState) => {
@@ -2015,29 +1838,11 @@ const DetailsScreen = ({ navigation, route }) => {
     );
   };
 
-  // TODO: componentize as NewRecord?
-  const NewContact = () => {
-    return (
-      <KeyboardAwareScrollView
-        enableAutomaticScroll
-        enableOnAndroid
-        keyboardOpeningTime={0}
-        extraScrollHeight={150}
-        keyboardShouldPersistTaps="handled">
-        {!isConnected && <OfflineBar />}
-        <View style={styles.formContainer}>
-          <CustomView state={state} fields={renderCreationFields(settings)} create />
-        </View>
-      </KeyboardAwareScrollView>
-    );
-  };
-
-  // TODO: move to it's own component
   const Tabs = () => {
     return (
       <TabView
         lazy
-        navigationState={tabRoutes}
+        navigationState={{ index, routes }}
         renderTabBar={(props) => (
           <TabBar
             {...props}
@@ -2067,28 +1872,42 @@ const DetailsScreen = ({ navigation, route }) => {
         renderLazyPlaceholder={({ route }) => {
           return null;
         }}
-        onIndexChange={(index) => {
-          setTabRoutes({
-            ...tabRoutes,
-            index,
-          });
-        }}
+        onIndexChange={setIndex}
         initialLayout={{ width: windowWidth }}
       />
     );
   };
 
-  // TODO: componentize as ExistingRecord?
-  const ExistingContact = () => {
+  const CreatePost = () => {
+    const fields = renderCreationFields(settings);
+    return (
+      <KeyboardAwareScrollView
+        enableAutomaticScroll
+        enableOnAndroid
+        keyboardOpeningTime={0}
+        extraScrollHeight={150}
+        keyboardShouldPersistTaps="handled">
+        {!isConnected && <OfflineBar />}
+        {/*TODO<View style={styles.formContainer}>*/}
+        <CustomView state={state} fields={fields} create />
+      </KeyboardAwareScrollView>
+    );
+  };
+
+  const Post = () => {
+    // TODO: Nav Param ?
+    const isEditMode = false;
+    // TODO: why relying on position rather than name or type?
+    const isLastTab = index === routes?.length - 1;
+    console.log(`isLastTab? ${isLastTab}`);
     return (
       <>
         {!isConnected && <OfflineBar />}
         <Tabs />
-        {true && state.tabRoutes?.index !== state.tabRoutes?.routes?.length - 1 && <FAB />}
+        {!isEditMode && !isLastTab && <FAB post={post} />}
       </>
     );
   };
-  //{state.onlyView && state.tabRoutes?.index !== state.tabRoutes?.routes?.length-1 && (
 
   // TODO: componentize?
   const Modals = () => {
@@ -2124,18 +1943,20 @@ const DetailsScreen = ({ navigation, route }) => {
     );
   };
 
-  // TODO:
-  const isAddNewContact = false;
+  // TODO: Nav Param ?
+  const isCreate = false;
   return (
     <>
-      {isAddNewContact ? <NewContact /> : <ExistingContact />}
+      {isCreate ? <CreatePost /> : <Post />}
       <Modals />
     </>
   );
 };
-
-/*
 DetailsScreen.propTypes = {
-*/
-
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  route: PropTypes.object.isRequired,
+};
 export default DetailsScreen;

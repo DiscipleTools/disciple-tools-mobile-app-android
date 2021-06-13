@@ -26,10 +26,10 @@ import {
   Radio,
   Right,
 } from 'native-base';
-import Toast from 'react-native-easy-toast';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
 import Colors from 'constants/Colors';
+import { isIOS, showToast } from 'helpers';
 import i18n from 'languages';
 import { saveComment as saveGroupComment } from 'store/actions/groups.actions';
 import { saveComment as saveContactComment } from 'store/actions/contacts.actions';

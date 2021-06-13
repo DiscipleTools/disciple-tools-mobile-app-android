@@ -22,10 +22,10 @@ import {
   Radio,
   Right,
 } from 'native-base';
-import Toast from 'react-native-easy-toast';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
 import Colors from 'constants/Colors';
+import { isIOS, showToast } from 'helpers';
 import i18n from 'languages';
 import {
   getQuestionnaireById,
@@ -327,6 +327,7 @@ const Questionnaire = ({ navigation }) => {
               swipeRight={swipeRight}
               onSubmit={onSubmit}
             />
+            {/*
             <Toast
               ref={toastSaveRef}
               style={{ backgroundColor: Colors.successBackground }}
@@ -337,6 +338,7 @@ const Questionnaire = ({ navigation }) => {
               style={{ backgroundColor: Colors.errorBackground }}
               positionValue={300}
             />
+            */}
           </View>
         ))
       ) : (

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 15 sec default timeout for all requests
 const timeout = 15000;
-const protocol = 'http'; //"https";
+const protocol = 'https';
 
 export const getBaseUrl = (domain) => {
   return `${protocol}://${domain}/wp-json/`;

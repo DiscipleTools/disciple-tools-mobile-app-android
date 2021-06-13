@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import { networkStatus, setNetworkConnectivity } from './store/actions/networkConnectivity.actions';
+import { networkStatus, setNetworkConnectivity } from 'store/actions/networkConnectivity.actions';
 
 // TODO: re-introduce Sentry? something else? remove crash analytics for privacy?
 /*

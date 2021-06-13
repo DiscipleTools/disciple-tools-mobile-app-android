@@ -139,7 +139,7 @@ const useMyUser = () => {
   */
 
   return {
-    myUser: data,
+    userData: data,
     error,
     isLoading,
     isValidating,

@@ -20,6 +20,7 @@ import usePostType from 'hooks/usePostType.js';
 import useList from 'hooks/useList.js';
 
 // Custom Components
+import FAB from 'components/FAB';
 import FilterList from 'components/FilterList';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
@@ -547,100 +548,6 @@ const ListScreen = ({ navigation, route }) => {
     return <Text>Hello Comments</Text>;
   };
 
-  // TODO: create FAB component?
-  // this FAB is hardcoded, so let the Details FAB drive component
-  /* e.g., FAB items list:
-  [
-    {
-      label: "",
-      component: </>,
-      callback: fn(),
-    }
-  ]
-  */
-  const FAB = () => {
-    return (
-      <ActionButton
-        style={[state.fixFABIndex ? { zIndex: -1 } : {}]}
-        buttonColor={Colors.primaryRGBA}
-        renderIcon={(active) =>
-          active ? (
-            <Icon type="MaterialIcons" name="close" style={{ color: 'white', fontSize: 22 }} />
-          ) : (
-            <Icon type="MaterialIcons" name="add" style={{ color: 'white', fontSize: 25 }} />
-          )
-        }
-        degrees={0}
-        activeOpacity={0}
-        bgColor="rgba(0,0,0,0.5)"
-        nativeFeedbackRippleColor="rgba(0,0,0,0)">
-        {/* TODO: translate these new fields */}
-        <ActionButton.Item
-          title={'Add New Contact'}
-          onPress={() => {
-            goToDetailsScreen();
-          }}
-          size={40}
-          buttonColor={Colors.tintColor}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon type="MaterialIcons" name="add" style={styles.contactFABIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          // TODO: translate
-          title={'Import Phone Contact'}
-          onPress={() => {
-            (async () => {
-              const { status } = await Contacts.requestPermissionsAsync();
-              if (status === 'granted') {
-                const importContactsList = [];
-                const { data } = await Contacts.getContactsAsync({});
-                data.map((contact) => {
-                  const contactData = {};
-                  if (contact.contactType === 'person') {
-                    contactData['idx'] = contact.id;
-                    contactData['title'] = contact.name;
-                    contactData['name'] = contact.name;
-                    if (contact.hasOwnProperty('emails') && contact.emails.length > 0) {
-                      contactData['contact_email'] = [];
-                      contact.emails.map((email, idx) => {
-                        contactData['contact_email'].push({
-                          key: `contact_email_${idx}`,
-                          value: email.email,
-                        });
-                      });
-                    }
-                    if (contact.hasOwnProperty('phoneNumbers') && contact.phoneNumbers.length > 0) {
-                      contactData['contact_phone'] = [];
-                      contact.phoneNumbers.map((phoneNumber, idx) => {
-                        contactData['contact_phone'].push({
-                          key: `contact_phone_${idx}`,
-                          value: phoneNumber.number,
-                        });
-                      });
-                    }
-                    importContactsList.push(contactData);
-                  }
-                });
-                setState({
-                  importContactsModalVisible: true,
-                  importContactsList,
-                });
-              }
-            })();
-          }}
-          size={40}
-          buttonColor={Colors.colorYes}
-          nativeFeedbackRippleColor="rgba(0,0,0,0)"
-          textStyle={{ color: Colors.tintColor, fontSize: 15 }}
-          textContainerStyle={{ height: 'auto' }}>
-          <Icon type="MaterialIcons" name="contact-phone" style={styles.contactFABIcon} />
-        </ActionButton.Item>
-      </ActionButton>
-    );
-  };
-
   return (
     <Container>
       <View style={{ flex: 1 }}>
@@ -662,8 +569,7 @@ const ListScreen = ({ navigation, route }) => {
             setModalVisible={(modalVisible) =>
               setState({ importContactsModalVisible: modalVisible })
             }
-            // TODO: translate
-            title={'Import Phone Contacts'}>
+            title={i18n.t('contactsScreen.importContact')}>
             {importContactsRender()}
           </ActionModal>
         )}

@@ -81,6 +81,8 @@
     }
   },
   "contactsScreen": {
+    "addNewContact": "Add New Contact",
+    "importContact": "Import Phone Contact",
     "contacts": "Contacts",
     "noContactPlaceHolder": "No Contacts currently available.\n\nPress the FAB Button (+) to add a new Contact",
     "noContactPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
@@ -109,7 +111,6 @@
     "confirmPin": "Confirm PIN"
   },
   "contactDetailScreen": {
-    "addNewContact": "Add New Contact",
     "subAssignThisContact": "Sub-assign this contact",
     "mobile": "Phone",
     "selectSources": "Select sources",
@@ -130,7 +131,6 @@
     },
     "noContactCommentPlaceHolder1": "There may have been a problem getting them from your site. Drag down to try to refresh and try again.",
     "noContactCommentPlaceHolderOffline": "You are currently offline. Ensure you are connected to wifi or mobile data in order to refresh and get your contact comment.",
-    "importContact": "Import Phone Contact",
     "contactSharedWith": "This contact is shared with",
     "ageNotSet": "No age set"
   },
