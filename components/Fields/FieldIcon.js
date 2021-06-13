@@ -65,10 +65,7 @@ const FieldIcon = ({ field, detailMode, hideIcon }) => {
       break;
     }
     case 'multi_select': {
-      if (field.name.includes('tag')) {
-        iconType = 'AntDesign';
-        iconName = 'tags';
-      } else if (field.name.includes('email')) {
+      if (field.name.includes('email')) {
         iconType = 'FontAwesome';
         iconName = 'envelope';
       } else if (field.name.includes('sources')) {
@@ -147,6 +144,11 @@ const FieldIcon = ({ field, detailMode, hideIcon }) => {
         iconType = 'FontAwesome';
         iconName = 'user';
       }
+      break;
+    }
+    case 'tags': {
+      iconType = 'AntDesign';
+      iconName = 'tags';
       break;
     }
     case 'text': {

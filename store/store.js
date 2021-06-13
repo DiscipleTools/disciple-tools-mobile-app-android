@@ -3,7 +3,7 @@ import { persistStore, persistReducer, createTransform } from 'redux-persist';
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
 import hardSet from 'redux-persist/es/stateReconciler/hardSet';
 
-import rootReducer from './reducer';
+import rootReducer from './rootReducer';
 
 const middleware = [];
 

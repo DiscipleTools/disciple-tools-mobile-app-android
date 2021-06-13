@@ -2,18 +2,18 @@ import useRequest from 'hooks/useRequest';
 
 const useNotifications = () => {
   const url = 'dt/v1/notifications/get_notifications';
-  /* TODO: useSWRInfinity?
+  // TODO: useSWRInfinity: https://swr.vercel.app/examples/infinite-loading
   const req = {
+    method: 'post',
     url,
-    body: {
-      all: allNotifications,
-      page: offset,
-      limit,
-    }
+    data: {
+      all: true,
+      limit: 20,
+      page: 0,
+    },
   };
-  */
 
-  const { data, error, isLoading, isValidating, mutate } = useRequest(url);
+  const { data, error, isLoading, isValidating, mutate } = useRequest(req);
 
   // TODO:
 
@@ -36,10 +36,11 @@ const useNotifications = () => {
   };
 
   return {
-    myUser: data,
+    notifications: data,
     error,
     isLoading,
     isValidating,
+    mutate,
   };
 };
 export default useNotifications;

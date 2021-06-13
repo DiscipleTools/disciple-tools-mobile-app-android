@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux';
 import { Label, Input, Icon, Picker, DatePicker, Textarea, Button } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
+import TextField from 'components/Fields/Text/TextField';
 import FaithMilestones from 'components/FaithMilestones';
 import i18n from 'languages';
 import utils from 'utils';
@@ -1113,6 +1114,36 @@ const Field = ({ state, field }) => {
     // - state.nameRequired
     case 'text': {
       return (
+        <TextField
+          accessibilityLabel={i18n.t('loginScreen.domain.label', { locale })}
+          label={i18n.t('loginScreen.domain.label', { locale })}
+          containerStyle={domainStyle}
+          iconName="ios-globe"
+          onChangeText={(text) => {
+            setState({
+              ...state,
+              domain: text,
+            });
+          }}
+          textAlign={isRTL ? 'right' : 'left'}
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={state.domain}
+          returnKeyType="next"
+          textContentType="URL"
+          keyboardType="url"
+          disabled={state.loading}
+          placeholder={i18n.t('loginScreen.domain.placeholder', { locale })}
+        />
+      );
+    }
+    default: {
+      return <Text>{field.toString()}</Text>;
+    }
+  }
+  return null;
+};
+/*
         <Input
           value={value}
           onChangeText={(value) => {
@@ -1127,12 +1158,5 @@ const Field = ({ state, field }) => {
             isRTL ? { textAlign: 'left', flex: 1 } : {},
           ]}
         />
-      );
-    }
-    default: {
-      return <Text>{field.toString()}</Text>;
-    }
-  }
-  return null;
-};
+        */
 export default Field;

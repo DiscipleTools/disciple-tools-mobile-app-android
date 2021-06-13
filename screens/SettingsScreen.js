@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Platform, Text } from 'react-native';
 import PropTypes from 'prop-types';
-// component library (native base)
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  //logout,
+  toggleAutoLogin,
+  toggleRememberLoginDetails,
+  updateUserInfo,
+} from 'store/actions/user.actions';
+import { toggleNetworkConnectivity } from 'store/actions/networkConnectivity.actions';
+
+// Component Library (Native Base)
 import {
   Body,
   Button as NbButton,
@@ -14,60 +23,56 @@ import {
   Switch,
   Thumbnail,
 } from 'native-base';
-// recommended by native base
 import { Row } from 'react-native-easy-grid';
-// expo
+
+// Expo
 import Constants from 'expo-constants';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
 import * as Updates from 'expo-updates';
-// redux
-import { useDispatch, useSelector } from 'react-redux';
-// actions
-import {
-  //logout,
-  toggleAutoLogin,
-  toggleRememberLoginDetails,
-  updateUserInfo,
-} from 'store/actions/user.actions';
-import { toggleNetworkConnectivity } from 'store/actions/networkConnectivity.actions';
-// helpers/utils
-import i18n from 'languages';
-import { renderLanguagePickerItems, showToast, withPropsValidation } from 'helpers';
-// custom hooks
+
+// Custom Hooks
+import useNetworkStatus from 'hooks/useNetworkStatus';
 import useMyUser from 'hooks/useMyUser.js';
-// custom components
+
+// Custom Components
 import OfflineBar from 'components/OfflineBar';
 import Locale from 'components/Locale';
-// styles/assets
+
+// Helpers
+import i18n from 'languages';
+import { isIOS, renderLanguagePickerItems, showToast, withPropsValidation } from 'helpers';
+
+// Styles, Constants, Icons, Assets, etc...
 import { styles } from './SettingsScreen.styles';
 import gravatar from 'assets/images/gravatar-default.png';
 
 const SettingsScreen = ({ navigation, route }) => {
-  const isIOS = Platform.OS === 'ios';
   const dispatch = useDispatch();
 
-  const { logout } = useMyUser();
+  const isConnected = useNetworkStatus();
+  const { userData, error: userError, logout } = useMyUser();
 
   // TODO: implement PropType validation on selectors? e.g.:
+  /*
   const userData = withPropsValidation(
     { userData: PropTypes.object.isRequired },
     useSelector((state) => state.userReducer.userData),
   );
+  */
   const locale = useSelector((state) => state.i18nReducer.locale);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
   const isAutoLogin = useSelector((state) => state.userReducer.isAutoLogin);
   const hasPIN = useSelector((state) => state.userReducer.hasPIN);
   const rememberLoginDetails = useSelector((state) => state.userReducer.rememberLoginDetails);
   const userReducerError = useSelector((state) => state.userReducer.error);
-  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
-  const networkStatus = useSelector((state) => state.networkConnectivityReducer.networkStatus);
 
   const [state, setState] = useState({
     hasPIN,
     locale,
   });
 
+  /* TODO
   // update local state any time 'userData' changes globally
   useEffect(() => {
     setState({
@@ -75,6 +80,7 @@ const SettingsScreen = ({ navigation, route }) => {
       locale: userData.locale,
     });
   }, [userData]);
+  */
 
   // update local state any time 'hasPIN' changes globally
   useEffect(() => {
@@ -91,7 +97,12 @@ const SettingsScreen = ({ navigation, route }) => {
     }
   }, [userReducerError]);
 
+  if (!userData) return null;
+
   const Header = () => {
+    const username = userData?.display_name ?? null;
+    // TODO: get from Redux
+    const domain = userData?.domain ?? null;
     return (
       <ListItem itemHeader first avatar style={styles.header}>
         <Left>
@@ -106,7 +117,7 @@ const SettingsScreen = ({ navigation, route }) => {
               },
               styles.username,
             ]}>
-            {userData.displayName}
+            {username}
           </Text>
           <Text
             style={[
@@ -116,7 +127,7 @@ const SettingsScreen = ({ navigation, route }) => {
               },
               styles.domain,
             ]}>
-            {userData.domain}
+            {domain}
           </Text>
         </Body>
       </ListItem>
@@ -149,13 +160,11 @@ const SettingsScreen = ({ navigation, route }) => {
 
   const OnlineToggle = () => {
     const toggleOnline = () => {
-      if (networkStatus) {
-        const toastMsg = isConnected
-          ? i18n.t('settingsScreen.networkUnavailable')
-          : i18n.t('settingsScreen.networkAvailable');
-        showToast(toastMsg, isConnected);
-        dispatch(toggleNetworkConnectivity(isConnected));
-      }
+      const toastMsg = isConnected
+        ? i18n.t('settingsScreen.networkUnavailable')
+        : i18n.t('settingsScreen.networkAvailable');
+      showToast(toastMsg, isConnected);
+      //dispatch(toggleNetworkConnectivity(isConnected));
     };
     return (
       <ListItem icon>
@@ -174,7 +183,7 @@ const SettingsScreen = ({ navigation, route }) => {
           </Text>
         </Body>
         <Right>
-          <Switch value={isConnected} onChange={toggleOnline} disabled={!networkStatus} />
+          <Switch value={isConnected} onChange={toggleOnline} disabled={false /*!networkStatus*/} />
         </Right>
       </ListItem>
     );

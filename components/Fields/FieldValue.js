@@ -1,51 +1,57 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Label, Input, Icon, Picker, DatePicker, Textarea, Button } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
+// Custom Hooks
+import useNetworkStatus from 'hooks/useNetworkStatus';
+import usePostType from 'hooks/usePostType.js';
+import useId from 'hooks/useId.js';
+import useDetails from 'hooks/useDetails.js';
+import useSettings from 'hooks/useSettings.js';
+
+// Custom Components
 import FaithMilestones from 'components/FaithMilestones';
 import i18n from 'languages';
 import utils from 'utils';
 import { isIOS, showToast } from 'helpers';
 
+import Colors from 'constants/Colors';
 // TODO: refactor styles
 import { styles } from './FieldValue.styles';
+import {
+  hasBibleIcon,
+  statusIcon,
+  readingBibleIcon,
+  statesBeliefIcon,
+  canShareGospelIcon,
+  sharingTheGospelIcon,
+  baptizedIcon,
+  baptizingIcon,
+  inChurchIcon,
+  startingChurchesIcon,
+} from 'constants/Icons';
 
-// TODO: move to constants
-const POST_TYPE_CONTACT = 'contacts';
-const POST_TYPE_GROUP = 'groups';
-
-// TODO: no longer pass in 'state' (use Context or Redux)
 const FieldValue = ({ state, field }) => {
-  const postType = field?.post_type;
-  if (!postType) return null;
-
-  let record = null;
-  let settings = null;
-  let statusField = null;
-  if (postType === POST_TYPE_CONTACT) {
-    settings = useSelector((state) => state.contactsReducer.settings);
-    record = useSelector((state) => state.contactsReducer.contact);
-    // TODO: make constant
-    statusField = 'overall_status';
-  } else if (postType === POST_TYPE_GROUP) {
-    settings = useSelector((state) => state.groupsReducer.settings);
-    record = useSelector((state) => state.groupsReducer.group);
-    // TODO: make constant
-    statusField = 'group_status';
-  } else {
-    return null;
-  }
-  if (!settings || !record) return null;
-
-  if (!Object.prototype.hasOwnProperty.call(record, field.name)) return null;
-  const value = record[field.name];
-  if (value.length < 1) return null;
-  const valueType = field?.type;
+  const isConnected = useNetworkStatus();
+  const { isContact, isGroup, postType } = usePostType();
+  const id = useId();
+  const { post, error: postError } = useDetails(id);
+  const { settings, error: settingsError } = useSettings();
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
+
+  const statusField = isContact ? 'overall_status' : 'group_status';
+
+  if (postError || settingsError || !id)
+    showToast(postError?.message || settingsError?.message || 'ZZError', true);
+  if (!post || !settings) return null;
+
+  if (!Object.prototype.hasOwnProperty.call(post, field.name)) return null;
+  const value = post[field.name];
+  if (value.length < 1) return null;
+  const valueType = field?.type;
 
   // TODO: duplicated in Field.js
   const renderStatusPickerItems = () => {
@@ -181,7 +187,7 @@ const FieldValue = ({ state, field }) => {
             </Text>
           </View>
         );
-      } else if (postType === POST_TYPE_GROUP) {
+      } else if (isGroup) {
         let iconSource = groupParentIcon;
         const groupFieldLabel = String(field.label);
         if (groupFieldLabel.toLowerCase().includes('peer')) iconSource = groupPeerIcon;
@@ -295,12 +301,13 @@ const FieldValue = ({ state, field }) => {
               { marginTop: 'auto', marginBottom: 'auto' },
               isRTL ? { textAlign: 'left', flex: 1 } : {},
             ]}>
-            {value.values
+            {/*value.values
               .map(
                 (source) =>
                   state.sources.find((sourceItem) => sourceItem.value === source.value).name,
               )
-              .join(', ')}
+              .join(', ')*/}
+            {value.values.join(', ')}
           </Text>
         );
       } else if (field.name == 'health_metrics') {
@@ -423,7 +430,8 @@ const FieldValue = ({ state, field }) => {
                 ]}>
                 <Picker
                   selectedValue={value}
-                  onValueChange={setContactStatus}
+                  // TODO
+                  //onValueChange={setContactStatus}
                   style={Platform.select({
                     android: {
                       color: '#ffffff',
@@ -441,12 +449,12 @@ const FieldValue = ({ state, field }) => {
               </Col>
             </Row>
             <Row style={{ paddingBottom: 15 }}>
-              {Object.prototype.hasOwnProperty.call(record, `reason_${record.overall_status}`) ? (
+              {Object.prototype.hasOwnProperty.call(post, `reason_${post.overall_status}`) ? (
                 <Text>
                   (
                   {
-                    settings.fields[`reason_${record.overall_status}`].values[
-                      record[`reason_${record.overall_status}`]
+                    settings.fields[`reason_${post.overall_status}`].values[
+                      post[`reason_${post.overall_status}`]
                     ].label
                   }
                   )
@@ -491,7 +499,8 @@ const FieldValue = ({ state, field }) => {
                 ]}>
                 <Picker
                   selectedValue={value}
-                  onValueChange={setGroupStatus}
+                  // TODO
+                  //onValueChange={setGroupStatus}
                   style={Platform.select({
                     android: {
                       color: '#ffffff',
@@ -519,7 +528,7 @@ const FieldValue = ({ state, field }) => {
       }
     }
     case 'user_select': {
-      return renderContactLink(value);
+      //return renderContactLink(value);
     }
     default: {
       return <Text style={isRTL ? { textAlign: 'left', flex: 1 } : {}}>{value.toString()}</Text>;

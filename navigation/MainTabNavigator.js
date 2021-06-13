@@ -1,7 +1,4 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import * as SecureStore from 'expo-secure-store';
-import { Text, View } from 'react-native';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { createBottomTabNavigator, BottomTabBar } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
@@ -17,6 +14,7 @@ import NotificationsScreen from 'screens/NotificationsScreen';
 import SettingsScreen from 'screens/SettingsScreen';
 import Storybook from 'storybook';
 
+import useNotifications from 'hooks/useNotifications.js';
 import TabBarIcon from 'components/TabBarIcon';
 import Colors from 'constants/Colors';
 import i18n from 'languages';
@@ -24,37 +22,16 @@ import i18n from 'languages';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-import {
-  getLocations,
-  getPeopleGroups,
-  getLocationListLastModifiedDate,
-} from 'store/actions/groups.actions';
-import { getUsers } from 'store/actions/users.actions';
-
 const MainTabNavigator = ({ navigation }) => {
   console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
   console.log('$$$$$          MAIN TAB NAVIGATOR             $$$$$');
   console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
-  /*
-  const dispatch = useDispatch();
-  useEffect(() => {
-    // TODO: batch?
-    // TODO: caching?
-    // TODO: get Contacts here since it is default/initial screen?
-    dispatch(getUsers());
-    dispatch(getLocations());
-    dispatch(getPeopleGroups());
-  }, []);
-  */
-
-  const notifications = useSelector((state) => state.notificationsReducer.notifications);
-  let unreadNotifications = [];
-  if (notifications !== undefined) {
-    unreadNotifications = notifications?.filter((notification) => {
-      if (notification.is_new === '1') return notification;
-    });
-  }
+  const { notifications } = useNotifications();
+  if (!notifications) return null;
+  const unreadNotifications = notifications?.filter((notification) => {
+    if (notification.is_new === '1') return notification;
+  });
   const notificationsCount = unreadNotifications?.length > 0 ? unreadNotifications.length : null;
 
   const screenOptionStyle = {
@@ -320,26 +297,4 @@ const MainTabNavigator = ({ navigation }) => {
     </Tab.Navigator>
   );
 };
-/*
-      <Tab.Screen
-        name="Contacts"
-        component={ContactsStack}
-        options={{
-          tabBarLabel: i18n.t('contactsScreen.contacts'),
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabBarIcon type="FontAwesome" name="user" focused={focused} />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="Groups"
-        component={GroupsStack}
-        options={{
-          tabBarLabel: i18n.t('global.groups'),
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabBarIcon type="FontAwesome" name="users" focused={focused} />
-          )
-        }}
-      />
-*/
 export default MainTabNavigator;

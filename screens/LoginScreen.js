@@ -19,7 +19,7 @@ import { Button, Icon } from 'native-base';
 import Constants from 'expo-constants';
 import * as Localization from 'expo-localization';
 // redux
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 // actions
 //import { login } from 'store/actions/user.actions';
 // helpers/utils
@@ -37,9 +37,9 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { styles } from './LoginScreen.styles';
 
 const LoginScreen = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const { userData, login } = useMyUser();
 
-  const userData = useSelector((state) => state.userReducer.userData);
+  //const userData = useSelector((state) => state.userReducer.userData);
   const locale = useSelector((state) => state.i18nReducer.locale);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
@@ -54,8 +54,6 @@ const LoginScreen = ({ navigation, route }) => {
     passwordValidation: null,
     locale, // use Redux
   });
-
-  const { login } = useMyUser();
 
   useEffect(() => {
     if (locale === null) {

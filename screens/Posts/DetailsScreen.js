@@ -20,7 +20,6 @@ import {
 import PropTypes from 'prop-types';
 
 // Redux
-//import { useDispatch, useSelector } from 'react-redux';
 import { useSelector } from 'react-redux';
 
 // Component Library (Native Base)
@@ -44,6 +43,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
 import usePostType from 'hooks/usePostType.js';
+import useId from 'hooks/useId.js';
 import useDetails from 'hooks/useDetails.js';
 import useSettings from 'hooks/useSettings.js';
 import useMyUser from 'hooks/useMyUser.js';
@@ -96,20 +96,8 @@ import i18n from 'languages';
 import utils from 'utils';
 import { isIOS, renderCreationFields, showToast } from 'helpers';
 import Colors from 'constants/Colors';
-import {
-  hasBibleIcon,
-  statusIcon,
-  readingBibleIcon,
-  statesBeliefIcon,
-  canShareGospelIcon,
-  sharingTheGospelIcon,
-  baptizedIcon,
-  baptizingIcon,
-  inChurchIcon,
-  dtIcon,
-  startingChurchesIcon,
-} from 'constants/Icons';
 import { styles } from './DetailsScreen.styles';
+import { dtIcon } from 'constants/Icons';
 
 const initialState = {
   record: {},
@@ -201,16 +189,10 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const { isContact, isGroup, postType } = usePostType();
 
-  const id = route?.params?.id ?? null;
+  const id = useId();
   const { post, error: postError } = useDetails(id);
   const { settings, error: settingsError } = useSettings();
   const { userData, error: userError } = useMyUser();
-
-  if (postError || settingsError || userError || !id)
-    showToast(
-      postError?.message || settingsError?.message || userError?.message || 'ZZError',
-      true,
-    );
 
   const mapTabRoutes = () => {
     if (!settings?.tiles) return [];
@@ -1899,7 +1881,7 @@ const DetailsScreen = ({ navigation, route }) => {
     const isEditMode = false;
     // TODO: why relying on position rather than name or type?
     const isLastTab = index === routes?.length - 1;
-    console.log(`isLastTab? ${isLastTab}`);
+    //console.log(`isLastTab? ${isLastTab}`);
     return (
       <>
         {!isConnected && <OfflineBar />}
@@ -1942,6 +1924,13 @@ const DetailsScreen = ({ navigation, route }) => {
       </>
     );
   };
+
+  if (postError || settingsError || userError || !id)
+    showToast(
+      postError?.message || settingsError?.message || userError?.message || 'ZZError',
+      true,
+    );
+  if (!post || !settings || !userData) return null;
 
   // TODO: Nav Param ?
   const isCreate = false;

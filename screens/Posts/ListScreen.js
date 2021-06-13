@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, FlatList, Pressable, RefreshControl, StyleSheet, Text } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Container, Icon } from 'native-base';
 import PropTypes from 'prop-types';
 
@@ -16,6 +16,7 @@ import { isIOS, showToast } from 'helpers';
 import utils from 'utils';
 
 // Custom Hooks
+import useNetworkStatus from 'hooks/useNetworkStatus';
 import usePostType from 'hooks/usePostType.js';
 import useList from 'hooks/useList.js';
 
@@ -35,11 +36,10 @@ import { styles } from './ListScreen.styles';
 import Constants from 'constants';
 
 const ListScreen = ({ navigation, route }) => {
-  const dispatch = useDispatch();
-
   const { isContact, isGroup } = usePostType();
 
-  const isConnected = useSelector((state) => state.networkConnectivityReducer.isConnected);
+  const isConnected = useNetworkStatus();
+
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const defaultFilter = {
@@ -307,51 +307,6 @@ const ListScreen = ({ navigation, route }) => {
   const onRefresh = () => {
     mutate();
   };
-
-  /*
-  const onRefresh = (increasePagination = false, returnFromDetail = false) => {
-    let newState = {
-      offset: increasePagination ? state.offset + state.limit : 0,
-    };
-    setState(
-      (prevState) => {
-        return returnFromDetail ? prevState : newState;
-      },
-      () => {
-        let filter = {};
-        // Add pagination on ONLINE mode
-        if (isConnected) {
-          filter = {
-            offset: state.offset,
-            limit: state.limit,
-            sort: state.sort,
-          };
-        }
-        if (state.filtered) {
-          filter = {
-            ...filter,
-            filtered: true,
-          };
-          if (state.filterOption) {
-            filter = {
-              ...filter,
-              ...state.filterOption,
-              filterOption: true,
-            };
-          } else if (state.filterText) {
-            filter = {
-              ...filter,
-              name: state.filterText,
-              sort: 'name',
-              filterText: true,
-            };
-          }
-        }
-        dispatch(getAll(domain, token, offset, limit, sort));
-      },
-    );
-  };
-  */
 
   const goToDetailsScreen = (record, isPhoneImport = false) => {
     if (isContact) {

@@ -11,7 +11,7 @@ const useRequest = (request, { initialData, ...config } = {}) => {
   // TODO: is the [request, id] correct?
   //console.log(`*** REQ: ${JSON.stringify(request)} ***`);
 
-  let { data, error } = useSWR(
+  let { data, error, isLoading, isValidating, mutate } = useSWR(
     isConnected ? request && JSON.stringify(request) : null,
     () => axios(request || {}).then((response) => response.data),
     {
@@ -35,10 +35,12 @@ const useRequest = (request, { initialData, ...config } = {}) => {
     }
     */
   }
-  //console.log(data);
   return {
     data,
     error,
+    isLoading,
+    isValidating,
+    mutate,
   };
 };
 export default useRequest;
