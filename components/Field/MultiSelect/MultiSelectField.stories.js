@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import CenterView from 'storybook/stories/CenterView';
-import MultiSelect from './MultiSelect';
+import MultiSelect from './MultiSelectField';
 import FormField from 'components/FormField';
 
 storiesOf('Multi Select', module)

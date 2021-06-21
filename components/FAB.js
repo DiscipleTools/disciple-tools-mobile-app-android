@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from 'native-base';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 // 3rd-party Components
 import ActionButton from 'react-native-action-button';
@@ -17,6 +18,8 @@ import Colors from 'constants/Colors';
 import { styles } from './FAB.styles';
 
 const FAB = ({ post }) => {
+  const navigation = useNavigation();
+
   const isConnected = useNetworkStatus();
 
   const { isContact, isGroup } = usePostType();
@@ -187,12 +190,11 @@ const FAB = ({ post }) => {
     if (field === 'quick_button_new')
       return {
         ...defaultIconConfig,
-        title: i18n.t('contactsScreen.addNewContact'),
+        title: i18n.t('contactsScreen.addNewContact'), // TODO: group translate
         count: null,
         name: 'plus',
         callback: () => {
-          // TODO:
-          console.log('*** ADD NEW ***');
+          navigation.navigate('Details', { create: true });
         },
       };
     if (field === 'quick_button_import_contacts')
@@ -207,6 +209,7 @@ const FAB = ({ post }) => {
         callback: () => {
           // TODO:
           console.log('*** IMPORT CONTACT ***');
+          //navigation.navigate('Details', { import: true });
         },
       };
     return null;

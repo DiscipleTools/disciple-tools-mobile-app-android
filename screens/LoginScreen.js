@@ -30,7 +30,7 @@ import { renderLanguagePickerItems, showToast } from 'helpers';
 import useMyUser from 'hooks/useMyUser.js';
 // custom components
 import Locale from 'components/Locale';
-import TextField from 'components/Fields/Text/TextField';
+import TextField from 'components/Field/Text/TextField';
 // third-party components
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // styles/assets

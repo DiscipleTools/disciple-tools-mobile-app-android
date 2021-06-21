@@ -8,56 +8,33 @@ import Colors from 'constants/Colors';
 import i18n from 'languages';
 
 const HeaderLeft = ({ label, onPress }) => {
-  // TODO: use label to distinguish Contact/Group/etc...
   const route = useRoute();
+  const editing = useSelector((state) => state.appReducer.editing);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  if (route?.params?.onlyView) {
+  if (editing) {
     return (
-      <Icon
-        type="Feather"
-        name="arrow-left"
-        onPress={onPress}
-        style={{ paddingLeft: 16, color: Colors.headerTintColor, paddingRight: 16 }}
-      />
+      <Row onPress={onPress}>
+        <Icon
+          type="AntDesign"
+          name="close"
+          style={[
+            { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
+            isRTL ? { paddingRight: 16 } : { paddingLeft: 16 },
+          ]}
+        />
+        <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
+          {i18n.t('global.cancel')}
+        </Text>
+      </Row>
     );
   }
   return (
-    <Row onPress={onPress}>
-      <Icon
-        type="AntDesign"
-        name="close"
-        style={[
-          { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
-          isRTL ? { paddingRight: 16 } : { paddingLeft: 16 },
-        ]}
-      />
-      <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-        {i18n.t('global.cancel')}
-      </Text>
-    </Row>
+    <Icon
+      type="Feather"
+      name="arrow-left"
+      onPress={onPress}
+      style={{ paddingLeft: 16, color: Colors.headerTintColor, paddingRight: 16 }}
+    />
   );
 };
-/*
-const HeaderLeft = ({ isLeft, isEditMode, onPress }) => {
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  return(
-    <Row onPress={onPress}>
-      <Icon
-        type={ isEditMode ? "AntDesign" : "Feather" }
-        name={ isEditMode ? "close" : (isRTL ? "arrow-right" : "arrow-left") }
-        style={[
-          { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
-          isRTL ? { paddingRight: 16 } : { paddingLeft: 16 },
-        ]}
-      />
-      { isEditMode && (
-        <Text
-          style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-          {i18n.t('global.cancel')}
-        </Text>
-      )}
-    </Row>
-  );
-};
-*/
 export default HeaderLeft;

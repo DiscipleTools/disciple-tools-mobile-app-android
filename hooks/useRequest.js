@@ -6,7 +6,6 @@ import useNetworkStatus from 'hooks/useNetworkStatus';
 
 const useRequest = (request, { initialData, ...config } = {}) => {
   const isConnected = useNetworkStatus();
-  //console.log(`isConnected? ${isConnected}`);
 
   // TODO: is the [request, id] correct?
   //console.log(`*** REQ: ${JSON.stringify(request)} ***`);

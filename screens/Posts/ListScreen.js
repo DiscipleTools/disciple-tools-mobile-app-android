@@ -36,11 +36,11 @@ import { styles } from './ListScreen.styles';
 import Constants from 'constants';
 
 const ListScreen = ({ navigation, route }) => {
-  const { isContact, isGroup } = usePostType();
+  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const isConnected = useNetworkStatus();
 
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { isContact, isGroup, postType } = usePostType();
 
   const defaultFilter = {
     text: '',
@@ -308,59 +308,25 @@ const ListScreen = ({ navigation, route }) => {
     mutate();
   };
 
-  const goToDetailsScreen = (record, isPhoneImport = false) => {
-    if (isContact) {
-      goToContactDetailScreen(record, isPhoneImport);
-      return;
-    }
-    if (isGroup) {
-      goToGroupDetailScreen(record);
-      return;
-    }
-    return null;
-  };
-
-  // TODO: merge with goToGroupDetailScreen
-  const goToContactDetailScreen = (contactData = null, isPhoneImport = false) => {
-    if (contactData && isPhoneImport) {
-      navigation.navigate('ContactDetails', {
-        onlyView: true,
+  const goToDetailsScreen = (postData = null, isPhoneImport = false) => {
+    if (postData && isPhoneImport) {
+      navigation.navigate('Details', {
         importContact: contactData,
-        //onGoBack: () => onRefresh(false, true),
+        type: postType,
       });
-    } else if (contactData) {
+    } else if (postData) {
       // Detail
-      navigation.navigate('ContactDetails', {
-        id: contactData.ID,
-        onlyView: true,
-        name: contactData.title,
-        importContact: null,
-        //onGoBack: () => onRefresh(false, true),
+      navigation.navigate('Details', {
+        id: postData.ID,
+        name: postData.title,
+        type: postType,
+        onGoBack: () => onRefresh(),
       });
     } else {
       // Create
-      navigation.navigate('ContactDetails', {
-        onlyView: true,
-        importContact: null,
-        //onGoBack: () => onRefresh(false, true),
-      });
-    }
-  };
-
-  const goToGroupDetailScreen = (groupData = null) => {
-    if (groupData) {
-      // Detail
-      navigation.navigate('GroupDetails', {
-        id: groupData.ID,
-        onlyView: true,
-        name: groupData.title,
-      });
-      //onGoBack: () => onRefresh(false, true),
-    } else {
-      // Create
-      navigation.navigate('GroupDetails', {
-        onlyView: true,
-        onGoBack: () => onRefresh(false, true),
+      navigation.navigate('Details', {
+        create: true,
+        type: postType,
       });
     }
   };

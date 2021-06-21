@@ -2,9 +2,9 @@ import React from 'react';
 import { Platform, StyleSheet, Text } from 'react-native';
 
 import { storiesOf } from '@storybook/react-native';
-import colors from '../constants/Colors';
-import CenterView from '../storybook/stories/CenterView';
-import TextFieldMultiple from './Fields/Text/TextFieldMultiple';
+import colors from 'constants/Colors';
+import CenterView from 'storybook/stories/CenterView';
+import TextFieldMultiple from './Field/Text/TextFieldMultiple';
 import FormField from './FormField';
 
 const styles = StyleSheet.create({

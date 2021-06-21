@@ -50,54 +50,21 @@ import useMyUser from 'hooks/useMyUser.js';
 
 // Custom Components
 import FAB from 'components/FAB';
-import CustomView from 'components/CustomView';
+import Tile from 'components/Tile';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
 import HeaderLeft from 'components/HeaderLeft';
 import HeaderRight from 'components/HeaderRight';
 import KebabMenu from 'components/KebabMenu';
 
-import {
-  save,
-  getCommentsByContact,
-  saveComment,
-  getActivitiesByContact,
-  getAll,
-  getById,
-  getByIdEnd,
-  getContactSettings,
-  saveEnd,
-  deleteComment,
-  loadingFalse,
-  updatePrevious,
-  getShareSettings,
-  addUserToShare,
-  removeUserToShare,
-} from 'store/actions/contacts.actions';
-import {
-  saveGroup,
-  getById as getByIdGroup,
-  getCommentsByGroup,
-  saveComment as saveCommentGroup,
-  getActivitiesByGroup,
-  getByIdEnd as getByIdEndGroup,
-  searchLocations,
-  deleteComment as deleteCommentGroup,
-  loadingFalse as loadingFalseGroup,
-  updatePrevious as updatePreviousGroups,
-  getShareSettings as getShareSettingsGroup,
-  addUserToShare as addUserToShareGroup,
-  removeUserToShare as removeUserToShareGroup,
-} from 'store/actions/groups.actions';
-import { updatePrevious as updatePreviousContacts } from 'store/actions/contacts.actions';
-
 import i18n from 'languages';
-
-import utils from 'utils';
 import { isIOS, renderCreationFields, showToast } from 'helpers';
+import utils from 'utils';
+
 import Colors from 'constants/Colors';
-import { styles } from './DetailsScreen.styles';
 import { dtIcon } from 'constants/Icons';
+
+import { styles } from './DetailsScreen.styles';
 
 const initialState = {
   record: {},
@@ -178,6 +145,10 @@ const initialState = {
 };
 
 const DetailsScreen = ({ navigation, route }) => {
+  console.log('*** DETAILS ***');
+
+  console.log(JSON.stringify(route));
+
   const layout = useWindowDimensions();
   const windowWidth = layout.width;
   const milestonesGridSize = windowWidth + 5;
@@ -190,7 +161,7 @@ const DetailsScreen = ({ navigation, route }) => {
   const { isContact, isGroup, postType } = usePostType();
 
   const id = useId();
-  const { post, error: postError } = useDetails(id);
+  const { post, error: postError, mutate } = useDetails(id);
   const { settings, error: settingsError } = useSettings();
   const { userData, error: userError } = useMyUser();
 
@@ -211,11 +182,14 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   const routes = mapTabRoutes(settings);
+  // TODO: default to 0
+  const [index, setIndex] = React.useState(1);
+  /*
   const [tabRoutes, setTabRoutes] = useState({
     index: 0,
     routes,
   });
-  const [index, setIndex] = React.useState(0);
+  */
   /*
   const [routes] = React.useState([
     { key: 'first', title: 'First' },
@@ -223,36 +197,56 @@ const DetailsScreen = ({ navigation, route }) => {
   ]);
   */
 
+  const editing = useSelector((state) => state.appReducer.editing);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   // TODO: replace with hooks
   //const userData = useSelector((state) => state.userReducer.userData);
-  const comments = useSelector((state) => state.contactsReducer.comments);
-  const totalComments = useSelector((state) => state.contactsReducer.totalComments);
-  const loadingComments = useSelector((state) => state.contactsReducer.loadingComments);
-  const activities = useSelector((state) => state.contactsReducer.activities);
-  const totalActivities = useSelector((state) => state.contactsReducer.totalActivities);
-  const loadingActivities = useSelector((state) => state.contactsReducer.loadingActivities);
-  const newComment = useSelector((state) => state.contactsReducer.newComment);
-  const saved = useSelector((state) => state.contactsReducer.saved);
+  const comments = {};
+  //const comments = useSelector((state) => state.contactsReducer.comments);
+  const totalComments = 0;
+  //const totalComments = useSelector((state) => state.contactsReducer.totalComments);
+  const loadingComments = false;
+  //const loadingComments = useSelector((state) => state.contactsReducer.loadingComments);
+  const activities = {};
+  //const activities = useSelector((state) => state.contactsReducer.activities);
+  const totalActivities = 0;
+  //const totalActivities = useSelector((state) => state.contactsReducer.totalActivities);
+  const loadingActivities = false;
+  //const loadingActivities = useSelector((state) => state.contactsReducer.loadingActivities);
+  const newComment = false;
+  //const newComment = useSelector((state) => state.contactsReducer.newComment);
+  const saved = false;
+  //const saved = useSelector((state) => state.contactsReducer.saved);
   //const contactSettings = useSelector((state) => state.contactsReducer.settings);
   const contactSettings = { ...settings };
-  const foundGeonames = useSelector((state) => state.groupsReducer.foundGeonames);
-  const groupsList = useSelector((state) => state.groupsReducer.groups);
-  const contactsList = useSelector((state) => state.contactsReducer.contacts);
-  const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
-  const previousContacts = useSelector((state) => state.contactsReducer.previousContacts);
-  const previousGroups = useSelector((state) => state.groupsReducer.previousGroups);
-  const loadingShare = useSelector((state) => state.contactsReducer.loadingShare);
-  const shareSettings = useSelector((state) => state.contactsReducer.shareSettings);
-  const savedShare = useSelector((state) => state.contactsReducer.savedShare);
-  const tags = useSelector((state) => state.contactsReducer.tags);
+  const foundGeonames = [];
+  //const foundGeonames = useSelector((state) => state.groupsReducer.foundGeonames);
+  const groupsList = [];
+  //const groupsList = useSelector((state) => state.groupsReducer.groups);
+  const contactsList = [];
+  //const contactsList = useSelector((state) => state.contactsReducer.contacts);
+  const questionnaires = [];
+  //const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
+  const previousContacts = [];
+  //const previousContacts = useSelector((state) => state.contactsReducer.previousContacts);
+  const previousGroups = [];
+  //const previousGroups = useSelector((state) => state.groupsReducer.previousGroups);
+  const loadingShare = false;
+  //const loadingShare = useSelector((state) => state.contactsReducer.loadingShare);
+  const shareSettings = {};
+  //const shareSettings = useSelector((state) => state.contactsReducer.shareSettings);
+  const savedShare = false;
+  //const savedShare = useSelector((state) => state.contactsReducer.savedShare);
+  const tags = [];
+  //const tags = useSelector((state) => state.contactsReducer.tags);
 
   let keyboardDidShowListener, keyboardDidHideListener, focusListener, hardwareBackPressListener;
 
   const [state, setState] = useState(initialState);
 
-  let filters = useSelector((state) => state.usersReducer.contactFilters);
+  const filters = {};
+  //let filters = useSelector((state) => state.usersReducer.contactFilters);
   // TODO:
   let totalRecords = 20;
   let filteredRecords = null;
@@ -310,16 +304,11 @@ const DetailsScreen = ({ navigation, route }) => {
       headerTintColor: Colors.headerTintColor,
       headerTitleStyle: {
         fontWeight: 'bold',
-        width: route.params?.onlyView
-          ? Platform.select({
-              android: 180,
-              ios: 140,
-            })
-          : Platform.select({
-              android: 180,
-              ios: 140,
-            }),
-        marginLeft: route.params?.onlyView ?? 25,
+        width: Platform.select({
+          android: 180,
+          ios: 140,
+        }),
+        marginLeft: editing ? null : 25,
       },
     });
   }, [navigation]);
@@ -1820,78 +1809,7 @@ const DetailsScreen = ({ navigation, route }) => {
     );
   };
 
-  const Tabs = () => {
-    return (
-      <TabView
-        lazy
-        navigationState={{ index, routes }}
-        renderTabBar={(props) => (
-          <TabBar
-            {...props}
-            style={styles.tabStyle}
-            activeColor={Colors.tintColor}
-            inactiveColor={Colors.gray}
-            scrollEnabled
-            tabStyle={{ width: 'auto' }}
-            indicatorStyle={styles.tabBarUnderlineStyle}
-            renderLabel={({ route, color }) => (
-              <Text style={{ color, fontWeight: 'bold' }}>{route.title}</Text>
-            )}
-          />
-        )}
-        renderScene={({ route }) => {
-          // TODO: placeholder if error?
-          const tile = settings.tiles.find((tile) => tile.label === route.title);
-          if (route.key === 'comments') {
-            if (state.showFilterView) {
-              return renderFilterCommentsView();
-            } else {
-              return renderAllCommentsView();
-            }
-          }
-          return <CustomView state={state} fields={tile.fields} />;
-        }}
-        renderLazyPlaceholder={({ route }) => {
-          return null;
-        }}
-        onIndexChange={setIndex}
-        initialLayout={{ width: windowWidth }}
-      />
-    );
-  };
-
-  const CreatePost = () => {
-    const fields = renderCreationFields(settings);
-    return (
-      <KeyboardAwareScrollView
-        enableAutomaticScroll
-        enableOnAndroid
-        keyboardOpeningTime={0}
-        extraScrollHeight={150}
-        keyboardShouldPersistTaps="handled">
-        {!isConnected && <OfflineBar />}
-        {/*TODO<View style={styles.formContainer}>*/}
-        <CustomView state={state} fields={fields} create />
-      </KeyboardAwareScrollView>
-    );
-  };
-
-  const Post = () => {
-    // TODO: Nav Param ?
-    const isEditMode = false;
-    // TODO: why relying on position rather than name or type?
-    const isLastTab = index === routes?.length - 1;
-    //console.log(`isLastTab? ${isLastTab}`);
-    return (
-      <>
-        {!isConnected && <OfflineBar />}
-        <Tabs />
-        {!isEditMode && !isLastTab && <FAB post={post} />}
-      </>
-    );
-  };
-
-  // TODO: componentize?
+  // TODO: better Modal strategy?
   const Modals = () => {
     return (
       <>
@@ -1925,6 +1843,79 @@ const DetailsScreen = ({ navigation, route }) => {
     );
   };
 
+  const CreatePost = () => {
+    if (!settings?.tiles) return null;
+    const fields = [];
+    settings.tiles.forEach((tile) => {
+      let creationFieldsByTile = tile?.fields?.filter((field) => field?.in_create_form === true);
+      if (creationFieldsByTile.length > 0) {
+        fields.push(...creationFieldsByTile);
+      }
+    });
+    return (
+      <KeyboardAwareScrollView
+        enableAutomaticScroll
+        enableOnAndroid
+        keyboardOpeningTime={0}
+        extraScrollHeight={150}
+        keyboardShouldPersistTaps="handled">
+        {!isConnected && <OfflineBar />}
+        <Tile fields={fields} />
+      </KeyboardAwareScrollView>
+    );
+  };
+
+  const Post = () => {
+    // TODO: why relying on position rather than name or type?
+    const isLastTab = index === routes?.length - 1;
+    //console.log(`isLastTab? ${isLastTab}`);
+    // TODO: KeyboardAwareScrollView for editing?
+    return (
+      <>
+        {!isConnected && <OfflineBar />}
+        <TabView
+          //lazy
+          navigationState={{ index, routes }}
+          //navigationState={tabRoutes}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              style={styles.tabStyle}
+              activeColor={Colors.tintColor}
+              inactiveColor={Colors.gray}
+              scrollEnabled
+              tabStyle={{ width: 'auto' }}
+              indicatorStyle={styles.tabBarUnderlineStyle}
+              renderLabel={({ route, color }) => (
+                <Text style={{ color, fontWeight: 'bold' }}>{route.title}</Text>
+              )}
+            />
+          )}
+          renderScene={({ route }) => {
+            // TODO: placeholder if error?
+            const tile = settings.tiles.find((tile) => tile.label === route.title);
+            if (route.key === 'comments') {
+              if (state.showFilterView) {
+                return renderFilterCommentsView();
+              } else {
+                return renderAllCommentsView();
+              }
+            }
+            return <Tile fields={tile.fields} />;
+          }}
+          //renderLazyPlaceholder={({ route }) => {
+          //return null;
+          //  console.log("-----> renderLazyPlaceholder ");
+          //  return <Text>Loading...</Text>;
+          //}}
+          onIndexChange={setIndex}
+          initialLayout={{ width: windowWidth }}
+        />
+        {!editing && !isLastTab && <FAB post={post} />}
+      </>
+    );
+  };
+
   if (postError || settingsError || userError || !id)
     showToast(
       postError?.message || settingsError?.message || userError?.message || 'ZZError',
@@ -1932,8 +1923,7 @@ const DetailsScreen = ({ navigation, route }) => {
     );
   if (!post || !settings || !userData) return null;
 
-  // TODO: Nav Param ?
-  const isCreate = false;
+  const isCreate = route?.params?.create;
   return (
     <>
       {isCreate ? <CreatePost /> : <Post />}

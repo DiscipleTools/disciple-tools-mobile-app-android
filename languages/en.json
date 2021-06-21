@@ -110,6 +110,9 @@
     "close": "Close",
     "confirmPin": "Confirm PIN"
   },
+  "detailsScreen": {
+    "requiredField": "Required field"
+  },
   "contactDetailScreen": {
     "subAssignThisContact": "Sub-assign this contact",
     "mobile": "Phone",

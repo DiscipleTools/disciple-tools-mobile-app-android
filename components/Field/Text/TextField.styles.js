@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   inputContainer: {
     alignSelf: 'stretch',
     marginVertical: 10,
@@ -18,11 +18,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   inputRowIcon: {
+    fontSize: 25,
     marginHorizontal: 5,
   },
   inputRowTextInput: {
-    // TODO
-    //textAlign: i18n.isRTL ? 'right' : 'left',
     padding: 5,
     flexGrow: 1,
   },

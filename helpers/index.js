@@ -18,22 +18,6 @@ export const renderPickerItem = (item) => (
 */
 export const isIOS = Platform.OS === 'ios';
 
-export const renderCreationFields = (settings) => {
-  if (!settings?.tiles) return [];
-  let creationFields = [];
-  settings.tiles.forEach((tile) => {
-    let creationFieldsByTile = tile.fields.filter(
-      (field) =>
-        Object.prototype.hasOwnProperty.call(field, 'in_create_form') &&
-        field.in_create_form === true,
-    );
-    if (creationFieldsByTile.length > 0) {
-      creationFields.push(...creationFieldsByTile);
-    }
-  });
-  return creationFields;
-};
-
 // TODO: refactor to use renderPickerItems above?
 //renderPickerItem({ key: locale.code, label: locale.name, value: locale.code })
 export const renderLanguagePickerItems = locales.map((locale) => (
@@ -191,14 +175,6 @@ const mapContacts = (contacts, entities) => {
 
 const mapContact = (contact, entities) => {
   return mapContacts([contact], entities)[0];
-};
-
-const _isNumeric = (string) => {
-  if (typeof string != 'string') return false; // we only process strings!
-  return (
-    !isNaN(string) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-    !isNaN(parseFloat(string))
-  ); // ...and ensure strings of whitespace fail
 };
 
 const mapGroups = (groups, entities) => {

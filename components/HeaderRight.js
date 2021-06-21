@@ -7,62 +7,61 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 import Colors from 'constants/Colors';
 import i18n from 'languages';
 
-//if (route.params?.onEnableEdit && route.params?.contactId && route.params?.onlyView) {
 const HeaderRight = ({ menu, menuRef, label, onPress }) => {
-  // TODO: use label to distinguish Contact/Group/etc...
   const route = useRoute();
+  const editing = useSelector((state) => state.appReducer.editing);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  if (true) {
+  if (editing) {
     return (
-      <Row>
-        <Row onPress={onPress}>
-          <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-            {i18n.t('global.edit')}
-          </Text>
-          <Icon
-            type="MaterialCommunityIcons"
-            name="pencil"
-            style={{
-              color: Colors.headerTintColor,
-              marginTop: 'auto',
-              marginBottom: 'auto',
-              fontSize: 24,
-            }}
-          />
-        </Row>
-        {menu && (
-          <Row
-            onPress={() => {
-              menuRef.current.show();
-            }}>
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingLeft: 12,
-                paddingRight: 12,
-              }}>
-              {menu}
-            </View>
-          </Row>
-        )}
+      <Row onPress={onPress}>
+        <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
+          {i18n.t('global.save')}
+        </Text>
+        <Icon
+          type="Feather"
+          name="check"
+          style={[
+            { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
+            isRTL ? { paddingLeft: 16 } : { paddingRight: 16 },
+          ]}
+        />
       </Row>
     );
   }
   return (
-    <Row onPress={onPress}>
-      <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
-        {i18n.t('global.save')}
-      </Text>
-      <Icon
-        type="Feather"
-        name="check"
-        style={[
-          { color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' },
-          isRTL ? { paddingLeft: 16 } : { paddingRight: 16 },
-        ]}
-      />
+    <Row>
+      <Row onPress={onPress}>
+        <Text style={{ color: Colors.headerTintColor, marginTop: 'auto', marginBottom: 'auto' }}>
+          {i18n.t('global.edit')}
+        </Text>
+        <Icon
+          type="MaterialCommunityIcons"
+          name="pencil"
+          style={{
+            color: Colors.headerTintColor,
+            marginTop: 'auto',
+            marginBottom: 'auto',
+            fontSize: 24,
+          }}
+        />
+      </Row>
+      {menu && (
+        <Row
+          onPress={() => {
+            menuRef.current.show();
+          }}>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: 12,
+              paddingRight: 12,
+            }}>
+            {menu}
+          </View>
+        </Row>
+      )}
     </Row>
   );
 };

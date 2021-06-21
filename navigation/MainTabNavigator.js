@@ -51,10 +51,12 @@ const MainTabNavigator = ({ navigation }) => {
           options={{
             title: i18n.t('contactsScreen.contacts'),
           }}
+          initialParams={{
+            type: 'contacts',
+          }}
         />
         <Stack.Screen
-          name="ContactDetails"
-          //component={ContactDetailScreen}
+          name="Details"
           component={DetailsScreen}
           options={{
             title: '',
@@ -73,10 +75,12 @@ const MainTabNavigator = ({ navigation }) => {
           options={{
             title: i18n.t('global.groups'),
           }}
+          initialParams={{
+            type: 'groups', // TODO: Constants
+          }}
         />
         <Stack.Screen
-          name="GroupDetails"
-          //component={GroupDetailScreen}
+          name="Details"
           component={DetailsScreen}
           //options={({ route }) => ({
           //  title: route.params.groupName
@@ -108,7 +112,7 @@ const MainTabNavigator = ({ navigation }) => {
       <Stack.Navigator screenOptions={screenOptionStyle}>
         <Stack.Screen
           name="More"
-          component={ContactsScreen}
+          component={DetailsScreen}
           options={{
             title: '',
           }}

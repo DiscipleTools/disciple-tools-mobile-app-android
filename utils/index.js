@@ -153,6 +153,15 @@ const diff = (obj1, obj2) => {
   return diffs;
 };
 
+const isNumeric = (string) => {
+  if (typeof string != 'string') return false; // we only process strings!
+  return (
+    !isNaN(string) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+    !isNaN(parseFloat(string))
+  ); // ...and ensure strings of whitespace fail
+};
+
+// TODO: remove bc it is now in DateField
 const formatDateToBackEnd = (dateString) => {
   const dateObject = new Date(dateString);
   const year = dateObject.getFullYear();
@@ -163,10 +172,12 @@ const formatDateToBackEnd = (dateString) => {
   return newDate;
 };
 
+// TODO: remove bc it is now in DateField
 const formatDateToView = (date) => {
   return moment(new Date(date)).utc().format('LL');
 };
 
+// TODO: remove bc it is now in DateField
 const formatDateToDatePicker = (timestamp = null) => {
   let date = timestamp ? new Date(timestamp) : new Date();
   // Keep date value to current timezone
@@ -616,4 +627,5 @@ export default {
   formatDateToDatePicker,
   mergeContactList,
   mergeGroupList,
+  isNumeric,
 };

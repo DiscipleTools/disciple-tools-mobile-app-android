@@ -49,6 +49,13 @@ const App = () => {
   const notificationListener = useRef();
   const responseListener = useRef();
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('...');
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Push Notification Listeners
   useEffect(() => {
     // Show incoming notifications when the app is in foreground
@@ -131,10 +138,11 @@ const App = () => {
       <PersistGate loading={null} persistor={persistor}>
         <SWRConfig
           value={{
+            focusThrottleInterval: 5000,
             refreshInterval: 0,
             dedupingInterval: 2000,
             loadingTimeout: 15000,
-            fetcher: (...args) => axios(...args).then((res) => res.data),
+            fetcher: async (...args) => axios(...args).then((res) => res.data),
           }}>
           <Root>
             <View style={styles.container}>
