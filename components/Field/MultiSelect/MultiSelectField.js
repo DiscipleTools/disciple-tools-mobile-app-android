@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Chip, Selectize } from 'react-native-material-selectize';
+import { Icon, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
+import { Chip, Selectize } from 'react-native-material-selectize';
 import PropTypes from 'prop-types';
+
+import i18n from 'languages';
 
 import { styles } from './MultiSelectField.styles';
 
 const MultiSelectField = ({
+  field,
+  value,
   containerStyle,
   inputContainerStyle,
   placeholder,
@@ -21,6 +26,7 @@ const MultiSelectField = ({
   const [state, setState] = useState({
     selectedItems,
     items,
+    sources: [],
   });
 
   const editing = useSelector((state) => state.appReducer.editing);
@@ -28,6 +34,7 @@ const MultiSelectField = ({
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const onMilestoneChange = (milestoneName, customProp = null) => {
+    /* TODO: record?
     let list = customProp ? record[customProp] : record.milestones;
     let propName = customProp ? customProp : 'milestones';
     const milestonesList = list ? [...list.values] : [];
@@ -72,12 +79,14 @@ const MultiSelectField = ({
   };
 
   const onCheckExistingMilestone = (milestoneName, customProp = null) => {
+    /* TODO: record?
     let list = customProp ? record[customProp] : record.milestones;
     const milestonesList = list ? [...list.values] : [];
     // Return 'boolean' acording to milestone existing in the 'milestonesList'
     return milestonesList.some(
       (milestone) => milestone.value === milestoneName && !milestone.delete,
     );
+    */
   };
 
   const renderMultiSelectField = (field, value, index) => (
@@ -118,9 +127,9 @@ const MultiSelectField = ({
           itemId="value"
           items={state.sources}
           selectedItems={
-            record[field.name]
+            value
               ? // Only add option elements (by contact sources) does exist in source list
-                record[field.name].values
+                value.values
                   .filter((contactSource) =>
                     state.sources.find((sourceItem) => sourceItem.value === contactSource.value),
                   )
@@ -211,8 +220,10 @@ const MultiSelectField = ({
               </Label>
             </Col>
           </Row>
+          {/* TODO
           <FaithMilestones state={state} />
           <FaithMilestones state={state} custom />
+          */}
         </Col>
       );
     } else if (field.name == 'health_metrics') {

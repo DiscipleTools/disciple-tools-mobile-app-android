@@ -39,7 +39,7 @@ const TextField = (props) => {
     />
   ) : null;
 
-  const TextFieldEdit = () => {
+  const TextFieldEdit = () => (
     <View style={[styles.inputContainer, containerStyle]}>
       <View style={[styles.inputLabel, labelStyle]}>
         <Text style={[styles.inputLabelText, labelTextStyle]}>{label}</Text>
@@ -48,8 +48,8 @@ const TextField = (props) => {
         {icon}
         <TextInput style={[styles.inputRowTextInput, textInputStyle]} {...props} />
       </View>
-    </View>;
-  };
+    </View>
+  );
 
   const TextFieldView = () => (
     <View style={[styles.inputContainer, containerStyle]}>

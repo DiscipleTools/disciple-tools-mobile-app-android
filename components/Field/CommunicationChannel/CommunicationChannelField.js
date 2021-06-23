@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Chip, Selectize } from 'react-native-material-selectize';
+import { Icon, Input, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
+import { Chip, Selectize } from 'react-native-material-selectize';
 import PropTypes from 'prop-types';
 
 // TODO: refactor unused styles

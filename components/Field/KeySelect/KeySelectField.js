@@ -35,6 +35,7 @@ const KeySelectField = ({ field, value }) => {
   };
 
   const KeySelectFieldEdit = () => {
+    return null; // TODO!!
     if (name === 'overall_status') {
       return (
         <Col>
@@ -71,7 +72,7 @@ const KeySelectField = ({ field, value }) => {
               ]}>
               <Picker
                 selectedValue={value}
-                onValueChange={setContactStatus}
+                //TODO:onValueChange={setContactStatus}
                 style={Platform.select({
                   android: {
                     color: '#ffffff',
@@ -89,28 +90,6 @@ const KeySelectField = ({ field, value }) => {
               <Icon name="caret-down" size={10} style={styles.pickerIcon} />
             </Col>
           </Row>
-          {Object.prototype.hasOwnProperty.call(record, `reason_${record.overall_status}`) ? (
-            <TouchableOpacity activeOpacity={0.6} onPress={toggleReasonStatusView}>
-              <Row>
-                <Text>
-                  (
-                  {
-                    settings.fields[`reason_${record.overall_status}`].values[
-                      record[`reason_${record.overall_status}`]
-                    ].label
-                  }
-                  )
-                </Text>
-                <Icon
-                  type="MaterialCommunityIcons"
-                  name="pencil"
-                  style={{
-                    fontSize: 21,
-                  }}
-                />
-              </Row>
-            </TouchableOpacity>
-          ) : null}
         </Col>
       );
       // TODO:
@@ -179,6 +158,7 @@ const KeySelectField = ({ field, value }) => {
           //TODO:selectedValue={record[name]}
           onValueChange={(value) => {
             // TODO:
+            console.log('*** KEY SELECT CHANGE ***');
             //setContactCustomFieldValue(name, value)
             //setGroupCustomFieldValue(name, value)}
           }}
@@ -194,6 +174,28 @@ const KeySelectField = ({ field, value }) => {
   };
 
   /*
+          {/*TODO:Object.prototype.hasOwnProperty.call(record, `reason_${record.overall_status}`) ? (
+            <TouchableOpacity activeOpacity={0.6} onPress={toggleReasonStatusView}>
+              <Row>
+                <Text>
+                  (
+                  {
+                    settings.fields[`reason_${record.overall_status}`].values[
+                      record[`reason_${record.overall_status}`]
+                    ].label
+                  }
+                  )
+                </Text>
+                <Icon
+                  type="MaterialCommunityIcons"
+                  name="pencil"
+                  style={{
+                    fontSize: 21,
+                  }}
+                />
+              </Row>
+            </TouchableOpacity>
+          ) : null}
             {Object.prototype.hasOwnProperty.call(post, `reason_${post.overall_status}`) ? (
               <Text>
                 (
@@ -245,8 +247,7 @@ const KeySelectField = ({ field, value }) => {
               ]}>
               <Picker
                 selectedValue={value}
-                // TODO
-                //onValueChange={setContactStatus}
+                //TODO:onValueChange={setContactStatus}
                 style={Platform.select({
                   android: {
                     color: '#ffffff',

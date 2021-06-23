@@ -3,6 +3,8 @@ import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Picker } from 'native-base';
 
+import Colors from 'constants/Colors';
+
 //import { styles } from "./UserSelectField.styles";
 
 const UserSelectField = ({ value }) => {
@@ -21,7 +23,7 @@ const UserSelectField = ({ value }) => {
     return (
       <Picker
         mode="dropdown"
-        selectedValue={propExist ? selectedValue : null}
+        selectedValue={value ?? null}
         onValueChange={(value) => {
           // TODO
           //setContactCustomFieldValue(field.name, value)
