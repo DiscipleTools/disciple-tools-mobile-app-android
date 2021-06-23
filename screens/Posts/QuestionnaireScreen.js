@@ -27,12 +27,14 @@ import PropTypes from 'prop-types';
 import Colors from 'constants/Colors';
 import { isIOS, showToast } from 'helpers';
 import i18n from 'languages';
+/*
 import {
   getQuestionnaireById,
   resetState,
   setQuestion,
   submitQuestionnaire,
 } from 'store/actions/questionnaire.actions';
+*/
 
 const propTypes = {
   navigation: PropTypes.shape({
@@ -58,7 +60,7 @@ const QuestionHeader = ({ question }) => {
 };
 
 const Question = ({ question }) => {
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   const options = question.options;
   const isMutuallyExclusive = question && question.type == 'radio' ? true : false;
   const handleOptionSelect = (option) => {
@@ -78,12 +80,14 @@ const Question = ({ question }) => {
       }
       return existing_option;
     });
+    /*
     dispatch(
       setQuestion({
         ...question,
         options: options_p,
       }),
     );
+    */
   };
   return (
     <React.Fragment>
@@ -92,12 +96,14 @@ const Question = ({ question }) => {
         <Input
           value={question.value}
           onChangeText={(value) => {
+            /*
             dispatch(
               setQuestion({
                 ...question,
                 value,
               }),
             );
+            */
           }}
           style={styles.contactTextField}
         />
@@ -171,7 +177,7 @@ const NextButton = ({ currIdx, lastIdx, swipeRight, onSubmit }) => {
 };
 
 const Questionnaire = ({ navigation }) => {
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   const q_id = navigation.getParam('q_id');
   const userData = navigation.getParam('userData');
   const domain = userData.domain;
@@ -189,10 +195,11 @@ const Questionnaire = ({ navigation }) => {
     );
   }
 
+  /*
   useEffect(() => {
     dispatch(getQuestionnaireById(domain, token, q_id));
   }, []);
-
+  */
   useEffect(() => {
     if (save != null) {
       toastSaveRef.current.show(
@@ -201,7 +208,7 @@ const Questionnaire = ({ navigation }) => {
         </View>,
         1000,
         () => {
-          dispatch(resetState());
+          //dispatch(resetState());
           goToContactDetailScreen(navigation);
         },
       );
@@ -223,7 +230,7 @@ const Questionnaire = ({ navigation }) => {
         </View>,
         3000,
         () => {
-          dispatch(resetState());
+          //dispatch(resetState());
         },
       );
     }
@@ -255,6 +262,7 @@ const Questionnaire = ({ navigation }) => {
 
   const onSubmit = () => {
     // TODO: confirm required fields are selected, or give error feedback
+    /*
     dispatch(
       submitQuestionnaire(domain, token, {
         fields: {
@@ -265,6 +273,7 @@ const Questionnaire = ({ navigation }) => {
         },
       }),
     );
+    */
   };
   const swiperRef = useRef(null);
   const swipeRight = () => {

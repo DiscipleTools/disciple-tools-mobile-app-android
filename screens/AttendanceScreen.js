@@ -31,8 +31,8 @@ import PropTypes from 'prop-types';
 import Colors from 'constants/Colors';
 import { isIOS, showToast } from 'helpers';
 import i18n from 'languages';
-import { saveComment as saveGroupComment } from 'store/actions/groups.actions';
-import { saveComment as saveContactComment } from 'store/actions/contacts.actions';
+//import { saveComment as saveGroupComment } from 'store/actions/groups.actions';
+//import { saveComment as saveContactComment } from 'store/actions/contacts.actions';
 
 const propTypes = {
   navigation: PropTypes.shape({
@@ -45,7 +45,7 @@ import { styles } from './AttendanceScreen.styles';
 const Attendance = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   const q_id = route.params?.q_id ?? null;
   const userData = route.params?.userData ?? null;
   const groupData = route.params?.group ?? null;
@@ -110,7 +110,7 @@ const Attendance = () => {
       if (comment.length > 1) {
         comment += attendee.comment;
       }
-      dispatch(saveContactComment(domain, token, id, { comment }));
+      //dispatch(saveContactComment(domain, token, id, { comment }));
     });
     var comment =
       i18n.t('groupDetailScreen.attendance.groupComment') +
@@ -124,7 +124,7 @@ const Attendance = () => {
       attendedList.join('\n') +
       '\n\n' +
       groupComment;
-    dispatch(saveGroupComment(domain, token, group_id, { comment }));
+    //dispatch(saveGroupComment(domain, token, group_id, { comment }));
     goToGroupDetailScreen(navigation);
   };
 
