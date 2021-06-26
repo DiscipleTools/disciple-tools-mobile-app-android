@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as Random from 'expo-random';
 import * as SecureStore from 'expo-secure-store';
 
-import { setCNonceLogin } from 'store/actions/user.actions';
+import { setCNonceLogin } from 'store/actions/auth.actions';
 
 import useRequest from 'hooks/useRequest';
 import axios, { getBaseUrl } from 'services/axios';
@@ -48,6 +48,7 @@ const useMyUser = () => {
       const authToken = res?.data?.token;
       console.log(`authToken: ${authToken}`);
       if (authToken) {
+        // TODO: migrate to AppNavigator
         axios.defaults.baseURL = baseUrl;
         axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
         setSecureStoreItem('authToken', authToken);

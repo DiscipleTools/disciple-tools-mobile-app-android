@@ -17,13 +17,16 @@ const AppNavigator = () => {
   console.log('$$$$$          APP NAVIGATOR                  $$$$$');
   console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
-  const isAutoLogin = useSelector((state) => state.userReducer.isAutoLogin);
-  const cnoncePIN = useSelector((state) => state.userReducer.cnoncePIN);
-  const cnonceLogin = useSelector((state) => state.userReducer.cnonceLogin);
+  const hasPIN = useSelector((state) => state.authReducer.hasPIN);
+  const isAutoLogin = useSelector((state) => state.authReducer.isAutoLogin);
+  const cnoncePIN = useSelector((state) => state.authReducer.cnoncePIN);
+  const cnonceLogin = useSelector((state) => state.authReducer.cnonceLogin);
+  //const cnonceLogin = useSelector(state => state.userReducer.cnonceLogin);
 
   // NOTE: this 'hasPIN' differs from 'state.userReducer.hasPIN' which is used only to toggle the Switch on the Settings Screen. This is set if an existing PIN is found in SecureStore (to compare user confirm/entry against)
   const [state, setState] = useState({
-    hasPIN: null,
+    //hasPIN: null,
+    hasPIN,
     hasAutoLogin: isAutoLogin,
     hasValidAuthToken: null,
     hasDomain: null,
@@ -43,13 +46,13 @@ const AppNavigator = () => {
 
   const _hasValidCNonces = async (cnonce, secureCNonceKey, secureCNonceDTKey, threshold) => {
     const secureCNonceDT = await SecureStore.getItemAsync(secureCNonceDTKey);
-    //console.log(`secureCNonceDT: ${secureCNonceDT}`);
+    console.log(`secureCNonceDT: ${secureCNonceDT}`);
     const isTimelyCNonce = _isTimelyCNonce(secureCNonceDT, threshold);
-    //console.log(`isTimelyCNonce: ${isTimelyCNonce}`);
+    console.log(`isTimelyCNonce: ${isTimelyCNonce}`);
     const secureCNonce = await SecureStore.getItemAsync(secureCNonceKey);
-    //console.log(`secureCNonce: ${secureCNonce}`);
+    console.log(`secureCNonce: ${secureCNonce}`);
     const isMatchingCNonce = cnonce === secureCNonce;
-    //console.log(`isMatchingCNonce: ${isMatchingCNonce}`);
+    console.log(`isMatchingCNonce: ${isMatchingCNonce}`);
     return isTimelyCNonce && isMatchingCNonce;
   };
 
@@ -81,7 +84,7 @@ const AppNavigator = () => {
     if (type === 'Login') {
       secureCNonceKey = 'cnonceLogin';
       secureCNonceDTKey = 'cnonceLoginDT';
-      threshold = 30000; // 3 secs
+      threshold = 30000; // 10 secs
     }
     return await _hasValidCNonces(cnonce, secureCNonceKey, secureCNonceDTKey, threshold);
   };
@@ -163,8 +166,7 @@ const AppNavigator = () => {
       // valid PINCNonces
       if (state.hasValidPINCNonces) {
         // valid LoginCNonces && valid Token/Domain
-        //if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
-        if (state.hasValidAuthToken && state.hasDomain) {
+        if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
           return <MainTabNavigator />;
         } else {
           return <LoginStack />;
@@ -178,7 +180,6 @@ const AppNavigator = () => {
       console.log('*** AUTH 3 - Login ***');
       // valid LoginCNonces && valid Token/Domain
       if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
-        //if (true) {
         return <MainTabNavigator />;
       } else {
         return <LoginStack />;
@@ -190,12 +191,17 @@ const AppNavigator = () => {
       console.log('*** AUTH 2 - PIN->Main ***');
       // valid PINCNonces
       if (state.hasValidPINCNonces) {
-        // TODO: ONLINE? && !valid Token/Domain
-        //if (ONLINE? && !state.hasValidAuthToken && !state.hasDomain)
-        // return <LoginStack/>;
-        return <MainTabNavigator />;
+        // valid LoginCNonces && valid Token/Domain
+        if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
+          // TODO: ONLINE?
+          return <MainTabNavigator />;
+        } else {
+          return <LoginStack />;
+        }
       } else {
         return <PINStack />;
+        //return <LoginStack/>;
+        //return <MainTabNavigator/>;
       }
     }
     // Stack 1. Least Secure, Most Convenient

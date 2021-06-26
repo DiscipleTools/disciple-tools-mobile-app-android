@@ -1,21 +1,16 @@
 import React, { useState, useRef } from 'react';
-import { Image, ImageBackground, Text, View } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { Image, Text, View } from 'react-native';
+import { Icon } from 'native-base';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import * as SecureStore from 'expo-secure-store';
-import { MaterialIcons } from '@expo/vector-icons';
+
+import usePIN from 'hooks/usePIN';
 import i18n from 'languages';
 import { showToast } from 'helpers';
 
 import { styles } from './PINScreen.styles';
 
-import { setPIN, deletePIN, generatePINCNonce } from 'store/actions/user.actions';
-
-const PINScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const dispatch = useDispatch();
+const PINScreen = ({ navigation, route }) => {
+  const { getPIN, setPIN, deletePIN, setCNonce } = usePIN();
 
   const [state, setState] = useState({
     code: '',
@@ -28,11 +23,6 @@ const PINScreen = () => {
   const isSet = type === 'set' ? true : false;
 
   const pinInput = useRef();
-
-  const getPIN = async () => {
-    // TODO: Constants for value
-    return await SecureStore.getItemAsync('pinCode');
-  };
 
   const _isRepeating = (code) => {
     return [
@@ -75,18 +65,16 @@ const PINScreen = () => {
           );
           pinInput.current.shake().then(() => setState({ ...state, code: '' }));
         } else if (code === secretCode) {
-          dispatch(generatePINCNonce());
+          setCNonce();
           setState({ ...state, code: '' });
         } else {
           pinInput.current.shake().then(() => setState({ ...state, code: '' }));
         }
       });
     } else if (isDelete) {
-      console.log('*** GET PIN ***');
       getPIN().then((secretCode) => {
-        console.log('*** GOT PIN ***');
         if (code === secretCode) {
-          dispatch(deletePIN());
+          deletePIN();
           setState({ ...state, code: '' });
           navigation.goBack();
           showToast(i18n.t('settingsScreen.removedPinCode'));
@@ -132,7 +120,7 @@ const PINScreen = () => {
       }
     } else if (isSet && state.tmpCode !== null) {
       if (code === state.tmpCode) {
-        dispatch(setPIN(code));
+        setPIN(code);
         navigation.goBack();
         setState({ code: '', tmpCode: null });
         showToast(i18n.t('settingsScreen.savedPinCode'));
@@ -167,7 +155,7 @@ const PINScreen = () => {
     <View style={styles.container}>
       <Image source={require('assets/images/dt-icon.png')} style={styles.logo} />
       <Text style={styles.text}>{displayText}</Text>
-      <MaterialIcons name="lock-outline" style={styles.icon} />
+      <Icon type="MaterialIcons" name="lock-outline" style={styles.icon} />
       <SmoothPinCodeInput
         ref={pinInput}
         autoFocus
