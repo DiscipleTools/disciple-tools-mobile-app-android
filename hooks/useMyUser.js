@@ -46,11 +46,7 @@ const useMyUser = () => {
       });
       // success
       const authToken = res?.data?.token;
-      console.log(`authToken: ${authToken}`);
       if (authToken) {
-        // TODO: migrate to AppNavigator
-        axios.defaults.baseURL = baseUrl;
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
         setSecureStoreItem('authToken', authToken);
       } else {
         // TODO: translate custom error? use generic?
@@ -129,15 +125,6 @@ const useMyUser = () => {
     await SecureStore.deleteItemAsync('PIN');
     return true;
   };
-
-  /*
-  const generatePINCNonce = async() => {
-    const cnoncePIN = Random.getRandomBytes(256).toString();
-    yield SecureStore.setItemAsync('cnoncePINDT', new Date().toString());
-    yield SecureStore.setItemAsync('cnoncePIN', cnoncePIN);
-    return cnoncePIN;
-  };
-  */
 
   return {
     userData: data,

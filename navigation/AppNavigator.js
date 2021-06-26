@@ -8,6 +8,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import jwt_decode from 'jwt-decode';
 import * as SplashScreen from 'expo-splash-screen';
 
+import axios, { getBaseUrl } from 'services/axios';
+
 import PINScreen from 'screens/PINScreen';
 import LoginScreen from 'screens/LoginScreen';
 import MainTabNavigator from './MainTabNavigator';
@@ -46,13 +48,13 @@ const AppNavigator = () => {
 
   const _hasValidCNonces = async (cnonce, secureCNonceKey, secureCNonceDTKey, threshold) => {
     const secureCNonceDT = await SecureStore.getItemAsync(secureCNonceDTKey);
-    console.log(`secureCNonceDT: ${secureCNonceDT}`);
+    //console.log(`secureCNonceDT: ${secureCNonceDT}`);
     const isTimelyCNonce = _isTimelyCNonce(secureCNonceDT, threshold);
-    console.log(`isTimelyCNonce: ${isTimelyCNonce}`);
+    //console.log(`isTimelyCNonce: ${isTimelyCNonce}`);
     const secureCNonce = await SecureStore.getItemAsync(secureCNonceKey);
-    console.log(`secureCNonce: ${secureCNonce}`);
+    //console.log(`secureCNonce: ${secureCNonce}`);
     const isMatchingCNonce = cnonce === secureCNonce;
-    console.log(`isMatchingCNonce: ${isMatchingCNonce}`);
+    //console.log(`isMatchingCNonce: ${isMatchingCNonce}`);
     return isTimelyCNonce && isMatchingCNonce;
   };
 
@@ -104,9 +106,16 @@ const AppNavigator = () => {
     try {
       // Lookup Auth-related values in SecureStore
       hasPIN = await _hasSecureStoreItem('pinCode');
+      hasDomain = await _hasSecureStoreItem('domain');
       const hasAuthToken = await _hasSecureStoreItem('authToken');
-      if (hasAuthToken === true) {
+      // Set Axios BaseURL and Authorization Header
+      if (hasAuthToken && hasDomain) {
+        //if (hasAuthToken === true) {
         const authToken = await SecureStore.getItemAsync('authToken');
+        const domain = await SecureStore.getItemAsync('domain');
+        const baseUrl = getBaseUrl(domain);
+        axios.defaults.baseURL = baseUrl;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
         // TODO: disable until we work out what do do when server datetime is off
         // eg, 1621782129 -> 1970-01-19T18:29:42.129Z
         //const isAuthTokenExpired = _checkIsAuthTokenExpired(authToken);
@@ -115,7 +124,6 @@ const AppNavigator = () => {
       } else {
         hasValidAuthToken = false;
       }
-      hasDomain = await _hasSecureStoreItem('domain');
       hasValidPINCNonces = await _validateCNonces('PIN', cnoncePIN);
       hasValidLoginCNonces = await _validateCNonces('Login', cnonceLogin);
     } catch (e) {
@@ -191,8 +199,8 @@ const AppNavigator = () => {
       console.log('*** AUTH 2 - PIN->Main ***');
       // valid PINCNonces
       if (state.hasValidPINCNonces) {
-        // valid LoginCNonces && valid Token/Domain
-        if (state.hasValidLoginCNonces && state.hasValidAuthToken && state.hasDomain) {
+        // valid Token/Domain
+        if (state.hasValidAuthToken && state.hasDomain) {
           // TODO: ONLINE?
           return <MainTabNavigator />;
         } else {
@@ -200,8 +208,6 @@ const AppNavigator = () => {
         }
       } else {
         return <PINStack />;
-        //return <LoginStack/>;
-        //return <MainTabNavigator/>;
       }
     }
     // Stack 1. Least Secure, Most Convenient
