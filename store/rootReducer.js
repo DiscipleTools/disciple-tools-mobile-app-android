@@ -14,7 +14,7 @@ const rootReducer = combineReducers({
   i18nReducer,
   appReducer,
   authReducer,
-  userReducer,
+  userReducer, // TODO: merge with appReducer
   requestReducer,
 });
 export default rootReducer;

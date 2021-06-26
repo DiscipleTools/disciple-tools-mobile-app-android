@@ -27,7 +27,10 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import { networkStatus, setNetworkConnectivity } from 'store/actions/networkConnectivity.actions';
+import {
+  setNetworkStatus,
+  setNetworkConnectivity,
+} from 'store/actions/networkConnectivity.actions';
 
 // TODO: re-introduce Sentry? something else? remove crash analytics for privacy?
 /*
@@ -104,15 +107,15 @@ const App = () => {
       fetch('https://8.8.8.8')
         .then(() => {
           store.dispatch(setNetworkConnectivity(true));
-          store.dispatch(networkStatus(true));
+          store.dispatch(setNetworkStatus(true));
         })
         .catch(() => {
           store.dispatch(setNetworkConnectivity(false));
-          store.dispatch(networkStatus(false));
+          store.dispatch(setNetworkStatus(false));
         });
     } else {
       store.dispatch(setNetworkConnectivity(false));
-      store.dispatch(networkStatus(false));
+      store.dispatch(setNetworkStatus(false));
     }
   };
 

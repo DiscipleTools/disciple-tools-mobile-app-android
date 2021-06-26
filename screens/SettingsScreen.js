@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text } from 'react-native';
-import PropTypes from 'prop-types';
+import { Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  //logout,
-  toggleAutoLogin,
-  toggleRememberLoginDetails,
-  updateUserInfo,
-} from 'store/actions/user.actions';
+import PropTypes from 'prop-types';
+import { toggleAutoLogin, toggleRememberLoginDetails } from 'store/actions/auth.actions';
 import { toggleNetworkConnectivity } from 'store/actions/networkConnectivity.actions';
 
 // Component Library (Native Base)
@@ -23,13 +18,11 @@ import {
   Switch,
   Thumbnail,
 } from 'native-base';
-import { Row } from 'react-native-easy-grid';
 
 // Expo
 import Constants from 'expo-constants';
 import * as MailComposer from 'expo-mail-composer';
-import * as SecureStore from 'expo-secure-store';
-import * as Updates from 'expo-updates';
+//import * as Updates from 'expo-updates';
 
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
@@ -48,6 +41,7 @@ import { styles } from './SettingsScreen.styles';
 import gravatar from 'assets/images/gravatar-default.png';
 
 const SettingsScreen = ({ navigation, route }) => {
+  console.log('******** SETTINGS SCREEN ?? ________');
   const dispatch = useDispatch();
 
   const isConnected = useNetworkStatus();
@@ -62,13 +56,11 @@ const SettingsScreen = ({ navigation, route }) => {
   */
   const locale = useSelector((state) => state.i18nReducer.locale);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  const isAutoLogin = useSelector((state) => state.userReducer.isAutoLogin);
-  const hasPIN = useSelector((state) => state.userReducer.hasPIN);
-  const rememberLoginDetails = useSelector((state) => state.userReducer.rememberLoginDetails);
-  const userReducerError = useSelector((state) => state.userReducer.error);
+  const isAutoLogin = useSelector((state) => state.authReducer.isAutoLogin);
+  const hasPIN = useSelector((state) => state.authReducer.hasPIN);
+  const rememberLoginDetails = useSelector((state) => state.authReducer.rememberLoginDetails);
 
   const [state, setState] = useState({
-    hasPIN,
     locale,
   });
 
@@ -90,6 +82,7 @@ const SettingsScreen = ({ navigation, route }) => {
     });
   }, [hasPIN]);
 
+  /*
   // display error toast on global 'userReducerError'
   useEffect(() => {
     if (userReducerError !== null && userReducerError.length() > 0) {
@@ -98,6 +91,7 @@ const SettingsScreen = ({ navigation, route }) => {
   }, [userReducerError]);
 
   if (!userData) return null;
+  */
 
   const Header = () => {
     const username = userData?.display_name ?? null;
@@ -164,7 +158,7 @@ const SettingsScreen = ({ navigation, route }) => {
         ? i18n.t('settingsScreen.networkUnavailable')
         : i18n.t('settingsScreen.networkAvailable');
       showToast(toastMsg, isConnected);
-      //dispatch(toggleNetworkConnectivity(isConnected));
+      dispatch(toggleNetworkConnectivity());
     };
     return (
       <ListItem icon>
@@ -183,7 +177,7 @@ const SettingsScreen = ({ navigation, route }) => {
           </Text>
         </Body>
         <Right>
-          <Switch value={isConnected} onChange={toggleOnline} disabled={false /*!networkStatus*/} />
+          <Switch value={isConnected} onChange={toggleOnline} disabled={false} />
         </Right>
       </ListItem>
     );
@@ -285,7 +279,7 @@ const SettingsScreen = ({ navigation, route }) => {
 
   const PINCodeToggle = () => {
     const togglePIN = () => {
-      const type = state.hasPIN ? 'delete' : 'set';
+      const type = hasPIN ? 'delete' : 'set';
       navigation.navigate('PIN', {
         screen: 'PIN',
         params: { type, code: null },
@@ -309,7 +303,7 @@ const SettingsScreen = ({ navigation, route }) => {
         </Body>
         <Right>
           <Switch
-            value={state.hasPIN}
+            value={hasPIN}
             onChange={() => {
               togglePIN();
             }}
