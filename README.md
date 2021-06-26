@@ -25,6 +25,29 @@ The React Native code base for the Disciple Tools mobile app.
 
 ![Basic Design Idea](https://github.com/DiscipleTools/disciple-tools-mobile-app-plugin/raw/master/mobile-app-design.png)
 
+## Notable Design Decisions
+
+General:
+
+- Offline-First via FIFO Request Queue for API writes
+- Aggressive data fetching for Posts (Contacts, Groups, etc... not Notifications or Comments/Activities where we implement Pagination/InfiniteScrolling), preferring GET ALL vs. Pagination (so that data is available offline)
+- Not quite complete feature-parity offline - eg, Search works offline, but Filtering/Grouping only works online (for now?)
+- CNonces: Login (10 sec) and PIN (30 sec)
+- (Coming soon) Accessibility (double as Test IDs?)
+
+UI/Framework-specific:
+
+- Functional Components vs. Class
+- Modular component design to mirror D.T Post Types and Fields, and dynamically respond to API changes, and support plugins
+- Custom Hooks - map well to a 'useResource' REST pattern
+- SWR (stale-while-revalidate), also meets requirement for background fetching, onFocus fetching (prevent stale data on refocus of app)
+- Redux vs. Context - Redux enables Persistence (plus Flux pattern is nice)
+- Skeletons vs. Spinners
+- Minimize 3rd party dependencies where possible (even if a noticeable impact to UI/UX, so long as minor impact)
+- "Over-use" SecureStore - in addition to obvious values like PIN, password, we also store URL/domain, username (if user specifies to 'Remember Login Details', then we also keep URL/domain, username in Redux as before)
+- Component Library: Native Base (may switch to React Native Paper?)
+- (Coming soon) Themes with fallback to D.T logo(s) and color scheme
+
 ## Installation (Development)
 
 - [Set up React Native (expo)](https://facebook.github.io/react-native/docs/getting-started)
