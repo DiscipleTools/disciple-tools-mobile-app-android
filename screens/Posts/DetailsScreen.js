@@ -161,7 +161,7 @@ const DetailsScreen = ({ navigation, route }) => {
   const { isContact, isGroup, postType } = usePostType();
 
   const id = useId();
-  const { post, error: postError, mutate } = useDetails(id);
+  const { post, error: postError, isLoading, isValidating, save } = useDetails(id);
   const { settings, error: settingsError } = useSettings();
   const { userData, error: userError } = useMyUser();
 
@@ -183,7 +183,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const routes = mapTabRoutes(settings);
   // TODO: default to 0
-  const [index, setIndex] = React.useState(1);
+  const [index, setIndex] = useState(1);
   /*
   const [tabRoutes, setTabRoutes] = useState({
     index: 0,
@@ -198,6 +198,9 @@ const DetailsScreen = ({ navigation, route }) => {
   */
 
   const editing = useSelector((state) => state.appReducer.editing);
+  const stateG = useSelector((state) => state);
+  console.log(JSON.stringify(stateG));
+  console.log(`IS EDITING? ${editing}`);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   // TODO: replace with hooks
@@ -1860,7 +1863,7 @@ const DetailsScreen = ({ navigation, route }) => {
         extraScrollHeight={150}
         keyboardShouldPersistTaps="handled">
         {!isConnected && <OfflineBar />}
-        <Tile fields={fields} />
+        <Tile post={post} fields={fields} />
       </KeyboardAwareScrollView>
     );
   };
@@ -1874,7 +1877,7 @@ const DetailsScreen = ({ navigation, route }) => {
       <>
         {!isConnected && <OfflineBar />}
         <TabView
-          //lazy
+          lazy
           navigationState={{ index, routes }}
           //navigationState={tabRoutes}
           renderTabBar={(props) => (
@@ -1901,15 +1904,17 @@ const DetailsScreen = ({ navigation, route }) => {
                 return renderAllCommentsView();
               }
             }
-            return <Tile fields={tile.fields} />;
+            return <Tile post={post} fields={tile.fields} />;
           }}
-          //renderLazyPlaceholder={({ route }) => {
-          //return null;
-          //  console.log("-----> renderLazyPlaceholder ");
-          //  return <Text>Loading...</Text>;
-          //}}
+          renderLazyPlaceholder={({ route }) => {
+            //console.log("-----> renderLazyPlaceholder ");
+            return null;
+            //return <Text>Loading...</Text>;
+          }}
           onIndexChange={setIndex}
-          initialLayout={{ width: windowWidth }}
+          initialLayout={{ height: 0, width: windowWidth }}
+          keyboardDismissMode={'auto'}
+          swipeEnabled={false}
         />
         {!editing && !isLastTab && <FAB post={post} />}
       </>
@@ -1921,13 +1926,20 @@ const DetailsScreen = ({ navigation, route }) => {
       postError?.message || settingsError?.message || userError?.message || 'ZZError',
       true,
     );
-  if (!post || !settings || !userData) return null;
+  //if (!post || !settings || !userData) return null;
 
+  // TODO: skeletons, isLoading/isValidating for settings, userData
   const isCreate = route?.params?.create;
   return (
     <>
-      {isCreate ? <CreatePost /> : <Post />}
-      <Modals />
+      {isLoading || isValidating ? (
+        <Text>Loading...</Text>
+      ) : (
+        <>
+          {isCreate ? <CreatePost /> : <Post />}
+          <Modals />
+        </>
+      )}
     </>
   );
 };

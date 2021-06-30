@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import {
+  ScrollView,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import { useSelector } from 'react-redux';
-import { Label } from 'native-base';
+import { Icon, Label } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 //import Field from 'components/Field';
@@ -16,7 +23,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import { styles } from './Tile.styles';
 
-const Tile = ({ fields }) => {
+const Tile = ({ post, fields }) => {
   console.log('*** TILE RENDER ***');
 
   const editing = useSelector((state) => state.appReducer.editing);
@@ -31,6 +38,7 @@ const Tile = ({ fields }) => {
   };
 
   const setFieldContentStyle = (field) => {
+    //if (isRequiredField(field)) console.log(`------------- POST[FIELD.NAME]: ${ JSON.stringify(post[field.name]) } ------------`);
     const type = field.type;
     const name = field.name;
     let newStyles = {};
@@ -41,6 +49,7 @@ const Tile = ({ fields }) => {
         paddingRight: 10,
       };
     }
+    /* TODO: move this bc we do not have post here?
     if (isRequiredField(field)) {
       newStyles = {
         ...newStyles,
@@ -49,6 +58,7 @@ const Tile = ({ fields }) => {
         borderColor: Colors.errorBackground,
       };
     }
+    */
     return newStyles;
   };
 
@@ -88,14 +98,14 @@ const Tile = ({ fields }) => {
             <Row>
               <Col style={styles.formIconLabelCol}>
                 <View style={styles.formIconLabelView}>
-                  <FieldIcon field={field} hide />
+                  <FieldIcon field={field} />
                 </View>
               </Col>
               <Col style={setFieldContentStyle(field)}>
-                <Field field={field} />
+                <Field post={post} field={field} />
               </Col>
             </Row>
-            {isRequiredField(field) && (
+            {/*isRequiredField(field) && (
               <Row>
                 <Col style={styles.formIconLabelCol}>
                   <View style={styles.formIconLabelView}>
@@ -112,7 +122,7 @@ const Tile = ({ fields }) => {
                   </Text>
                 </Col>
               </Row>
-            )}
+            )*/}
           </>
         ) : (
           <>
@@ -122,7 +132,7 @@ const Tile = ({ fields }) => {
               </Col>
               <Col>
                 <View>
-                  <Field field={field} />
+                  <Field post={post} field={field} />
                 </View>
               </Col>
               <Col style={styles.formParentLabel}>
@@ -146,43 +156,67 @@ const Tile = ({ fields }) => {
         {fields
           //.filter((field) => field.name !== 'tags')
           .map((field, idx) => (
-            <View key={idx}>
+            <Field post={post} field={field} />
+          ))}
+      </>
+    );
+  };
+  /*
+            <>
               {isUndecoratedField(field) ? (
                 <Field field={field} />
               ) : (
                 <DecoratedField field={field} />
               )}
               {hasFormDivider(field) ? null : <View style={styles.formDivider} />}
-            </View>
-          ))}
-      </>
-    );
-  };
+            </>
+  */
 
+  /*
   const TileEdit = () => (
     <KeyboardAwareScrollView
       enableAutomaticScroll
       enableOnAndroid
       keyboardOpeningTime={0}
       extraScrollHeight={150}
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps={"handled"}
+    >
       <View style={[styles.formContainer, { marginTop: 10, paddingTop: 0 }]}>
         <Fields />
       </View>
     </KeyboardAwareScrollView>
   );
+  //<KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={100}>
+  <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      enabled
+      keyboardVerticalOffset={10}
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
+  >
+  */
+  const TileEdit = () => (
+    <ScrollView keyboardShouldPersistTaps="handled">
+      <View style={[styles.formContainer, { marginTop: 0 }]}>
+        <Fields />
+      </View>
+    </ScrollView>
+  );
 
   const TileView = () => (
     <ScrollView
-    //keyboardShouldPersistTaps="handled"
-    // TODO: pass 'mutate()' down or refresh up?
-    //refreshControl={
-    //<RefreshControl
-    //refreshing={refreshing}
-    //onRefresh={onRefresh}
-    //}}
-    ///>
-    //}
+      keyboardShouldPersistTaps="handled"
+      // TODO: pass 'mutate()' down or refresh up?
+      //refreshControl={
+      //<RefreshControl
+      //refreshing={refreshing}
+      //onRefresh={onRefresh}
+      //}}
+      ///>
+      //}
     >
       <View style={[styles.formContainer, { marginTop: 0 }]}>
         <Fields />
@@ -191,6 +225,7 @@ const Tile = ({ fields }) => {
   );
 
   //<View style={{ flex: 1 }}>
+  return <TileEdit />;
   return <>{editing ? <TileEdit /> : <TileView />}</>;
 };
-export default Tile;
+export default React.memo(Tile);

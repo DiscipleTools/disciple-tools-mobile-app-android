@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { Label, Icon, DatePicker } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
+import React from 'react';
+import { Text } from 'react-native';
+import { Icon, DatePicker } from 'native-base';
+import { Row } from 'react-native-easy-grid';
 
-// Custom Hooks
-
+// Helpers
 import i18n from 'languages';
 import moment from 'languages/moment';
+import { showToast } from 'helpers';
 import utils from 'utils';
 
 import { styles } from './DateField.styles';
 
-const DateField = ({ value }) => {
+const DateField = ({ value, editing, onChange }) => {
+  //const DateField = ({ value }) => {
   console.log('*** DATE FIELD RENDER ***');
+  console.log(`*** editing? ${editing} ***`);
 
-  const [state, setState] = useState({
-    date: value,
-  });
+  const handleChange = (newValue) => {
+    let parsedValue = null;
+    if (newValue) parsedValue = Date.parse(newValue) / 1000;
+    if (parsedValue !== value) {
+      console.log(`____ changed from: ${value} to: ${parsedValue} ____`);
+      onChange(parsedValue);
+    }
+  };
 
-  const editing = useSelector((state) => state.appReducer.editing);
-  //const editing = true;
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-
+  // TODO: how to return this to Field.js properly
   const formatDateToBackEnd = (dateString) => {
     const dateObject = new Date(dateString);
     const year = dateObject.getFullYear();
@@ -37,7 +40,9 @@ const DateField = ({ value }) => {
     return moment(new Date(date)).utc().format('LL');
   };
 
+  // TODO: use locale with timezone?
   const formatDateToDatePicker = (timestamp = null) => {
+    if (!timestamp) return null;
     let date = timestamp ? new Date(timestamp) : new Date();
     // Keep date value to current timezone
     date = new Date(
@@ -46,45 +51,30 @@ const DateField = ({ value }) => {
     return date;
   };
 
-  const DateFieldEdit = () => {
-    return (
-      <Row>
-        <DatePicker
-          modalTransparent={true}
-          //androidMode={"default"}
-          maximumDate={new Date()}
-          locale={'en'}
-          onDateChange={(dateValue) => {
-            /* TODO: lift up to save
-            setState({
-              ...state,
-              date: formatDateToBackEnd(dateValue) ?? null
-            });
-            */
-          }}
-          defaultDate={formatDateToDatePicker(state.date * 1000)}
-        />
-        <Icon
-          type="AntDesign"
-          name="close"
-          style={[
-            styles.formIcon,
-            styles.addRemoveIcons,
-            styles.removeIcons,
-            { marginLeft: 'auto' },
-          ]}
-          onPress={() => {
-            /* TODO: lift up to save
-            setState({
-              ...state,
-              date: null
-            });
-            */
-          }}
-        />
-      </Row>
-    );
-  };
+  const defaultDate = formatDateToDatePicker(value * 1000);
+  const DateFieldEdit = () => (
+    <Row>
+      <DatePicker
+        modalTransparent={false} //true}
+        //androidMode={"default"}
+        maximumDate={new Date()}
+        locale={'en'} // TODO: use locale
+        onDateChange={handleChange}
+        defaultDate={defaultDate}
+      />
+      <Icon
+        type="AntDesign"
+        name="close"
+        style={[
+          styles.formIcon,
+          styles.addRemoveIcons,
+          styles.removeIcons,
+          //{ marginLeft: 'auto' },
+        ]}
+        onPress={() => handleChange(null)}
+      />
+    </Row>
+  );
 
   const DateFieldView = () => {
     return <Text>{formatDateToView(utils.isNumeric(value) ? parseInt(value) * 1000 : value)}</Text>;

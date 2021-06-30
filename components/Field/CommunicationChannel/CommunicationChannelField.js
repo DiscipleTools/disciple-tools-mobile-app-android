@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Icon, Input, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
@@ -9,200 +9,122 @@ import PropTypes from 'prop-types';
 // TODO: refactor unused styles
 import { styles } from './CommunicationChannelField.styles';
 
-const CommunicationChannelField = ({ field, value }) => {
+// TODO: LINKING PHONE DIALER, EMAIL, etc...
+const CommunicationChannelField = ({ name, value, editing, onChange }) => {
   console.log('*** COMMUNICATIONCHANNEL FIELD RENDER ***');
+  console.log(`*** VALUE: ${JSON.stringify(value)} ***`);
 
-  const editing = useSelector((state) => state.appReducer.editing);
-  //const editing = true;
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  // TODO: record[key]?
-  const onAddCommunicationField = (key) => {
-    const communicationList = record[key] ? [...record[key]] : [];
-    communicationList.push({
-      value: '',
-    });
-    /* TODO:
-    setState((prevState) => ({
-      ...state,
-      contact: {
-        ...prevState.contact,
-        [key]: communicationList,
+  const onAddCommunicationField = () => {
+    onChange([
+      ...value,
+      {
+        value: '',
       },
-      group: {
-        ...prevState.group,
-        [key]: communicationList,
-      },
-    }));
-    */
+    ]);
   };
 
-  const onCommunicationFieldChange = (key, value, index, dbIndex, component) => {
-    const communicationList = [...component.record[key]];
-    let communicationItem = {
-      ...communicationList[index],
-    };
-    communicationItem = {
-      ...communicationItem,
-      value,
-    };
-    if (dbIndex) {
-      communicationItem = {
-        ...communicationItem,
-        key: dbIndex,
-      };
-    }
-    communicationList[index] = {
-      ...communicationItem,
-    };
-    /* TODO: 
-    component.setState((prevState) => ({
-      ...state,
-      contact: {
-        ...prevState.contact,
-        [key]: communicationList,
-      },
-      group: {
-        ...prevState.group,
-        [key]: communicationList,
-      },
-    }));
-    */
+  //const onCommunicationFieldChange = (key, value, index, dbIndex, component) => {
+  //const onCommunicationFieldChange = (newValue, idx) => {
+  const onCommunicationFieldChange = (newValue) => {
+    // TODO: does not work yet bc TabView component rerenders on TextInput
+    console.log(`*** COMM FIELD CHANGE: ${JSON.stringify(newValue)}, idx: ${idx} ***`);
+    //if (value[idx] !== newValue)
   };
 
-  const onRemoveCommunicationField = (key, index, component) => {
-    const communicationList = [...component.record[key]];
-    let communicationItem = communicationList[index];
-    if (communicationItem.key) {
-      communicationItem = {
-        key: communicationItem.key,
-        delete: true,
-      };
-      communicationList[index] = communicationItem;
-    } else {
-      communicationList.splice(index, 1);
-    }
-    /* TODO:
-    component.setState((prevState) => ({
-      ...state,
-      contact: {
-        ...prevState.contact,
-        [key]: communicationList,
-      },
-      group: {
-        ...prevState.group,
-        [key]: communicationList,
-      },
-    }));
-    */
+  const onRemoveCommunicationField = (idx) => {
+    const cloned = [...value];
+    // splice occurs in-place, returns removed (unhandled)
+    cloned.splice(idx, 1);
+    onChange(cloned);
+  };
+
+  const getKeyboardType = () => {
+    if (name.includes('phone')) return 'phone-pad';
+    if (name.includes('email')) return 'email-address';
+    return 'default';
   };
 
   const CommunicationChannelFieldEdit = () => {
-    let keyboardType = 'default';
-    if (field.name.includes('phone')) {
-      keyboardType = 'phone-pad';
-    } else if (field.name.includes('email')) {
-      keyboardType = 'email-address';
-    }
+    const keyboardType = getKeyboardType();
     return (
       <Col>
         <Row style={styles.formFieldMargin}>
-          <Col style={styles.formIconLabelCol}>
-            <View style={styles.formIconLabelView}>
-              {/*<Icon type="Octicons" name="primitive-dot" style={styles.formIcon} />*/}
-              <Icon type="FontAwesome" name="user" style={styles.formIcon} />
-            </View>
-          </Col>
-          <Col>
-            <Label style={styles.formLabel}>{field.label}</Label>
-          </Col>
           <Col style={styles.formIconLabel}>
             <Icon
               android="md-add"
               ios="ios-add"
               style={[styles.addRemoveIcons, styles.addIcons]}
               onPress={() => {
-                onAddCommunicationField(field.name);
+                onAddCommunicationField(name);
               }}
             />
           </Col>
         </Row>
-        {value.map((communicationChannel, index) =>
-          !communicationChannel.delete ? (
-            <Row key={index.toString()} style={{ marginBottom: 10 }}>
-              <Col style={styles.formIconLabelCol}>
-                <View style={styles.formIconLabelView}>
-                  <Icon type="FontAwesome" name="user" style={[styles.formIcon, { opacity: 0 }]} />
-                </View>
-              </Col>
-              <Col>
-                <Input
-                  value={communicationChannel.value}
-                  onChangeText={(value) => {
-                    onCommunicationFieldChange(field.name, value, index, communicationChannel.key);
-                  }}
-                  style={styles.contactTextField}
-                  keyboardType={keyboardType}
-                />
-              </Col>
-              <Col style={styles.formIconLabel}>
-                <Icon
-                  android="md-remove"
-                  ios="ios-remove"
-                  style={[styles.formIcon, styles.addRemoveIcons, styles.removeIcons]}
-                  onPress={() => {
-                    onRemoveCommunicationField(field.name, index, this);
-                  }}
-                />
-              </Col>
-            </Row>
-          ) : null,
-        )}
+        {value.map((communicationChannel, idx) => (
+          <Row style={{ marginBottom: 10 }}>
+            <Col>
+              <Input
+                value={communicationChannel.value}
+                onChangeText={onCommunicationFieldChange}
+                style={styles.contactTextField}
+                keyboardType={keyboardType}
+              />
+            </Col>
+            <Col style={styles.formIconLabel}>
+              <Icon
+                android="md-remove"
+                ios="ios-remove"
+                style={[styles.formIcon, styles.addRemoveIcons, styles.removeIcons]}
+                onPress={() => onRemoveCommunicationField(idx)}
+              />
+            </Col>
+          </Row>
+        ))}
       </Col>
     );
   };
 
   const CommunicationChannelFieldView = () => {
-    if (field.name.includes('phone')) {
-      return value
-        .filter((communicationChannel) => !communicationChannel.delete)
-        .map((communicationChannel, index) => (
-          <TouchableOpacity
-            key={index.toString()}
-            activeOpacity={0.5}
-            onPress={() => {
-              linkingPhoneDialer(communicationChannel.value);
-            }}>
-            <Text
-              style={[
-                styles.linkingText,
-                { marginTop: 'auto', marginBottom: 'auto' },
-                isRTL ? { textAlign: 'left', flex: 1 } : {},
-              ]}>
-              {communicationChannel.value}
-            </Text>
-          </TouchableOpacity>
-        ));
-    } else if (field.name.includes('email')) {
-      return value
-        .filter((communicationChannel) => !communicationChannel.delete)
-        .map((communicationChannel, index) => (
-          <TouchableOpacity
-            key={index.toString()}
-            activeOpacity={0.5}
-            onPress={() => {
-              Linking.openURL('mailto:' + communicationChannel.value);
-            }}>
-            <Text
-              style={[
-                styles.linkingText,
-                { marginTop: 'auto', marginBottom: 'auto' },
-                isRTL ? { textAlign: 'left', flex: 1 } : {},
-              ]}>
-              {communicationChannel.value}
-            </Text>
-          </TouchableOpacity>
-        ));
+    if (name.includes('phone')) {
+      return value.map((communicationChannel, index) => (
+        <TouchableOpacity
+          key={index.toString()}
+          activeOpacity={0.5}
+          //onPress={() => {
+          //  linkingPhoneDialer(communicationChannel.value);
+          //}}
+        >
+          <Text
+            style={[
+              styles.linkingText,
+              { marginTop: 'auto', marginBottom: 'auto' },
+              isRTL ? { textAlign: 'left', flex: 1 } : {},
+            ]}>
+            {communicationChannel.value}
+          </Text>
+        </TouchableOpacity>
+      ));
+    } else if (name.includes('email')) {
+      return value.map((communicationChannel, index) => (
+        <TouchableOpacity
+          key={index.toString()}
+          activeOpacity={0.5}
+          //onPress={() => {
+          //  Linking.openURL('mailto:' + communicationChannel.value);
+          //}}
+        >
+          <Text
+            style={[
+              styles.linkingText,
+              { marginTop: 'auto', marginBottom: 'auto' },
+              isRTL ? { textAlign: 'left', flex: 1 } : {},
+            ]}>
+            {communicationChannel.value}
+          </Text>
+        </TouchableOpacity>
+      ));
     } else {
       return (
         <Text
@@ -210,15 +132,13 @@ const CommunicationChannelField = ({ field, value }) => {
             { marginTop: 'auto', marginBottom: 'auto' },
             isRTL ? { textAlign: 'left', flex: 1 } : {},
           ]}>
-          {value
-            .filter((communicationChannel) => !communicationChannel.delete)
-            .map((communicationChannel) => communicationChannel.value)
-            .join(', ')}
+          {value.map((communicationChannel) => communicationChannel.value).join(', ')}
         </Text>
       );
     }
   };
 
+  //return(<CommunicationChannelFieldEdit/>);
   return <>{editing ? <CommunicationChannelFieldEdit /> : <CommunicationChannelFieldView />}</>;
 };
 export default CommunicationChannelField;

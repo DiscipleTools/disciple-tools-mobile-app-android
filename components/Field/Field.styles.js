@@ -5,6 +5,26 @@ const containerPadding = 20;
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 export const styles = StyleSheet.create({
+  raisedBox: {
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
+    elevation: 4,
+  },
+  fieldActionIcon: {
+    color: Colors.tintColor,
+    fontSize: 24,
+    //backgroundColor: Colors.gray,
+    //borderColor: Colors.grayDark,
+    //borderRadius: 5,
+    //borderWidth: 1,
+    //marginTop: 0,
+    //marginBottom: 10,
+    //marginLeft: 0,
+    //width: 32,
+  },
   tabBarUnderlineStyle: {
     backgroundColor: Colors.tintColor,
   },
@@ -51,6 +71,7 @@ export const styles = StyleSheet.create({
   formLabel: {
     color: Colors.tintColor,
     fontSize: 12,
+    fontWeight: 'bold',
     marginTop: 'auto',
     marginBottom: 'auto',
   },

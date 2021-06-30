@@ -1,7 +1,7 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import Colors from 'constants/Colors';
 
-const containerPadding = 20;
+const containerPadding = 5;
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 export const styles = StyleSheet.create({
@@ -24,8 +24,8 @@ export const styles = StyleSheet.create({
   formContainer: {
     paddingTop: 10,
     paddingBottom: 100,
-    paddingLeft: containerPadding,
-    paddingRight: containerPadding,
+    //paddingLeft: containerPadding,
+    //paddingRight: containerPadding,
   },
   formRow: {
     paddingTop: 15,
@@ -107,7 +107,7 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     flex: 1,
     marginLeft: 16,
-    padding: 10,
+    //padding: 10,
   },
   contentHeader: {
     flexDirection: 'row',

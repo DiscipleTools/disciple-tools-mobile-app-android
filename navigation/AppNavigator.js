@@ -217,6 +217,7 @@ const AppNavigator = () => {
       console.log('*** AUTH 1 - Main ***');
       // valid Token/Domain
       if (state.hasValidAuthToken && state.hasDomain) {
+        // TODO: blank screen?
         return <MainTabNavigator />;
       } else {
         return <LoginStack />;

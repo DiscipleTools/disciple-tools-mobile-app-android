@@ -1,8 +1,10 @@
+import useId from 'hooks/useId';
 import usePostType from 'hooks/usePostType';
 import useResource from 'hooks/useResource';
 import helpers from 'helpers';
 
-const useDetails = (id) => {
+const useDetails = () => {
+  const id = useId();
   const { isContact, isGroup, postType } = usePostType();
 
   // TODO: merge mapContact and mapGroup?
@@ -84,7 +86,7 @@ const useDetails = (id) => {
     isLoading,
     isValidating,
     mutate,
-    //save
+    save,
   };
 };
 export default useDetails;
