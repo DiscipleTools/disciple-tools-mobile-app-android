@@ -12,10 +12,6 @@ import utils from 'utils';
 import { styles } from './DateField.styles';
 
 const DateField = ({ value, editing, onChange }) => {
-  //const DateField = ({ value }) => {
-  console.log('*** DATE FIELD RENDER ***');
-  console.log(`*** editing? ${editing} ***`);
-
   const handleChange = (newValue) => {
     let parsedValue = null;
     if (newValue) parsedValue = Date.parse(newValue) / 1000;

@@ -10,15 +10,37 @@ import i18n from 'languages';
 
 import { styles } from './MultiSelectField.styles';
 
-const MultiSelectField = ({
-  field,
-  value,
-  containerStyle,
-  inputContainerStyle,
-  placeholder,
-  selectedItems,
-  items,
-}) => {
+const MultiSelectField = ({ field, value, editing, onChange }) => {
+  //TODO:
+  const items = [
+    {
+      key: 1,
+      label: 'Jane Doe',
+    },
+    {
+      key: 2,
+      label: 'Timmy Testerton',
+    },
+    {
+      key: 3,
+      label: 'Janice Doe',
+    },
+    {
+      key: 4,
+      label: 'Tammy Testerton',
+    },
+  ];
+  const selectedItems = [
+    {
+      key: 2,
+      label: 'Timmy Testerton',
+    },
+    {
+      key: 4,
+      label: 'Tammy Testerton',
+    },
+  ];
+
   console.log('*** MULTISELECT FIELD RENDER ***');
 
   // - state.sources
@@ -29,8 +51,6 @@ const MultiSelectField = ({
     sources: [],
   });
 
-  const editing = useSelector((state) => state.appReducer.editing);
-  //const editing = true;
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const onMilestoneChange = (milestoneName, customProp = null) => {
@@ -258,14 +278,14 @@ const MultiSelectField = ({
   const MultiSelectFieldView = () => {
     return (
       <Row>
-        <Col style={[styles.container, containerStyle]}>
+        <Col style={[styles.container, styles.containerStyle]}>
           <Selectize
             itemId="value"
             items={state.items}
             selectedItems={state.selectedItems}
-            textInputProps={{
-              placeholder,
-            }}
+            //TODO:textInputProps={{
+            //  placeholder,
+            //}}
             renderRow={(id, onPress, item) => (
               <TouchableOpacity
                 activeOpacity={0.6}
@@ -301,7 +321,7 @@ const MultiSelectField = ({
             )}
             filterOnKey="name"
             keyboardShouldPersistTaps
-            inputContainerStyle={[styles.inputContainer, inputContainerStyle]}
+            inputContainerStyle={[styles.inputContainer, styles.inputContainerStyle]}
           />
         </Col>
       </Row>

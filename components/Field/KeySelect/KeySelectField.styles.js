@@ -18,11 +18,9 @@ export const styles = StyleSheet.create({
   },
   statusFieldContainer: Platform.select({
     default: {
-      borderStyle: 'solid',
-      borderWidth: 2,
       borderRadius: 3,
     },
-    ios: {},
+    //ios: {},
   }),
   // Edit/Delete comment dialog
   pickerIcon: {

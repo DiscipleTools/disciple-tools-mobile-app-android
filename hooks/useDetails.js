@@ -26,10 +26,11 @@ const useDetails = () => {
   const { data, error, isLoading, isValidating, mutate, create, update, destroy } =
     useResource(url);
 
-  const save = (post) => {
+  const save = (field, value) => {
     // TODO:
     //create(); or
     //update();
+    console.log(`*** SAVE!  id: ${id},  field: ${JSON.stringify({ field, value })} ***`);
   };
 
   // TODO: useComment()

@@ -3,8 +3,8 @@ import useResource from 'hooks/useResource';
 
 import helpers from 'helpers';
 
-const useList = (filter) => {
-  const { isContact, isGroup, postType } = usePostType();
+const useList = (filter, type) => {
+  const { isContact, isGroup, postType } = usePostType(type);
 
   const mapPosts = (posts) => {
     if (isContact) return helpers.mapContacts(posts);

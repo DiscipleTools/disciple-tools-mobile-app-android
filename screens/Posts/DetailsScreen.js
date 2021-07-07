@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import {
+  TextInput,
   ScrollView,
   Text,
   Keyboard,
@@ -23,22 +24,35 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 // Component Library (Native Base)
-import { Label, Input, Icon, Picker, DatePicker, Textarea, Button } from 'native-base';
+import {
+  Label,
+  Input,
+  Icon,
+  Picker,
+  Button,
+  Tab,
+  Tabs,
+  TabHeading,
+  ScrollableTab,
+} from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 // Expo
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
 
 // 3rd-party Components
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+//import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Chip, Selectize } from 'react-native-material-selectize';
-import { TabView, TabBar } from 'react-native-tab-view';
+//import { TabView, TabBar } from 'react-native-tab-view';
 import MentionsTextInput from 'react-native-mentions';
 import ParsedText from 'react-native-parsed-text';
 // TODO
 //import * as Sentry from 'sentry-expo';
 import { CheckBox } from 'react-native-elements';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+
+// (native base does not have a Skeleton component)
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
@@ -54,8 +68,11 @@ import Tile from 'components/Tile';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
 import HeaderLeft from 'components/HeaderLeft';
-import HeaderRight from 'components/HeaderRight';
+//import HeaderRight from 'components/HeaderRight';
 import KebabMenu from 'components/KebabMenu';
+import FieldSkeleton from 'components/Field/FieldSkeleton';
+
+//import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab-view';
 
 import i18n from 'languages';
 import { isIOS, renderCreationFields, showToast } from 'helpers';
@@ -154,13 +171,12 @@ const DetailsScreen = ({ navigation, route }) => {
   const milestonesGridSize = windowWidth + 5;
   const windowHeight = layout.height;
 
-  const kebabMenuRef = useRef();
-
   const isConnected = useNetworkStatus();
 
   const { isContact, isGroup, postType } = usePostType();
 
   const id = useId();
+  console.log(`^^^^^^^^^^^^ ID: ${id} ^^^^^^^^^^^^^^`);
   const { post, error: postError, isLoading, isValidating, save } = useDetails(id);
   const { settings, error: settingsError } = useSettings();
   const { userData, error: userError } = useMyUser();
@@ -181,26 +197,9 @@ const DetailsScreen = ({ navigation, route }) => {
     ];
   };
 
-  const routes = mapTabRoutes(settings);
-  // TODO: default to 0
-  const [index, setIndex] = useState(1);
-  /*
-  const [tabRoutes, setTabRoutes] = useState({
-    index: 0,
-    routes,
-  });
-  */
-  /*
-  const [routes] = React.useState([
-    { key: 'first', title: 'First' },
-    { key: 'second', title: 'Second' },
-  ]);
-  */
+  const [index, setIndex] = useState(0);
+  const routes = mapTabRoutes();
 
-  const editing = useSelector((state) => state.appReducer.editing);
-  const stateG = useSelector((state) => state);
-  console.log(JSON.stringify(stateG));
-  console.log(`IS EDITING? ${editing}`);
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   // TODO: replace with hooks
@@ -289,18 +288,7 @@ const DetailsScreen = ({ navigation, route }) => {
     navigation.setOptions({
       title,
       headerLeft: (props) => <HeaderLeft {...props} onPress={() => navigation.goBack()} />,
-      headerRight: (props) => (
-        <HeaderRight
-          menu=<KebabMenu menuRef={kebabMenuRef} menuItems={kebabMenuItems} />
-          menuRef={kebabMenuRef}
-          {...props}
-          onPress={() => {
-            console.log('*** HEADER RIGHT WAS PRESSED ***');
-            //onEnableEdit();
-            //saveContact();
-          }}
-        />
-      ),
+      headerRight: (props) => <KebabMenu menuItems={kebabMenuItems} />,
       headerStyle: {
         backgroundColor: Colors.tintColor,
       },
@@ -311,35 +299,32 @@ const DetailsScreen = ({ navigation, route }) => {
           android: 180,
           ios: 140,
         }),
-        marginLeft: editing ? null : 25,
+        //marginLeft: editing ? null : 25,
       },
     });
   }, [navigation]);
 
   // componentDidMount
+  /*
   useEffect(() => {
-    /* TODO:
-    onLoad();
+    //onLoad();
     // Add afterBack param to execute 'parents' functions (ContactsView, NotificationsView)
-    if (!navigation.state.params.afterBack) {
-      params = {
-        ...params,
-        afterBack: afterBack.bind(this),
-      };
-    }
-    navigation.setParams(params);
-    */
+    //if (!navigation.state.params.afterBack) {
+    //  params = {
+    //    ...params,
+    //    afterBack: afterBack.bind(this),
+    //  };
+    //}
+    //navigation.setParams(params);
     Keyboard.addListener('keyboardDidShow', keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', keyboardDidHide);
     navigation.addListener('didFocus', () => {
       //Focus on 'detail mode' (going back or open detail view)
       console.log('*** DID FOCUS ***');
-      /* TODO
-      if (contactIsCreated()) {
-        dispatch(loadingFalse());
-        onRefresh(navigation.state.params.contactId, true);
-      }
-      */
+      //if (contactIsCreated()) {
+      //  dispatch(loadingFalse());
+      //  onRefresh(navigation.state.params.contactId, true);
+      //}
     });
     // Android hardware back press listener
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -356,6 +341,7 @@ const DetailsScreen = ({ navigation, route }) => {
       backHandler.remove();
     };
   }, []);
+  */
 
   /*
   // componentDidUpdate
@@ -687,101 +673,6 @@ const DetailsScreen = ({ navigation, route }) => {
         }
       }
     }
-  };
-
-  // TODO: move to helpers
-  const onEnableEdit = () => {
-    setState((prevState) => {
-      let indexFix = prevState.tabRoutes.index;
-      // Last tab (comments/activities)
-      if (prevState.tabRoutes.index === prevState.tabRoutes.routes.length - 1) {
-        indexFix = indexFix - 1; // -1 for commentsTab
-      }
-      return {
-        ...state,
-        onlyView: false,
-        tabRoutes: {
-          ...prevState.tabRoutes,
-          index: indexFix,
-          routes: mapTabRoutes(settings).filter(
-            (route) => route.key !== 'comments', // && route.key !== 'other',
-          ),
-        },
-      };
-    });
-    navigation.setParams({
-      hideTabBar: true,
-      onlyView: false,
-      contactName: state.record.name,
-    });
-  };
-
-  // TODO: move to helpers
-  const onDisableEdit = () => {
-    const {
-      unmodifiedContact,
-      unmodifiedSources,
-      unmodifiedSubAssignedContacts,
-      unmodifiedRelationContacts,
-      unmodifiedBaptizedByContacts,
-      unmodifiedBaptizedContacts,
-      unmodifiedCoachedByContacts,
-      unmodifiedCoachedContacts,
-      unmodifiedConnectionGroups,
-      unmodifedAssignedToContacts,
-      unmodifiedSelectedReasonStatus,
-    } = state;
-    setState((prevState) => {
-      // Set correct index in Tab position according to view mode and current tab position
-      let indexFix = prevState.tabRoutes.index;
-      let newState = {
-        onlyView: true,
-        contact: {
-          ...unmodifiedContact,
-        },
-        overallStatusBackgroundColor: utils.getSelectorColor(unmodifiedContact.overall_status),
-        tabRoutes: {
-          ...prevState.tabRoutes,
-          index: indexFix,
-          routes: mapTabRoutes(settings),
-        },
-        sources: [...unmodifiedSources],
-        subAssignedContacts: [...unmodifiedSubAssignedContacts],
-        relationContacts: [...unmodifiedRelationContacts],
-        baptizedByContacts: [...unmodifiedBaptizedByContacts],
-        baptizedContacts: [...unmodifiedBaptizedContacts],
-        coachedByContacts: [...unmodifiedCoachedByContacts],
-        coachedContacts: [...unmodifiedCoachedContacts],
-        connectionGroups: [...unmodifiedConnectionGroups],
-        assignedToContacts: [...unmodifedAssignedToContacts],
-      };
-
-      let contactReasonStatusKey = `reason_${unmodifiedContact.overall_status}`;
-      let contactHasStatusReason = Object.prototype.hasOwnProperty.call(
-        unmodifiedContact,
-        contactReasonStatusKey,
-      );
-      // CONTACT HAS STATUS WITH REASON
-      if (contactHasStatusReason) {
-        newState = {
-          ...newState,
-          selectedReasonStatus: unmodifiedSelectedReasonStatus,
-        };
-      } else {
-        newState = {
-          ...newState,
-          selectedReasonStatus: {
-            key: null,
-            value: null,
-          },
-        };
-      }
-      return {
-        ...state,
-        newState,
-      };
-    });
-    navigation.setParams({ hideTabBar: false, onlyView: true });
   };
 
   // TODO: merge with 'setGroupStatus'? and move to helpers? bc Field and FieldValue
@@ -1855,71 +1746,81 @@ const DetailsScreen = ({ navigation, route }) => {
         fields.push(...creationFieldsByTile);
       }
     });
-    return (
-      <KeyboardAwareScrollView
-        enableAutomaticScroll
-        enableOnAndroid
-        keyboardOpeningTime={0}
-        extraScrollHeight={150}
-        keyboardShouldPersistTaps="handled">
-        {!isConnected && <OfflineBar />}
-        <Tile post={post} fields={fields} />
-      </KeyboardAwareScrollView>
-    );
+    return <Tile post={post} fields={fields} />;
   };
 
-  const Post = () => {
-    // TODO: why relying on position rather than name or type?
-    const isLastTab = index === routes?.length - 1;
-    //console.log(`isLastTab? ${isLastTab}`);
-    // TODO: KeyboardAwareScrollView for editing?
+  const Post = () => (
+    <Tabs renderTabBar={() => <ScrollableTab />} tabBarUnderlineStyle={styles.tabBarUnderline}>
+      {settings.tiles.map((tile) => {
+        return (
+          <Tab
+            heading={
+              <TabHeading>
+                <Text style={styles.tabHeading}>{tile?.label}</Text>
+              </TabHeading>
+            }
+            style={styles.background}>
+            <Tile post={post} fields={tile.fields} save={save} />
+          </Tab>
+        );
+      })}
+    </Tabs>
+  );
+
+  // TODO: refactor this a bit per reuse
+  const Skeleton = () => {
+    const skeletons = Array(7).fill('');
     return (
       <>
-        {!isConnected && <OfflineBar />}
-        <TabView
-          lazy
-          navigationState={{ index, routes }}
-          //navigationState={tabRoutes}
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              style={styles.tabStyle}
-              activeColor={Colors.tintColor}
-              inactiveColor={Colors.gray}
-              scrollEnabled
-              tabStyle={{ width: 'auto' }}
-              indicatorStyle={styles.tabBarUnderlineStyle}
-              renderLabel={({ route, color }) => (
-                <Text style={{ color, fontWeight: 'bold' }}>{route.title}</Text>
-              )}
-            />
-          )}
-          renderScene={({ route }) => {
-            // TODO: placeholder if error?
-            const tile = settings.tiles.find((tile) => tile.label === route.title);
-            if (route.key === 'comments') {
-              if (state.showFilterView) {
-                return renderFilterCommentsView();
-              } else {
-                return renderAllCommentsView();
-              }
-            }
-            return <Tile post={post} fields={tile.fields} />;
-          }}
-          renderLazyPlaceholder={({ route }) => {
-            //console.log("-----> renderLazyPlaceholder ");
-            return null;
-            //return <Text>Loading...</Text>;
-          }}
-          onIndexChange={setIndex}
-          initialLayout={{ height: 0, width: windowWidth }}
-          keyboardDismissMode={'auto'}
-          swipeEnabled={false}
-        />
-        {!editing && !isLastTab && <FAB post={post} />}
+        <ContentLoader
+          rtl={isRTL}
+          speed={3}
+          width={windowWidth}
+          height={65}
+          viewBox={'0 ' + '0 ' + windowWidth + ' 80'}
+          backgroundColor="#e7e7e7"
+          foregroundColor="#b7b7b7">
+          <Rect x="0" y="25" rx="2" ry="2" width="75" height="20" />
+          <Rect x="0" y="50" rx="2" ry="2" width="100" height="8" />
+          <Rect x="120" y="25" rx="2" ry="2" width="75" height="20" />
+          <Rect x="240" y="25" rx="2" ry="2" width="75" height="20" />
+          <Rect x="360" y="25" rx="2" ry="2" width="75" height="20" />
+          <Rect x="0" y="65" rx="2" ry="2" width={windowWidth} height="1" />
+        </ContentLoader>
+        {skeletons.map((fieldSkeleton) => (
+          <FieldSkeleton isRTL={isRTL} windowWidth={windowWidth} />
+        ))}
+        <ContentLoader
+          rtl={isRTL}
+          speed={3}
+          width={windowWidth}
+          height={100}
+          viewBox={'0 ' + '0 ' + windowWidth + ' 80'}
+          backgroundColor="#e7e7e7"
+          foregroundColor="#b7b7b7">
+          <Circle cx="350" cy="60" r="35" />
+        </ContentLoader>
       </>
     );
   };
+
+  //<KeyboardAvoidingView behavior="position" style={{ flexGrow: 1 }}></KeyboardAvoidingView>
+  const Details = () => (
+    <KeyboardAvoidingView behavior="position" style={{ flexGrow: 1 }}>
+      <ScrollView
+        //contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps={'handled'}>
+        {isLoading || isValidating ? (
+          <Skeleton />
+        ) : (
+          <>
+            {!isConnected && <OfflineBar />}
+            {isCreate ? <CreatePost /> : <Post />}
+          </>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 
   if (postError || settingsError || userError || !id)
     showToast(
@@ -1928,18 +1829,16 @@ const DetailsScreen = ({ navigation, route }) => {
     );
   //if (!post || !settings || !userData) return null;
 
-  // TODO: skeletons, isLoading/isValidating for settings, userData
+  // TODO: why relying on position rather than name or type?
+  const hideFAB = () => index === routes?.length - 1;
+
   const isCreate = route?.params?.create;
+  //const isCreate = true;
   return (
     <>
-      {isLoading || isValidating ? (
-        <Text>Loading...</Text>
-      ) : (
-        <>
-          {isCreate ? <CreatePost /> : <Post />}
-          <Modals />
-        </>
-      )}
+      <Details />
+      {!hideFAB() && <FAB post={post} />}
+      <Modals />
     </>
   );
 };

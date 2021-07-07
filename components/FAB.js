@@ -270,6 +270,11 @@ const FAB = ({ post }) => {
         />
       ) : (
         <ActionButton
+          style={{
+            position: 'absolute',
+            bottom: 10,
+            right: 10,
+          }}
           buttonColor={Colors.primary}
           renderIcon={(active) =>
             active ? (

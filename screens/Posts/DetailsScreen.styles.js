@@ -5,10 +5,16 @@ const containerPadding = 20;
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 export const styles = StyleSheet.create({
-  tabBarUnderlineStyle: {
+  tabBarUnderline: {
     backgroundColor: Colors.tintColor,
   },
-  tabStyle: { backgroundColor: '#FFFFFF' },
+  tabStyle: {
+    backgroundColor: '#FFFFFF',
+  },
+  tabHeading: {
+    //color: Colors.tintColor,
+    color: '#000',
+  },
   fieldsIcons: {
     height: 22,
     width: 22,
@@ -84,6 +90,9 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   // Comments Section
+  background: {
+    backgroundColor: Colors.mainBackgroundColor,
+  },
   container: {
     paddingLeft: 19,
     paddingRight: 16,

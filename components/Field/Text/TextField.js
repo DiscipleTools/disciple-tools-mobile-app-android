@@ -23,6 +23,32 @@ const TextField = (props) => {
 
   console.log('*** TEXT FIELD RENDER ***');
 
+  /*
+  const inputRef = useRef(null);
+
+  const handleChange = (newValue) => {
+    inputRef.current.value = newValue;
+  };
+
+  const handleEditingEnd = () => {
+    const newValue = inputRef.current.value;
+    if (newValue !== value) onChange(newValue);
+  }
+
+  const TextFieldEdit = () => {
+    return(
+      <TextInput
+        ref={inputRef}
+        //style={styles.input}
+        onChangeText={handleChange}
+        onEndEditing={handleEditingEnd}
+        //defaultValue={value}
+        value={value}
+      />
+    )
+  };
+  */
+
   const editing = useSelector((state) => state.appReducer.editing);
   //const editing = true;
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Icon } from 'native-base';
 import Menu, { MenuItem } from 'react-native-material-menu';
-import Colors from 'constants/Colors';
 
-const KebabMenu = ({ menuRef, menuItems }) => {
+import { styles } from './KebabMenu.styles';
+
+const KebabMenu = ({ menuItems }) => {
+  const menuRef = useRef();
   return (
     <Menu
       ref={menuRef}
@@ -11,10 +13,8 @@ const KebabMenu = ({ menuRef, menuItems }) => {
         <Icon
           type="Entypo"
           name="dots-three-vertical"
-          style={{
-            color: Colors.headerTintColor,
-            fontSize: 20,
-          }}
+          onPress={() => menuRef.current.show()}
+          style={styles.kebabMenu}
         />
       }>
       {menuItems?.map((menuItem) => (

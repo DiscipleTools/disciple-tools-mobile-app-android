@@ -24,7 +24,7 @@ import { showToast } from 'helpers';
 
 import { styles } from './Field.styles';
 
-const Field = ({ post, field }) => {
+const Field = ({ post, field, save }) => {
   console.log('*** FIELD RENDER ***');
 
   //const ref = useRef(null);
@@ -32,18 +32,14 @@ const Field = ({ post, field }) => {
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
   const locale = useSelector((state) => state.i18nReducer.locale);
 
+  console.log(`FIELD: ${JSON.stringify(field)}`);
   // validate to confirm that post has the field name and value(s)
-  const fieldName = field.name;
-  console.log(`FIELD NAME: ${fieldName}`);
-  const fieldType = field.type;
-  console.log(`FIELD TYPE: ${fieldType}`);
-  if (!post.hasOwnProperty(fieldName)) return null;
-  const value = post[fieldName];
+  if (!post.hasOwnProperty(field.name)) return null;
+  const value = post[field.name];
   if (value?.length < 1) return null;
 
   const [state, setState] = useState({
     editing: null,
-    //initialValue: value,
     value,
   });
 
@@ -60,6 +56,120 @@ const Field = ({ post, field }) => {
     };
   }, [ref]);
   */
+
+  const isRequiredField = (field) => {
+    const name = field.name;
+    if (name === 'name') return true;
+    return false;
+  };
+
+  const setFieldContentStyle = (field) => {
+    //if (isRequiredField(field)) console.log(`------------- POST[FIELD.NAME]: ${ JSON.stringify(post[field.name]) } ------------`);
+    const type = field.type;
+    const name = field.name;
+    let newStyles = {};
+    // TODO: use Constants
+    if (type == 'key_select' || type == 'user_select') {
+      newStyles = {
+        ...styles.contactTextRoundField,
+        paddingRight: 10,
+      };
+    }
+    /* TODO: move this bc we do not have post here?
+    if (isRequiredField(field)) {
+      newStyles = {
+        ...newStyles,
+        backgroundColor: '#FFE6E6',
+        borderWidth: 2,
+        borderColor: Colors.errorBackground,
+      };
+    }
+    */
+    return newStyles;
+  };
+
+  const isUndecoratedField = (field) => {
+    const name = field?.name;
+    const type = field?.type;
+    // TODO: use Constants
+    return (
+      name == 'overall_status' ||
+      name == 'milestones' ||
+      name == 'group_status' ||
+      name == 'health_metrics' ||
+      name == 'members' ||
+      type == 'communication_channel' ||
+      (type == 'connection' && field.post_type === 'groups')
+    );
+  };
+
+  const DecoratedField = ({ field }) => {
+    const type = field.type;
+    const name = field.name;
+    const label = field.label;
+    return (
+      <Col>
+        {editing ? (
+          <>
+            <Row style={styles.formFieldMargin}>
+              <Col style={styles.formIconLabelCol}>
+                <View style={styles.formIconLabelView}>
+                  <FieldIcon field={field} />
+                </View>
+              </Col>
+              <Col>
+                <Label style={styles.formLabel}>{label}</Label>
+              </Col>
+            </Row>
+            <Row>
+              <Col style={styles.formIconLabelCol}>
+                <View style={styles.formIconLabelView}>
+                  <FieldIcon field={field} />
+                </View>
+              </Col>
+              <Col style={setFieldContentStyle(field)}>
+                <Field post={post} field={field} />
+              </Col>
+            </Row>
+            {/*isRequiredField(field) && (
+              <Row>
+                <Col style={styles.formIconLabelCol}>
+                  <View style={styles.formIconLabelView}>
+                    <Icon
+                      type="FontAwesome"
+                      name="user"
+                      style={[styles.formIcon, { opacity: 0 }]}
+                    />
+                  </View>
+                </Col>
+                <Col>
+                  <Text style={styles.validationErrorMessage}>
+                    {i18n.t('detailsScreen.requiredField')}
+                  </Text>
+                </Col>
+              </Row>
+            )*/}
+          </>
+        ) : (
+          <>
+            <Row style={[styles.formRow, { paddingTop: 15 }]}>
+              <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
+                <FieldIcon field={field} />
+              </Col>
+              <Col>
+                <View>
+                  <Field post={post} field={field} />
+                </View>
+              </Col>
+              <Col style={styles.formParentLabel}>
+                <Label style={styles.formLabel}>{field.label}</Label>
+              </Col>
+            </Row>
+          </>
+        )}
+      </Col>
+    );
+  };
 
   const onSave = () => {
     console.log('*** ON SAVE ***');
@@ -122,10 +232,12 @@ const Field = ({ post, field }) => {
     </Col>
   );
 
+  //console.log("******* POST *********");
+  //console.log(JSON.stringify(post));
   // TODO: use Constants
   const FieldComponent = () => {
-    switch (fieldType) {
-      case 'communication_channel': {
+    switch (field.type) {
+      case 'communication_channel':
         return (
           <CommunicationChannelField
             name={field.name}
@@ -134,34 +246,41 @@ const Field = ({ post, field }) => {
             onChange={onChange}
           />
         );
-      }
-      case 'date': {
-        return <DateField value={state.value} editing={state.editing} onChange={onChange} />;
-      }
-      case 'key_select': {
+      case 'connection':
         return (
-          <KeySelectField
-            name={field.name}
+          <ConnectionField
+            field={field}
             value={state.value}
             editing={state.editing}
             onChange={onChange}
           />
         );
-      }
+      case 'date':
+        return <DateField value={state.value} editing={state.editing} onChange={onChange} />;
+      case 'key_select':
+        // TODO: field->options={field.default}
+        return (
+          <KeySelectField
+            field={field}
+            value={state.value}
+            editing={state.editing}
+            onChange={onChange}
+          />
+        );
+      case 'multi_select':
+        return (
+          <MultiSelectField
+            field={field}
+            value={state.value}
+            editing={state.editing}
+            onChange={onChange}
+          />
+        );
+      case 'user_select':
+        return <UserSelectField value={state.value} editing={state.editing} onChange={onChange} />;
       /*
       case 'location': {
         return <LocationField value={postValue} editing />;
-      }
-      case 'connection': {
-        //return <ConnectionField field={field} value={postValue} editing />;
-        return null;
-      }
-      case 'multi_select': {
-        return <MultiSelectField field={field} value={postValue} editing />;
-      }
-      case 'user_select': {
-        const defaultValue = postValue?.key ?? postValue;
-        return <UserSelectField value={defaultValue} editing />;
       }
       case 'number': {
         return <NumberField value={postValue} editing />;

@@ -71,7 +71,7 @@
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.19",
     "moment": "^2.25.3",
-    "native-base": "2.13.8",
+    "native-base": "2.13.9",
     "prop-types": "^15.7.2",
     "react": "16.14.0",
     "react-content-loader": "^6.0.3",
