@@ -2,6 +2,7 @@ import useId from 'hooks/useId';
 import usePostType from 'hooks/usePostType';
 import useResource from 'hooks/useResource';
 import helpers from 'helpers';
+import { showToast } from 'helpers';
 
 const useDetails = () => {
   const id = useId();
@@ -20,17 +21,49 @@ const useDetails = () => {
   // getById
   // saveComment
 
-  const url = `/dt-posts/v2/${postType}/${id}`;
+  const baseUrl = `/dt-posts/v2/${postType}`;
+  const url = `${baseUrl}/${id}`;
   // TODO: useSelect for initialData?
   //const initialData = null;
-  const { data, error, isLoading, isValidating, mutate, create, update, destroy } =
-    useResource(url);
+  const { data, error, isLoading, isValidating, mutate, create, update } = useResource(url);
 
-  const save = (field, value) => {
-    // TODO:
-    //create(); or
-    //update();
+  const save = async (field, value) => {
     console.log(`*** SAVE!  id: ${id},  field: ${JSON.stringify({ field, value })} ***`);
+    const data = {};
+    data[field] = value;
+    try {
+      let res = null;
+      if (!id) {
+        res = await create({
+          url: baseUrl,
+          method: 'POST',
+          data,
+        });
+      } else {
+        res = await update({
+          url,
+          //method: "PUT",
+          method: 'POST',
+          data,
+        });
+      }
+      mutate();
+      console.log(`res: ${JSON.stringify(res)}`);
+      if (res) {
+        // TODO: parse res
+        const success = false; //true;
+        if (success) {
+          showToast('Saved successfully');
+        } else {
+          // TODO: translation
+          showToast('Unable to save', true);
+        }
+      }
+    } catch (err) {
+      console.log(`err: ${JSON.stringify(err)}`);
+      // TODO:
+      showToast('GENERIC ERROR GOES HERE', true);
+    }
   };
 
   // TODO: useComment()

@@ -6,10 +6,8 @@ import useNetworkStatus from 'hooks/useNetworkStatus';
 
 const useResource = (request, { initialData, ...config } = {}) => {
   const isConnected = useNetworkStatus();
-  //console.log(`isConnected? ${isConnected}`);
 
   // TODO: is the [request, id] correct?
-  //console.log(`*** REQ: ${JSON.stringify(request)} ***`);
 
   let { data, error, isLoading, isValidating, mutate } = useSWR(
     isConnected ? request && JSON.stringify(request) : null,
@@ -25,23 +23,46 @@ const useResource = (request, { initialData, ...config } = {}) => {
     },
   );
 
+  /*
   if (!isConnected) {
     // TODO: useSelector
-    /*
     if (cache.has(JSON.stringify(request))) {
       console.log("**** USING CACHED DATA ****");
       data = cache.get(JSON.stringify(request));
       error = null;
     }
-    */
   }
-  //console.log(data);
+  */
+
+  const create = async (request) => {
+    console.log(`^^^^ CREATE! ${JSON.stringify(request)}`);
+    //if (!isConnected) dispatch(request);
+    return axios(request);
+  };
+
+  const update = async (request) => {
+    console.log(`^^^^ UPDATE! ${JSON.stringify(request)}`);
+    //axios.put?
+    //if (!isConnected) dispatch(request);
+    return axios(request);
+  };
+
+  /*
+  const delet = async(request) => {
+    //if (!isConnected) dispatch(request);
+    return axios.delete(request);
+  };
+  */
+
   return {
     data,
     error,
     isLoading,
     isValidating,
     mutate,
+    create,
+    update,
+    //delet,
   };
 };
 export default useResource;

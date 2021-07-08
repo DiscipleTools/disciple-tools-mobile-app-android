@@ -2,14 +2,6 @@ import React from 'react';
 
 const useLocations = () => {
   // TODO: get from AsyncStorage
-  /*
-  const locations = [
-    {
-        "name": "Northern Cyprus",
-        "ID": "100380091"
-    },
-  ];
-  */
   const locations = [
     {
       name: 'Northern Cyprus',
