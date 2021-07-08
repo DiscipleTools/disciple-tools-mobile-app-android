@@ -41,8 +41,6 @@ Sentry.init({
 });
 */
 
-import { styles } from './App.styles';
-
 const App = () => {
   console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
   console.log('$$$$$          APP.JS                         $$$$$');
@@ -148,10 +146,10 @@ const App = () => {
             fetcher: async (...args) => axios(...args).then((res) => res.data),
           }}>
           <Root>
-            <View style={styles.container}>
+            <>
               {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
               <AppNavigator />
-            </View>
+            </>
           </Root>
         </SWRConfig>
       </PersistGate>
