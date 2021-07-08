@@ -3,31 +3,36 @@ import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import MultiSelect from 'components/MultiSelect';
+
 //import { styles } from './TagsField.styles';
 
-const TagsField = ({ value }) => {
-  console.log('*** TAGS FIELD RENDER ***');
-
-  const editing = useSelector((state) => state.appReducer.editing);
-  //const editing = true;
+const TagsField = ({ value, editing, onChange }) => {
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  // TODO: implement
-  const TagsFieldEdit = () => {
-    return null;
-  };
+  // TODO:
+  const tagsList = [
+    { value: -1, name: 'surfers' },
+    { value: -2, name: 'jovenes' },
+    { value: -3, name: 'zz' },
+  ];
+  const TagsFieldEdit = () => (
+    <MultiSelect
+      items={tagsList}
+      selectedItems={value?.values}
+      onChange={onChange}
+      placeholder={'zzzzz'}
+    />
+  );
 
-  const TagsFieldView = () => {
-    return (
-      <>
-        {value.values.map((tag) => (
-          <Text style={[{ marginBottom: 10 }, isRTL ? { textAlign: 'left', flex: 1 } : {}]}>
-            {tag.value}
-          </Text>
-        ))}
-      </>
-    );
-  };
+  // TODO: styling
+  const TagsFieldView = () => (
+    <>
+      {value.values.map((tag) => (
+        <Text style={isRTL ? { textAlign: 'left', flex: 1 } : {}}>{tag.value}</Text>
+      ))}
+    </>
+  );
 
   return <>{editing ? <TagsFieldEdit /> : <TagsFieldView />}</>;
 };

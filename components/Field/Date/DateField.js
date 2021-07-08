@@ -15,10 +15,7 @@ const DateField = ({ value, editing, onChange }) => {
   const handleChange = (newValue) => {
     let parsedValue = null;
     if (newValue) parsedValue = Date.parse(newValue) / 1000;
-    if (parsedValue !== value) {
-      console.log(`____ changed from: ${value} to: ${parsedValue} ____`);
-      onChange(parsedValue);
-    }
+    if (parsedValue !== value) onChange(parsedValue);
   };
 
   // TODO: how to return this to Field.js properly

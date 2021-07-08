@@ -3,7 +3,6 @@ import React from 'react';
 // 3rd-party Components
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 
-// TODO: mock FAB with absolute positioning?
 const FieldSkeleton = ({ isRTL, windowWidth }) => (
   <ContentLoader
     rtl={isRTL}

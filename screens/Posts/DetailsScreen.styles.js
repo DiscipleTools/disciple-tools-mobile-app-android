@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
   formIconLabel: {
     marginLeft: 10,
     width: 'auto',
-    marginBottom: 'auto',
+    //marginBottom: 'auto',
   },
   formIcon: {
     color: Colors.tintColor,

@@ -1,38 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Pressable, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Button, Icon, Label } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-
-// Custom Hooks
-import useDetails from 'hooks/useDetails.js';
+import { Icon, Label } from 'native-base';
+import { Grid, Row, Col } from 'react-native-easy-grid';
 
 // Custom Components
 import FieldIcon from 'components/Field/FieldIcon';
-import LocationField from 'components/Field/Location/LocationField';
-import DateField from 'components/Field/Date/DateField';
-import ConnectionField from 'components/Field/Connection/ConnectionField';
-import NumberField from 'components/Field/Number/NumberField';
-import KeySelectField from 'components/Field/KeySelect/KeySelectField';
-import MultiSelectField from 'components/Field/MultiSelect/MultiSelectField';
-import UserSelectField from 'components/Field/UserSelect/UserSelectField';
+import BooleanField from 'components/Field/Boolean/BooleanField';
 import CommunicationChannelField from 'components/Field/CommunicationChannel/CommunicationChannelField';
+import ConnectionField from 'components/Field/Connection/ConnectionField';
+import DateField from 'components/Field/Date/DateField';
+import KeySelectField from 'components/Field/KeySelect/KeySelectField';
+import LocationField from 'components/Field/Location/LocationField';
+import MultiSelectField from 'components/Field/MultiSelect/MultiSelectField';
+import NumberField from 'components/Field/Number/NumberField';
+import TagsField from 'components/Field/Tags/TagsField';
 import TextField from 'components/Field/Text/TextField';
+import ZZTextField from 'components/Field/Text/ZZTextField';
+import UserSelectField from 'components/Field/UserSelect/UserSelectField';
 
 import i18n from 'languages';
-import { showToast } from 'helpers';
 
 import { styles } from './Field.styles';
 
 const Field = ({ post, field, save }) => {
-  console.log('*** FIELD RENDER ***');
+  //console.log(`FIELD: ${JSON.stringify(field)}`);
 
   //const ref = useRef(null);
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
   const locale = useSelector((state) => state.i18nReducer.locale);
 
-  console.log(`FIELD: ${JSON.stringify(field)}`);
   // validate to confirm that post has the field name and value(s)
   if (!post.hasOwnProperty(field.name)) return null;
   const value = post[field.name];
@@ -232,12 +230,13 @@ const Field = ({ post, field, save }) => {
     </Col>
   );
 
-  //console.log("******* POST *********");
-  //console.log(JSON.stringify(post));
-  // TODO: use Constants
   const FieldComponent = () => {
     switch (field.type) {
+      case 'boolean':
+        // TODO: implement (as read-only Switch?)
+        return <BooleanField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'communication_channel':
+        // TODO: Linking, handle change, save
         return (
           <CommunicationChannelField
             name={field.name}
@@ -247,6 +246,7 @@ const Field = ({ post, field, save }) => {
           />
         );
       case 'connection':
+        // TODO: Lists
         return (
           <ConnectionField
             field={field}
@@ -256,6 +256,7 @@ const Field = ({ post, field, save }) => {
           />
         );
       case 'date':
+        // TODO: formatting?
         return <DateField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'key_select':
         // TODO: field->options={field.default}
@@ -267,7 +268,12 @@ const Field = ({ post, field, save }) => {
             onChange={onChange}
           />
         );
+      //case 'location_grid':
+      case 'location':
+        // TODO: handle changes, save
+        return <LocationField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'multi_select':
+        // TODO: handle save
         return (
           <MultiSelectField
             field={field}
@@ -276,31 +282,24 @@ const Field = ({ post, field, save }) => {
             onChange={onChange}
           />
         );
+      case 'number':
+        // TODO: style
+        return <NumberField value={state.value} editing={state.editing} onChange={onChange} />;
+      case 'post_user_meta':
+        // TODO: implement
+        return (
+          <PostUserMetaField value={state.value} editing={state.editing} onChange={onChange} />
+        );
+      case 'tags':
+        // TODO: style, implement edit
+        return <TagsField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'user_select':
+        // TODO: Lists
         return <UserSelectField value={state.value} editing={state.editing} onChange={onChange} />;
-      /*
-      case 'location': {
-        return <LocationField value={postValue} editing />;
-      }
-      case 'number': {
-        return <NumberField value={postValue} editing />;
-      }
-      case 'tags': {
-        return <TagsField value={postValue} editing />;
-      }
-      case 'boolean': {
-        //return(
-        //  <BooleanField value={postValue} editing />
-        //);
-      }
-      case 'post_user_meta': {
-        //return(
-        //  <PostUserMetaField value={postValue} editing />
-        //);
-      }
-      */
-      default: {
-        return null;
+      default:
+        //return null;
+        // TODO: styling, onchange, save
+        return <ZZTextField value={state.value} editing={state.editing} onChange={onChange} />;
         return (
           <TextField
             //accessibilityLabel={i18n.t('loginScreen.domain.label', { locale })}
@@ -316,7 +315,7 @@ const Field = ({ post, field, save }) => {
             textAlign={isRTL ? 'right' : 'left'}
             autoCapitalize="none"
             autoCorrect={false}
-            value={postValue}
+            value={state.value}
             returnKeyType="next"
             textContentType="text"
             keyboardType="text"
@@ -324,36 +323,31 @@ const Field = ({ post, field, save }) => {
             //placeholder={i18n.t('loginScreen.domain.placeholder', { locale })}
           />
         );
-      }
     }
   };
 
   return (
-    <View style={{ overflow: 'hidden', paddingTop: 2, paddingBottom: 2 }}>
-      <View style={state.editing ? styles.raisedBox : null}>
-        <Grid>
-          <Row style={[styles.formRow, { paddingTop: 15 }]}>
-            <Col size={1} style={[styles.formIconLabel, { marginRight: 10 }]}>
-              <FieldIcon field={field} />
-            </Col>
-            <Col size={7}>
-              <View style={{ marginRight: 10 }}>
-                <FieldComponent />
-              </View>
-            </Col>
-            <Col size={2} style={styles.formParentLabel}>
-              <Label style={styles.formLabel}>{field.label}</Label>
-            </Col>
-            {!state.editing && (
-              <Col style={{ marginRight: 15 }}>
-                <DefaultControls />
-              </Col>
-            )}
-            {state.editing && <EditControls />}
-          </Row>
-        </Grid>
-      </View>
-    </View>
+    <Grid>
+      <Row style={[state.editing ? styles.raisedBox : null, styles.formRow]}>
+        <Col size={1} style={styles.formIconLabel}>
+          <FieldIcon field={field} />
+        </Col>
+        <Col size={2} style={styles.formParentLabel}>
+          <Label style={styles.formLabel}>{field.label}</Label>
+        </Col>
+        <Col size={8}>
+          <View style={styles.formComponent}>
+            <FieldComponent />
+          </View>
+        </Col>
+        {!state.editing && (
+          <Col size={1} style={styles.formControls}>
+            <DefaultControls />
+          </Col>
+        )}
+        {state.editing && <EditControls />}
+      </Row>
+    </Grid>
   );
 };
 export default Field;

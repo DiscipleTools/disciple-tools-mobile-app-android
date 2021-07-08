@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   formIconLabel: {
     marginLeft: 10,
     width: 'auto',
-    marginBottom: 'auto',
+    //marginBottom: 'auto',
   },
   formIcon: {
     color: Colors.tintColor,
@@ -71,9 +71,16 @@ export const styles = StyleSheet.create({
   formLabel: {
     color: Colors.tintColor,
     fontSize: 12,
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
+    //textAlignVertical: 'top',
     marginTop: 'auto',
     marginBottom: 'auto',
+  },
+  formComponent: {
+    marginRight: 10,
+  },
+  formControls: {
+    marginRight: 5,
   },
   formDivider: {
     borderBottomColor: '#CCCCCC',
@@ -85,7 +92,7 @@ export const styles = StyleSheet.create({
   formIconLabelView: {
     alignItems: 'center',
     marginTop: 'auto',
-    marginBottom: 'auto',
+    //marginBottom: 'auto',
   },
   formFieldMargin: {
     marginTop: 20,

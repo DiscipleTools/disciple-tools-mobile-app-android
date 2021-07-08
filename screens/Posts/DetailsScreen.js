@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import {
   TextInput,
   ScrollView,
@@ -41,7 +41,7 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem';
 
 // 3rd-party Components
-//import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Chip, Selectize } from 'react-native-material-selectize';
 //import { TabView, TabBar } from 'react-native-tab-view';
 import MentionsTextInput from 'react-native-mentions';
@@ -177,7 +177,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const id = useId();
   console.log(`^^^^^^^^^^^^ ID: ${id} ^^^^^^^^^^^^^^`);
-  const { post, error: postError, isLoading, isValidating, save } = useDetails(id);
+  const { post, error: postError, isLoading, isValidating, mutate, save } = useDetails(id);
   const { settings, error: settingsError } = useSettings();
   const { userData, error: userError } = useMyUser();
 
@@ -240,8 +240,6 @@ const DetailsScreen = ({ navigation, route }) => {
   //const shareSettings = useSelector((state) => state.contactsReducer.shareSettings);
   const savedShare = false;
   //const savedShare = useSelector((state) => state.contactsReducer.savedShare);
-  const tags = [];
-  //const tags = useSelector((state) => state.contactsReducer.tags);
 
   let keyboardDidShowListener, keyboardDidHideListener, focusListener, hardwareBackPressListener;
 
@@ -525,7 +523,7 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   // TODO: leave this specific to each Module?
-  const onRefresh = (zzcontactId, forceRefresh = false) => {
+  const BAKonRefresh = (zzcontactId, forceRefresh = false) => {
     //const onRefresh = (contactId, forceRefresh = false) => {
     if (!state.loading || forceRefresh) {
       const contactId = route?.params?.contactId ?? null;
@@ -1746,7 +1744,7 @@ const DetailsScreen = ({ navigation, route }) => {
         fields.push(...creationFieldsByTile);
       }
     });
-    return <Tile post={post} fields={fields} />;
+    return <Tile post={post} fields={fields} save={save} mutate={mutate} refreshing={refreshing} />;
   };
 
   const Post = () => (
@@ -1760,7 +1758,7 @@ const DetailsScreen = ({ navigation, route }) => {
               </TabHeading>
             }
             style={styles.background}>
-            <Tile post={post} fields={tile.fields} save={save} />
+            <Tile post={post} fields={tile.fields} save={save} mutate={mutate} />
           </Tab>
         );
       })}
@@ -1805,21 +1803,18 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   //<KeyboardAvoidingView behavior="position" style={{ flexGrow: 1 }}></KeyboardAvoidingView>
+  // <KeyboardAvoidingView style={{ flex: 1 }}>
   const Details = () => (
-    <KeyboardAvoidingView behavior="position" style={{ flexGrow: 1 }}>
-      <ScrollView
-        //contentInsetAdjustmentBehavior="automatic"
-        keyboardShouldPersistTaps={'handled'}>
-        {isLoading || isValidating ? (
-          <Skeleton />
-        ) : (
-          <>
-            {!isConnected && <OfflineBar />}
-            {isCreate ? <CreatePost /> : <Post />}
-          </>
-        )}
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <>
+      {isLoading || isValidating ? (
+        <Skeleton />
+      ) : (
+        <>
+          {!isConnected && <OfflineBar />}
+          {isCreate ? <CreatePost /> : <Post />}
+        </>
+      )}
+    </>
   );
 
   if (postError || settingsError || userError || !id)
@@ -1838,7 +1833,7 @@ const DetailsScreen = ({ navigation, route }) => {
     <>
       <Details />
       {!hideFAB() && <FAB post={post} />}
-      <Modals />
+      {/* causes grey block above keyboard<Modals />*/}
     </>
   );
 };

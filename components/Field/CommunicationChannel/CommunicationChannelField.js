@@ -3,7 +3,6 @@ import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Icon, Input, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
-import { Chip, Selectize } from 'react-native-material-selectize';
 import PropTypes from 'prop-types';
 
 // TODO: refactor unused styles
@@ -92,10 +91,9 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
         <TouchableOpacity
           key={index.toString()}
           activeOpacity={0.5}
-          //onPress={() => {
-          //  linkingPhoneDialer(communicationChannel.value);
-          //}}
-        >
+          onPress={() => {
+            Linking.openURL('tel:' + communicationChannel.value);
+          }}>
           <Text
             style={[
               styles.linkingText,
@@ -111,10 +109,9 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
         <TouchableOpacity
           key={index.toString()}
           activeOpacity={0.5}
-          //onPress={() => {
-          //  Linking.openURL('mailto:' + communicationChannel.value);
-          //}}
-        >
+          onPress={() => {
+            Linking.openURL('mailto:' + communicationChannel.value);
+          }}>
           <Text
             style={[
               styles.linkingText,

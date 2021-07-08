@@ -4,9 +4,8 @@ import { Button, Icon, Label } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import { useSelector } from 'react-redux';
 
+import MultiSelect from 'components/MultiSelect';
 import PostLink from 'components/PostLink';
-
-import { Chip, Selectize } from 'react-native-material-selectize';
 
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
@@ -42,26 +41,6 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  const addConnection = (newValue) => {
-    const exists = value?.values.find((value) => value?.value === newValue?.value);
-    if (!exists)
-      onChange({
-        values: [...value.values, newValue],
-      });
-  };
-
-  const deleteConnection = (deletedValue) => {
-    const idx = value?.values.findIndex((value) => value?.value === deletedValue?.value);
-    console.log(`idx: ${idx}`);
-    if (idx > -1) {
-      const copied = [...value?.values];
-      const removed = copied.splice(idx, 1);
-      onChange({
-        values: copied,
-      });
-    }
-  };
-
   // - state.peopleGroups
   // - state.usersContacts
   // - state.groups
@@ -74,96 +53,14 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
     { value: -2, name: 'Timmy Testerton' },
     { value: -3, name: 'Jane Doe' },
   ];
-  const ConnectionFieldEdit = () => {
-    console.log(`Edit----> ${JSON.stringify(value?.values)}`);
-    return (
-      <Selectize
-        //itemid="key"
-        itemId="value"
-        items={connectionsList}
-        selectedItems={value?.values}
-        //textInputProps={{
-        //  placeholder: placeholder,
-        //}}
-        textInputProps={{
-          onSubmitEditing: addConnection,
-          //onBlur: () => selectizeRef.current.submit(),
-          placeholder: '',
-          /*
-          switch (postType) {
-            case 'contacts': {
-              listItems = contacts //[...state.usersContacts];
-              placeholder = i18n.t('global.searchContacts');
-              break;
-            }
-            case 'groups': {
-              listItems = [...state.groups];
-              placeholder = i18n.t('groupDetailScreen.searchGroups');
-              break;
-            }
-            case 'peoplegroups': {
-              listItems = [...state.peopleGroups];
-              placeholder = i18n.t('global.selectPeopleGroups');
-              break;
-            }
-            default:
-          }
-          */
-          //keyboardType: 'email-address'
-        }}
-        renderRow={(id, onPress, item) => (
-          <TouchableOpacity
-            activeOpacity={0.6}
-            key={id}
-            onPress={() => addConnection(item)}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 10,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-              }}>
-              {item.avatarUri && <Image style={styles.avatar} source={{ uri: item.avatarUri }} />}
-              <Text
-                style={{
-                  color: 'rgba(0, 0, 0, 0.87)',
-                  fontSize: 14,
-                  lineHeight: 21,
-                }}>
-                {item.name}
-              </Text>
-              <Text
-                style={{
-                  color: 'rgba(0, 0, 0, 0.54)',
-                  fontSize: 14,
-                  lineHeight: 21,
-                }}>
-                {' '}
-                (#
-                {id})
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        renderChip={(id, onClose, item, style, iconStyle) => (
-          <Chip
-            key={id}
-            iconStyle={iconStyle}
-            onClose={() => deleteConnection(item)}
-            text={item.name}
-            style={style}
-          />
-        )}
-        //filterOnKey="key"
-        //keyboardShouldPersistTaps
-        //onChangeSelectedItems={(selectedItems) => onSelectizeValueChange(field.name, selectedItems)}
-        //inputContainerStyle={styles.selectizeField}
-        //inputContainerStyle={styles.inputContainer}
-      />
-    );
-  };
+  const ConnectionFieldEdit = () => (
+    <MultiSelect
+      items={connectionsList}
+      selectedItems={value?.values}
+      onChange={onChange}
+      placeholder={'zzzzz'}
+    />
+  );
 
   const GroupView = () => {
     let iconSource = groupParentIcon;

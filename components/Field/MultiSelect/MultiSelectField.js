@@ -3,10 +3,11 @@ import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Icon, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
-import { Chip, Selectize } from 'react-native-material-selectize';
 import PropTypes from 'prop-types';
 
 import i18n from 'languages';
+
+import MultiSelect from 'components/MultiSelect';
 
 import { styles } from './MultiSelectField.styles';
 
@@ -140,7 +141,7 @@ const MultiSelectField = ({ field, value, editing, onChange }) => {
     </TouchableOpacity>
   );
 
-  const MultiSelectFieldEdit = () => {
+  const ZZMultiSelectFieldEdit = () => {
     if (field.name == 'sources') {
       return (
         <Selectize
@@ -275,7 +276,24 @@ const MultiSelectField = ({ field, value, editing, onChange }) => {
     }
   };
 
-  const MultiSelectFieldView = () => {
+  const MultiSelectFieldEdit = () => (
+    <MultiSelect
+      items={items}
+      selectedItems={selectedItems}
+      onChange={onChange}
+      placeholder={'zzzzz'}
+    />
+  );
+
+  const MultiSelectFieldView = () => (
+    <>
+      {value.values.map((tag) => (
+        <Text style={isRTL ? { textAlign: 'left', flex: 1 } : {}}>{tag.value}</Text>
+      ))}
+    </>
+  );
+
+  const ZZMultiSelectFieldView = () => {
     return (
       <Row>
         <Col style={[styles.container, styles.containerStyle]}>
