@@ -12,6 +12,7 @@ import useNetworkStatus from 'hooks/useNetworkStatus';
 //import useDebounce from 'hooks/useDebounce.js';
 import usePostType from 'hooks/usePostType';
 import useUsers from 'hooks/useUsers';
+import useUsersContacts from 'hooks/useUsersContacts';
 import useList from 'hooks/useList';
 import usePeopleGroups from 'hooks/usePeopleGroups';
 
@@ -39,18 +40,7 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  const { users } = useUsers();
-  if (!users) return null;
-
-  // - state.users
-  // - state.usersContacts
-  //..................
-  // - state.groups
-  // - state.membersContacts
-  // - state.users
-  // - state.usersContacts
-  // TODO:
-  const ConnectionFieldEditPeopleGroups = () => {
+  const PeopleGroupEdit = () => {
     const { peopleGroups } = usePeopleGroups();
     if (!peopleGroups) return null;
     return (
@@ -58,24 +48,45 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
         items={peopleGroups}
         selectedItems={value?.values}
         onChange={onChange}
-        placeholder={'zzzzz'}
+        placeholder={''}
       />
     );
   };
 
-  const connectionsList = [
-    ...value.values,
-    { value: -1, name: 'ZZTest' },
-    { value: -2, name: 'Timmy Testerton' },
-    { value: -3, name: 'Jane Doe' },
-  ];
-  const ConnectionFieldEditDefault = () => (
-    <MultiSelect
-      items={connectionsList}
-      selectedItems={value?.values}
-      onChange={onChange}
-      placeholder={'zzzzz'}
-    />
+  // TODO: membersContacts?
+  const GroupEdit = () => {
+    const { mergedUsersContacts } = useUsersContacts();
+    const { posts: groups } = useList(null, 'groups');
+    if (!groups || !mergedUsersContacts) return null;
+    return (
+      <MultiSelect
+        items={groups}
+        selectedItems={value?.values}
+        onChange={onChange}
+        placeholder={''}
+      />
+    );
+  };
+
+  const ContactEdit = () => {
+    const { mergedUsersContacts } = useUsersContacts();
+    if (!mergedUsersContacts) return null;
+    return (
+      <MultiSelect
+        items={mergedUsersContacts}
+        selectedItems={value?.values}
+        onChange={onChange}
+        placeholder={''}
+      />
+    );
+  };
+
+  const PeopleGroupView = () => (
+    <>
+      {value?.values?.map((connection) => (
+        <PostLink id={connection?.value} title={connection?.name} type={'people_groups'} />
+      ))}
+    </>
   );
 
   const GroupView = () => {
@@ -138,47 +149,16 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
     </>
   );
 
-  /* TODO: load appropriate connectionLists
-    if (field.name === 'people_groups') {
-    } else {
-      switch (postType) {
-        case 'contacts': {
-          collection = [
-            ...this.state.subAssignedContacts,
-            ...this.state.relationContacts,
-            ...this.state.baptizedByContacts,
-            ...this.state.coachedByContacts,
-            ...this.state.coachedContacts,
-            ...this.state.usersContacts,
-          ];
-          break;
-        }
-        case 'groups': {
-          collection = [
-            ...this.state.connectionGroups,
-             ...this.state.groups];
-          isGroup = true;
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-  */
   const ConnectionFieldEdit = () => {
-    return (
-      <>
-        {field?.name === 'people_groups' ? (
-          <ConnectionFieldEditPeopleGroups />
-        ) : (
-          <ConnectionFieldEditDefault />
-        )}
-      </>
-    );
+    if (field?.name === 'people_groups') return <PeopleGroupEdit />;
+    if (isGroup) return <GroupEdit />;
+    return <ContactEdit />;
   };
 
   const ConnectionFieldView = () => {
-    return <>{isGroup ? <GroupView /> : <ContactView />}</>;
+    if (field?.name === 'people_groups') return <PeopleGroupView />;
+    if (isGroup) return <GroupView />;
+    return <ContactView />;
   };
 
   return <>{editing ? <ConnectionFieldEdit /> : <ConnectionFieldView />}</>;

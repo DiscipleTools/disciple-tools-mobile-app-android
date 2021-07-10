@@ -13,7 +13,7 @@ const PostLink = ({ id, title, type }) => {
   // TODO: move inline styles to PostLink.styles
   return (
     <Pressable
-      disabled={!id}
+      disabled={!id || type === 'people_groups'}
       onPress={() => {
         navigation.push('Details', {
           id,
@@ -25,9 +25,8 @@ const PostLink = ({ id, title, type }) => {
       }}>
       <Text
         style={[
-          id ? styles.linkingText : null,
-          isRTL ? { textAlign: 'left', flex: 1 } : { marginLeft: 15 },
-          { fontSize: 16 },
+          id && !type === 'people_groups' ? styles.linkingText : null,
+          isRTL ? { textAlign: 'left', flex: 1 } : null,
         ]}>
         {title}
       </Text>

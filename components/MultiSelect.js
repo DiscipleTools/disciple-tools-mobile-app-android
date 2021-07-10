@@ -6,6 +6,7 @@ import { Chip, Selectize } from 'react-native-material-selectize';
 import { styles } from './MultiSelect.styles';
 
 const MultiSelect = ({ items, selectedItems, onChange }) => {
+  console.log(`items: ${JSON.stringify(items)}`);
   console.log(`selectedItems: ${JSON.stringify(selectedItems)}`);
 
   /*
@@ -71,7 +72,7 @@ const MultiSelect = ({ items, selectedItems, onChange }) => {
               flexDirection: 'row',
               width: '100%',
             }}>
-            {item?.avatarUri && <Image style={styles.avatar} source={{ uri: item.avatarUri }} />}
+            {item?.avatar && <Image style={styles.avatar} source={{ uri: item?.avatar }} />}
             <Text
               style={{
                 color: 'rgba(0, 0, 0, 0.87)',
