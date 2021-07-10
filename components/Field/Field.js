@@ -36,9 +36,27 @@ const Field = ({ post, field, save }) => {
   const value = post[field.name];
   if (value?.length < 1) return null;
 
+  /*
+  NOTE: the difference between value and apiValue:
+
+  'value': the value returned from the API that we use to control components,
+  and so we need to keep this consistent for handling 'onChange' events and
+  future API reads
+
+  'apiValue': this is used only when format to update the API differs from the
+  format that the API returns upon reads (eg, 'user_select' fields)
+  https://developers.disciple.tools/theme-core/api-posts/post-types-fields-format#user_select
+
+  'user_select' read: 
+ {"assigned_to":{"key":2,"label":"Jane Doe (multiplier)"}} 
+
+  'user_select' write:
+  { "assigned_to": 2 }
+  */
   const [state, setState] = useState({
     editing: null,
     value,
+    apiValue: null,
   });
 
   /*
@@ -170,28 +188,38 @@ const Field = ({ post, field, save }) => {
   };
 
   const onSave = () => {
-    console.log('*** ON SAVE ***');
     setState({
       ...state,
       editing: false,
     });
+    /*
+    if field requires a different API write format,
+    then we'll use that (populated in 'onChange')
+    */
+    if (state.apiValue !== null) {
+      save(field.name, state.apiValue);
+      return;
+    }
     save(field.name, state.value);
   };
 
   const onCancel = () => {
-    console.log('*** ON CANCEL ***');
     setState({
       ...state,
       editing: false,
-      value, //state.initialValue
+      value, // initialValue
+      apiValue: null,
     });
   };
 
-  const onChange = (newValue) => {
-    console.log(`$$$$$$ ON CHANGE - newValue: ${JSON.stringify(newValue)} $$$$$$`);
+  const onChange = (newValue, apiValue = null) => {
+    console.log('$$$$$$ ON CHANGE $$$$$$');
+    console.log(`newValue: ${JSON.stringify(newValue)}`);
+    console.log(`apiValue: ${JSON.stringify(apiValue)}`);
     setState({
       ...state,
       value: newValue,
+      apiValue,
     });
   };
 
@@ -294,7 +322,7 @@ const Field = ({ post, field, save }) => {
         // TODO: style, implement edit
         return <TagsField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'user_select':
-        // TODO: Lists
+        // TODO: RTL
         return <UserSelectField value={state.value} editing={state.editing} onChange={onChange} />;
       default:
         //return null;
@@ -302,9 +330,9 @@ const Field = ({ post, field, save }) => {
         return <ZZTextField value={state.value} editing={state.editing} onChange={onChange} />;
         return (
           <TextField
-            //accessibilityLabel={i18n.t('loginScreen.domain.label', { locale })}
-            //label={i18n.t('loginScreen.domain.label', { locale })}
-            //containerStyle={domainStyle}
+            //accessibilityLabel={i18n.t('label', { locale })}
+            //label={null}}
+            //containerStyle={null}
             //iconName="ios-globe"
             onChangeText={(text) => {
               setState({

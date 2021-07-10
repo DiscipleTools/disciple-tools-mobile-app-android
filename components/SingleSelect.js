@@ -1,102 +1,52 @@
-import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ViewPropTypes,
-} from 'react-native';
-import { Picker } from 'native-base';
-import { Col, Row } from 'react-native-easy-grid';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Icon, Picker } from 'native-base';
 
-const styles = StyleSheet.create({
+import { styles } from 'components/Field/Field.styles';
 
-  formRow: {
-    flex: 1,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: '#fff',
+const SingleSelect = ({ items, selectedItem, onChange }) => {
+  // TODO:
+  //const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  },
-  containerStyle: {
-    padding: 5,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-  },
-});
-
-
-class SingleSelect extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      selectedValue: this.props.selectedItem,
-    };
-  }
-
-  setValue = (value) => {
-    this.setState(prevState => ({
-      ...prevState.selectedValue,
-      selectedValue: value,
-    }));
-
-    this.props.onChange(value);
+  const handleChange = (newValue) => {
+    // this is how we enable the user to de-select a value
+    if (newValue === -1) {
+      onChange({
+        key: -1,
+        label: '',
+      });
+      return;
+    }
+    const newItem = items.find((existingItems) => existingItems.ID === newValue);
+    if (newItem)
+      onChange({
+        key: newItem?.ID ?? null,
+        label: newItem?.name ?? null,
+      });
   };
 
-    render = () => {
-      const {
-        containerStyle,
-        formStyle,
-        items,
-      } = this.props;
-
-      const values = items.map(item => (
-        <Picker.Item
-          key={item.value}
-          label={item.label}
-          value={item.value}
-        />
-      ));
-
-      return (
-        <View style={[styles.containerStyle, containerStyle]}>
-          <Row style={[styles.formRow, formStyle]}>
-            <Col style={{ alignSelf: 'center' }}>
-              <Picker
-                mode="dropdown"
-                selectedValue={this.state.selectedValue}
-                onValueChange={this.setValue}
-              >
-                {values}
-              </Picker>
-            </Col>
-          </Row>
-        </View>
-      );
-    }
-}
-
-SingleSelect.propTypes = {
-  // Styles
-  containerStyle: ViewPropTypes.style,
-  formStyle: Text.propTypes.style,
-  // Config
-  selectedItem: PropTypes.string,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string,
-      value: PropTypes.string,
-    }),
-  ),
-  onChange: PropTypes.func.isRequired,
-};
-
-SingleSelect.defaultProps = {
-  containerStyle: null,
-  formStyle: null,
-  items: [],
-  selectedItem: null,
-
+  return (
+    <>
+      <Picker
+        mode="dropdown"
+        selectedValue={selectedItem?.key}
+        onValueChange={handleChange}
+        // TODO: confirm this on Android
+        iosIcon={<Icon name="caret-down" size={10} style={styles.pickerIcon} />}
+        textStyle={{ fontSize: 14 }}>
+        <Picker.Item key={-1} label={''} value={-1} />
+        {items.map((item) => {
+          return (
+            <Picker.Item
+              key={item?.ID}
+              label={item?.name + ' (#' + item?.ID + ')'}
+              value={item?.ID}
+            />
+          );
+        })}
+      </Picker>
+      {/*<Icon name="caret-down" size={10} style={styles.pickerIcon} />*/}
+    </>
+  );
 };
 export default SingleSelect;

@@ -1,36 +1,35 @@
-import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React from 'react';
+import { Pressable, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
 import { styles } from './PostLink.styles';
 
-const PostLink = ({ label, value, type }) => {
-  console.log('*** POSTLINK RENDER ***');
-  console.log(`value: ${JSON.stringify(value)} `);
+const PostLink = ({ id, title, type }) => {
+  const navigation = useNavigation();
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  const navigation = useNavigation();
-
+  // TODO: move inline styles to PostLink.styles
   return (
     <Pressable
-      disabled={!value}
+      disabled={!id}
       onPress={() => {
         navigation.push('Details', {
-          id: value?.ID,
-          name: value?.title,
+          id,
+          // TODO: rename prop to 'title' for consistency sake?
+          name: title,
           type,
           //onGoBack: () => onRefresh(),
         });
       }}>
       <Text
         style={[
-          value ? styles.linkingText : null,
+          id ? styles.linkingText : null,
           isRTL ? { textAlign: 'left', flex: 1 } : { marginLeft: 15 },
           { fontSize: 16 },
         ]}>
-        {label}
+        {title}
       </Text>
     </Pressable>
   );

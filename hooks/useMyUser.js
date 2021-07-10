@@ -27,6 +27,13 @@ const useMyUser = () => {
 
   //const { expoPushToken, registerExpoPushToken } = useExpoPushToken();
   // replaces: user.sagas.js: getExpoPushToken, addPushToken
+  /*
+  const setServerLocale = async (locale) => {
+    // try, catch, toast
+    // POST: const url = `dt/v1/user/my?locale=${locale}`;
+    // mutate();
+  };
+  */
 
   const setSecureStoreItem = async (key, value) => {
     await SecureStore.setItemAsync(key, value);

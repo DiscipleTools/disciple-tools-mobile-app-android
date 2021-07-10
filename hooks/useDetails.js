@@ -50,9 +50,8 @@ const useDetails = () => {
       mutate();
       console.log(`res: ${JSON.stringify(res)}`);
       if (res) {
-        // TODO: parse res
-        const success = false; //true;
-        if (success) {
+        if (res?.status === 200) {
+          // TODO: translation
           showToast('Saved successfully');
         } else {
           // TODO: translation
@@ -61,7 +60,7 @@ const useDetails = () => {
       }
     } catch (err) {
       console.log(`err: ${JSON.stringify(err)}`);
-      // TODO:
+      // TODO: translation
       showToast('GENERIC ERROR GOES HERE', true);
     }
   };

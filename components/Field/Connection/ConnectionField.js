@@ -11,7 +11,9 @@ import PostLink from 'components/PostLink';
 import useNetworkStatus from 'hooks/useNetworkStatus';
 //import useDebounce from 'hooks/useDebounce.js';
 import usePostType from 'hooks/usePostType';
-//import useList from 'hooks/useList';
+import useUsers from 'hooks/useUsers';
+import useList from 'hooks/useList';
+import usePeopleGroups from 'hooks/usePeopleGroups';
 
 import i18n from 'languages';
 
@@ -27,33 +29,47 @@ import {
 import { styles } from './ConnectionField.styles';
 
 const ConnectionField = ({ field, value, editing, onChange }) => {
-  console.log('*** CONNECTION FIELD RENDER ***');
-  console.log(`value: ${JSON.stringify(value)}`);
+  console.log(`connection field: ${JSON.stringify(field)}`);
 
   const isConnected = useNetworkStatus();
 
   const { isContact, isGroup, postType } = usePostType();
-  // TODO: named params? use Constants
-  //const { posts: contacts } = useList(null, "contacts");
-  //console.log(`contacts[0]: ${ JSON.stringify(contacts[0])}`)
-  //const { posts: groups } = useList(null, "groups");
-  //console.log(`groups[0]: ${ JSON.stringify(groups[0])}`)
+  // TODO: filter should be 2nd param so we can default it to null
+  const { posts } = useList(null, postType);
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  // - state.peopleGroups
+  const { users } = useUsers();
+  if (!users) return null;
+
+  // - state.users
   // - state.usersContacts
+  //..................
   // - state.groups
   // - state.membersContacts
-  // - state.updateMembersList
+  // - state.users
+  // - state.usersContacts
   // TODO:
+  const ConnectionFieldEditPeopleGroups = () => {
+    const { peopleGroups } = usePeopleGroups();
+    if (!peopleGroups) return null;
+    return (
+      <MultiSelect
+        items={peopleGroups}
+        selectedItems={value?.values}
+        onChange={onChange}
+        placeholder={'zzzzz'}
+      />
+    );
+  };
+
   const connectionsList = [
     ...value.values,
     { value: -1, name: 'ZZTest' },
     { value: -2, name: 'Timmy Testerton' },
     { value: -3, name: 'Jane Doe' },
   ];
-  const ConnectionFieldEdit = () => (
+  const ConnectionFieldEditDefault = () => (
     <MultiSelect
       items={connectionsList}
       selectedItems={value?.values}
@@ -63,6 +79,8 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
   );
 
   const GroupView = () => {
+    const { posts: contacts } = useList(null, 'contacts');
+    const { posts: groups } = useList(null, 'groups');
     let iconSource = groupParentIcon;
     const groupFieldLabel = String(field.label);
     if (groupFieldLabel.toLowerCase().includes('peer')) iconSource = groupPeerIcon;
@@ -115,7 +133,7 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
   const ContactView = () => (
     <>
       {value?.values?.map((connection) => (
-        <PostLink label={connection?.name} value={null} type={'contacts'} />
+        <PostLink id={connection?.value} title={connection?.name} type={'contacts'} />
       ))}
     </>
   );
@@ -136,7 +154,9 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
           break;
         }
         case 'groups': {
-          collection = [...this.state.connectionGroups, ...this.state.groups];
+          collection = [
+            ...this.state.connectionGroups,
+             ...this.state.groups];
           isGroup = true;
           break;
         }
@@ -145,7 +165,21 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
         }
       }
   */
-  const ConnectionFieldView = () => <>{isGroup ? <GroupView /> : <ContactView />}</>;
+  const ConnectionFieldEdit = () => {
+    return (
+      <>
+        {field?.name === 'people_groups' ? (
+          <ConnectionFieldEditPeopleGroups />
+        ) : (
+          <ConnectionFieldEditDefault />
+        )}
+      </>
+    );
+  };
+
+  const ConnectionFieldView = () => {
+    return <>{isGroup ? <GroupView /> : <ContactView />}</>;
+  };
 
   return <>{editing ? <ConnectionFieldEdit /> : <ConnectionFieldView />}</>;
 };

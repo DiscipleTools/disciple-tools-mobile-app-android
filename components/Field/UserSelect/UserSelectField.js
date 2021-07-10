@@ -1,63 +1,37 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Icon, Picker } from 'native-base';
+import React from 'react';
+import { Icon } from 'native-base';
+
+// Custom Components
+import SingleSelect from 'components/SingleSelect';
 import PostLink from 'components/PostLink';
 
-import { styles } from './UserSelectField.styles';
+// Custom Hooks
+import useUsers from 'hooks/useUsers';
+
+import { styles } from 'components/Field/Field.styles';
 
 const UserSelectField = ({ value, editing, onChange }) => {
-  console.log('*** USER SELECT FIELD RENDER ***');
+  const { users } = useUsers();
 
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  if (!value?.key || !value?.label || !users) return null;
 
-  // TODO: how to best pull these lists?
-  const [state, setState] = useState({
-    users: [],
-    assignedToContacts: [],
-  });
+  const user = users?.find((existingUser) => existingUser.ID === value.key);
 
   const handleChange = (newValue) => {
-    if (newValue !== value) onChange(newValue);
+    const apiValue = newValue.key;
+    if (newValue !== value) onChange(newValue, apiValue);
   };
 
-  const UserSelectFieldEdit = () => {
-    return (
-      <>
-        <Picker
-          mode="dropdown"
-          selectedValue={value.key}
-          onValueChange={handleChange}
-          //textStyle={{ color: Colors.tintColor }}
-        >
-          {[...state.users, ...state.assignedToContacts, value].map((item) => {
-            return (
-              <Picker.Item
-                key={item.key}
-                label={item.label + ' (#' + item.key + ')'}
-                value={item.key}
-              />
-            );
-          })}
-        </Picker>
-        <Icon name="caret-down" size={10} style={styles.pickerIcon} />
-      </>
-    );
-  };
+  const UserSelectFieldEdit = () => (
+    <SingleSelect items={users} selectedItem={value} onChange={handleChange} />
+  );
 
   const UserSelectFieldView = () => {
-    if (!value?.key || !value?.label) return null;
-    const userId = parseInt(value.key);
-    let userData = state.users.find(
-      (existingUser) => existingUser?.key === userId || existingUser?.contactID === userId,
-    );
-    if (!userData) {
-      userData = state?.usersContacts?.find(
-        (existingUser) => existingUser.value === userId.toString(),
-      );
-    }
+    const id = !user ? null : user?.contact_id ?? null;
+    const title = !user ? value.label : user?.name ?? null;
     return (
       <>
-        <PostLink label={value.label} value={userData} type={'contacts'} />
+        <PostLink id={id} title={title} type={'contacts'} />
         {editing ? <Icon name="caret-down" size={10} style={styles.pickerIcon} /> : null}
       </>
     );

@@ -5,24 +5,30 @@ import { Chip, Selectize } from 'react-native-material-selectize';
 
 import { styles } from './MultiSelect.styles';
 
-const MultiSelect = ({ items, selectedItems, placeholder, onChange }) => {
+const MultiSelect = ({ items, selectedItems, onChange }) => {
   console.log(`selectedItems: ${JSON.stringify(selectedItems)}`);
 
-  /* TODO: check whether 'selectedItems' present in 'items' 
-  // ensure postLocation is still a valid instanceLocation
-  const getSelectizeItems = (selectedLocations, instanceLocations) => {
-    const items = new Set(); // avoid duplicates
-    selectedLocations?.forEach((selectedLocation) => {
-      const foundItem = instanceLocations.find(
-        (instanceLocation) => instanceLocation.value === selectedLocation.value,
-      );
-      if (foundItem) items.add(foundItem);
-    });
-    return [...items];
-  };
+  /*
+  Selectize component requires a consistent identifier,
+  so we map any input to 'id' property
   */
+  const mapItems = (itemsToMap) => {
+    if (!itemsToMap || itemsToMap.length < 1) return itemsToMap;
+    return itemsToMap.map((itemToMap) => {
+      const mappedItem = { ...itemToMap };
+      if (itemToMap?.value) mappedItem['id'] = itemToMap.value;
+      if (itemToMap?.key) mappedItem['id'] = itemToMap.key;
+      if (itemToMap?.ID) mappedItem['id'] = itemToMap.ID;
+      return mappedItem;
+    });
+  };
+
+  const mappedItems = mapItems(items);
+  const mappedSelectedItems = mapItems(selectedItems);
 
   const addSelection = (newValue) => {
+    // TODO: peopleGroup format:
+    //{"ID":30,"name":"Algerian, Arabic-speaking","label":"Algerian, Arabic-speaking","id":30}
     const exists = selectedItems.find((value) => value?.value === newValue?.value);
     if (!exists)
       onChange({
@@ -43,34 +49,13 @@ const MultiSelect = ({ items, selectedItems, placeholder, onChange }) => {
 
   return (
     <Selectize
-      itemId="value"
-      items={items}
-      selectedItems={selectedItems}
+      itemId={'id'}
+      items={mappedItems}
+      selectedItems={mappedSelectedItems}
       textInputProps={{
         onSubmitEditing: addSelection,
-        placeholder,
-        //onBlur: () => selectizeRef.current.submit(),
-        /* TODO:
-        switch (postType) {
-          case 'contacts': {
-            listItems = contacts //[...state.usersContacts];
-            placeholder = i18n.t('global.searchContacts');
-            break;
-          }
-          case 'groups': {
-            listItems = [...state.groups];
-            placeholder = i18n.t('groupDetailScreen.searchGroups');
-            break;
-          }
-          case 'peoplegroups': {
-            listItems = [...state.peopleGroups];
-            placeholder = i18n.t('global.selectPeopleGroups');
-            break;
-          }
-          default:
-        }
-        */
-        //keyboardType: 'email-address'
+        // TODO:
+        placeholder: '',
       }}
       renderRow={(id, onPress, item) => (
         <TouchableOpacity
@@ -86,14 +71,14 @@ const MultiSelect = ({ items, selectedItems, placeholder, onChange }) => {
               flexDirection: 'row',
               width: '100%',
             }}>
-            {item.avatarUri && <Image style={styles.avatar} source={{ uri: item.avatarUri }} />}
+            {item?.avatarUri && <Image style={styles.avatar} source={{ uri: item.avatarUri }} />}
             <Text
               style={{
                 color: 'rgba(0, 0, 0, 0.87)',
                 fontSize: 14,
                 lineHeight: 21,
               }}>
-              {item.name}
+              {item?.name || item?.label}
             </Text>
             <Text
               style={{
@@ -113,7 +98,7 @@ const MultiSelect = ({ items, selectedItems, placeholder, onChange }) => {
           key={id}
           iconStyle={iconStyle}
           onClose={() => removeSelection(item)}
-          text={item.name}
+          text={item?.name || item?.label}
           style={style}
         />
       )}

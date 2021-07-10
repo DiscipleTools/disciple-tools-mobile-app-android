@@ -5,8 +5,6 @@ import { Icon, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
 
-import i18n from 'languages';
-
 import MultiSelect from 'components/MultiSelect';
 
 import { styles } from './MultiSelectField.styles';
@@ -165,7 +163,7 @@ const MultiSelectField = ({ field, value, editing, onChange }) => {
               : []
           }
           textInputProps={{
-            placeholder: i18n.t('contactDetailScreen.selectSources'),
+            placeholder: '',
           }}
           renderRow={(id, onPress, item) => (
             <TouchableOpacity
