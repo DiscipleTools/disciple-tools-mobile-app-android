@@ -16,7 +16,6 @@ import MultiSelectField from 'components/Field/MultiSelect/MultiSelectField';
 import NumberField from 'components/Field/Number/NumberField';
 import TagsField from 'components/Field/Tags/TagsField';
 import TextField from 'components/Field/Text/TextField';
-import ZZTextField from 'components/Field/Text/ZZTextField';
 import UserSelectField from 'components/Field/UserSelect/UserSelectField';
 
 import i18n from 'languages';
@@ -327,7 +326,7 @@ const Field = ({ post, field, save }) => {
       default:
         //return null;
         // TODO: styling, onchange, save
-        return <ZZTextField value={state.value} editing={state.editing} onChange={onChange} />;
+        return <TextField value={state.value} editing={state.editing} onChange={onChange} />;
         return (
           <TextField
             //accessibilityLabel={i18n.t('label', { locale })}
