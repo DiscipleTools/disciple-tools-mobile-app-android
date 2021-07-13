@@ -1,29 +1,24 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Text, TextInput } from 'react-native';
 import { useSelector } from 'react-redux';
 //import PropTypes from 'prop-types';
 
-//import { styles } from './TextField.styles';
+import { styles } from './TextField.styles';
 
 const TextField = ({ value, editing, onChange }) => {
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
-  const inputRef = useRef(null);
-
-  const handleChange = (newValue) => (inputRef.current.value = newValue);
-
-  const handleEditingEnd = () => {
-    const newValue = inputRef.current.value;
+  const handleChange = (newValue) => {
     if (newValue !== value) onChange(newValue);
   };
 
   const TextFieldEdit = () => (
     <TextInput
-      ref={inputRef}
+      autoFocus={true}
       defaultValue={value}
       onChangeText={handleChange}
-      onEndEditing={handleEditingEnd}
-      //value={value}
+      // TODO: more consistent styling
+      style={[styles.textField, isRTL ? { textAlign: 'left', flex: 1 } : {}]}
     />
   );
 

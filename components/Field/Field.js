@@ -31,8 +31,8 @@ const Field = ({ post, field, save }) => {
   const locale = useSelector((state) => state.i18nReducer.locale);
 
   // validate to confirm that post has the field name and value(s)
-  if (!post.hasOwnProperty(field.name)) return null;
-  const value = post[field.name];
+  if (!post.hasOwnProperty(field?.name)) return null;
+  const value = post[field?.name];
   if (value?.length < 1) return null;
 
   /*
@@ -78,111 +78,16 @@ const Field = ({ post, field, save }) => {
     return false;
   };
 
-  const setFieldContentStyle = (field) => {
-    //if (isRequiredField(field)) console.log(`------------- POST[FIELD.NAME]: ${ JSON.stringify(post[field.name]) } ------------`);
-    const type = field.type;
-    const name = field.name;
-    let newStyles = {};
-    // TODO: use Constants
-    if (type == 'key_select' || type == 'user_select') {
-      newStyles = {
-        ...styles.contactTextRoundField,
-        paddingRight: 10,
-      };
-    }
-    /* TODO: move this bc we do not have post here?
-    if (isRequiredField(field)) {
-      newStyles = {
-        ...newStyles,
-        backgroundColor: '#FFE6E6',
-        borderWidth: 2,
-        borderColor: Colors.errorBackground,
-      };
-    }
-    */
-    return newStyles;
-  };
-
-  const isUndecoratedField = (field) => {
+  const isUndecoratedField = () => {
     const name = field?.name;
     const type = field?.type;
-    // TODO: use Constants
     return (
-      name == 'overall_status' ||
-      name == 'milestones' ||
-      name == 'group_status' ||
-      name == 'health_metrics' ||
-      name == 'members' ||
-      type == 'communication_channel' ||
-      (type == 'connection' && field.post_type === 'groups')
-    );
-  };
-
-  const DecoratedField = ({ field }) => {
-    const type = field.type;
-    const name = field.name;
-    const label = field.label;
-    return (
-      <Col>
-        {editing ? (
-          <>
-            <Row style={styles.formFieldMargin}>
-              <Col style={styles.formIconLabelCol}>
-                <View style={styles.formIconLabelView}>
-                  <FieldIcon field={field} />
-                </View>
-              </Col>
-              <Col>
-                <Label style={styles.formLabel}>{label}</Label>
-              </Col>
-            </Row>
-            <Row>
-              <Col style={styles.formIconLabelCol}>
-                <View style={styles.formIconLabelView}>
-                  <FieldIcon field={field} />
-                </View>
-              </Col>
-              <Col style={setFieldContentStyle(field)}>
-                <Field post={post} field={field} />
-              </Col>
-            </Row>
-            {/*isRequiredField(field) && (
-              <Row>
-                <Col style={styles.formIconLabelCol}>
-                  <View style={styles.formIconLabelView}>
-                    <Icon
-                      type="FontAwesome"
-                      name="user"
-                      style={[styles.formIcon, { opacity: 0 }]}
-                    />
-                  </View>
-                </Col>
-                <Col>
-                  <Text style={styles.validationErrorMessage}>
-                    {i18n.t('detailsScreen.requiredField')}
-                  </Text>
-                </Col>
-              </Row>
-            )*/}
-          </>
-        ) : (
-          <>
-            <Row style={[styles.formRow, { paddingTop: 15 }]}>
-              <Col style={[styles.formIconLabel, { marginRight: 10 }]}>
-                <FieldIcon field={field} />
-              </Col>
-              <Col>
-                <View>
-                  <Field post={post} field={field} />
-                </View>
-              </Col>
-              <Col style={styles.formParentLabel}>
-                <Label style={styles.formLabel}>{field.label}</Label>
-              </Col>
-            </Row>
-          </>
-        )}
-      </Col>
+      name === 'milestones' ||
+      name === 'health_metrics' ||
+      name === 'parent_groups' ||
+      name === 'peer_groups' ||
+      name === 'child_groups' //||
+      //name == 'members' // ||
     );
   };
 
@@ -196,6 +101,8 @@ const Field = ({ post, field, save }) => {
     then we'll use that (populated in 'onChange')
     */
     if (state.apiValue !== null) {
+      console.log('_______________API SAVE _________');
+      console.log(`state.apiValue: ${state.apiValue}`);
       save(field.name, state.apiValue);
       return;
     }
@@ -234,6 +141,9 @@ const Field = ({ post, field, save }) => {
     </Pressable>
   );
 
+  // TODO
+  //console.log(`state.value: ${ JSON.stringify(state.value) }`)
+  //console.log(`value: ${ JSON.stringify(value) }`)
   const EditControls = () => (
     <Col style={{ marginRight: 15 }}>
       <Row>
@@ -245,35 +155,39 @@ const Field = ({ post, field, save }) => {
           />
         </Pressable>
       </Row>
-      <Row>
-        <Pressable onPress={() => onSave()}>
-          <Icon
-            type={'MaterialIcons'}
-            name={'save'}
-            style={[styles.fieldActionIcon, { fontSize: 32, marginTop: 'auto' }]}
-          />
-        </Pressable>
-      </Row>
+      {JSON.stringify(state.value) !== JSON.stringify(value) && (
+        <Row>
+          <Pressable onPress={() => onSave()}>
+            <Icon
+              type={'MaterialIcons'}
+              name={'save'}
+              style={[styles.fieldActionIcon, { fontSize: 32, marginTop: 'auto' }]}
+            />
+          </Pressable>
+        </Row>
+      )}
     </Col>
   );
 
   const FieldComponent = () => {
-    switch (field.type) {
+    switch (field?.type) {
       case 'boolean':
-        // TODO: implement (as read-only Switch?)
-        return <BooleanField value={state.value} editing={state.editing} onChange={onChange} />;
+        return null;
+      // TODO: implement (as read-only Switch?)
+      //return <BooleanField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'communication_channel':
-        // TODO: Linking, handle change, save
+        // TODO: RTL, styles
         return (
           <CommunicationChannelField
-            name={field.name}
+            field={field}
             value={state.value}
             editing={state.editing}
             onChange={onChange}
           />
         );
       case 'connection':
-        // TODO: Lists
+        // TODO: RTL, style, (*)lists
+        console.log(`..................FIELD: ${JSON.stringify(field)}`);
         return (
           <ConnectionField
             field={field}
@@ -283,10 +197,10 @@ const Field = ({ post, field, save }) => {
           />
         );
       case 'date':
-        // TODO: formatting?
+        // TODO: RTL, style, better component?
         return <DateField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'key_select':
-        // TODO: field->options={field.default}
+        // TODO: RTL, style
         return (
           <KeySelectField
             field={field}
@@ -297,62 +211,59 @@ const Field = ({ post, field, save }) => {
         );
       //case 'location_grid':
       case 'location':
-        // TODO: handle changes, save
+        // TODO: RTL, style
         return <LocationField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'multi_select':
-        // TODO: handle save
+        // TODO: RTL, style, (*)save, (*)"defaults"/lists
         return (
           <MultiSelectField
-            field={field}
             value={state.value}
+            options={field?.default}
             editing={state.editing}
             onChange={onChange}
           />
         );
       case 'number':
-        // TODO: style
+        // TODO: RTL, style
         return <NumberField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'post_user_meta':
-        // TODO: implement
-        return (
-          <PostUserMetaField value={state.value} editing={state.editing} onChange={onChange} />
-        );
+        return null;
+      //return <PostUserMetaField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'tags':
-        // TODO: style, implement edit
-        return <TagsField value={state.value} editing={state.editing} onChange={onChange} />;
-      case 'user_select':
-        // TODO: RTL
-        return <UserSelectField value={state.value} editing={state.editing} onChange={onChange} />;
-      default:
-        //return null;
-        // TODO: styling, onchange, save
-        return <TextField value={state.value} editing={state.editing} onChange={onChange} />;
+        // TODO: RTL, style
         return (
-          <TextField
-            //accessibilityLabel={i18n.t('label', { locale })}
-            //label={null}}
-            //containerStyle={null}
-            //iconName="ios-globe"
-            onChangeText={(text) => {
-              setState({
-                ...state,
-                domain: text,
-              });
-            }}
-            textAlign={isRTL ? 'right' : 'left'}
-            autoCapitalize="none"
-            autoCorrect={false}
+          <TagsField
             value={state.value}
-            returnKeyType="next"
-            textContentType="text"
-            keyboardType="text"
-            //disabled={state.loading}
-            //placeholder={i18n.t('loginScreen.domain.placeholder', { locale })}
+            options={post?.tags?.values}
+            editing={state.editing}
+            onChange={onChange}
           />
         );
+      case 'user_select':
+        // TODO: RTL, style
+        return <UserSelectField value={state.value} editing={state.editing} onChange={onChange} />;
+      default:
+        // TODO: RTL, style
+        return <TextField value={state.value} editing={state.editing} onChange={onChange} />;
     }
   };
 
+  if (isUndecoratedField() && !state.editing)
+    return (
+      <Grid>
+        <Row style={[state.editing ? styles.raisedBox : null, styles.formRow]}>
+          <Col size={11}>
+            <FieldComponent />
+          </Col>
+          {!state.editing && (
+            <Col size={1} style={styles.formControls}>
+              <DefaultControls />
+            </Col>
+          )}
+          {state.editing && <EditControls />}
+        </Row>
+      </Grid>
+    );
   return (
     <Grid>
       <Row style={[state.editing ? styles.raisedBox : null, styles.formRow]}>

@@ -43,11 +43,22 @@ const ConnectionField = ({ field, value, editing, onChange }) => {
   const PeopleGroupEdit = () => {
     const { peopleGroups } = usePeopleGroups();
     if (!peopleGroups) return null;
+    const addSelection = (newValue) => {
+      console.log(`PEOPLE GROUP newValue: ${JSON.stringify(newValue)}`);
+      const exists = value?.values.find((value) => value?.value === newValue?.value);
+      if (!exists) console.log(`PEOPLE GROUP newValue: ${JSON.stringify(newValue)}`);
+      /*
+        onChange({
+          values: [...selectedItems, newValue],
+        });
+        */
+    };
     return (
       <MultiSelect
         items={peopleGroups}
         selectedItems={value?.values}
         onChange={onChange}
+        customAddSelection={addSelection}
         placeholder={''}
       />
     );

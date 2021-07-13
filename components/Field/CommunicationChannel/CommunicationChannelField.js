@@ -1,19 +1,48 @@
-import React, { useState } from 'react';
-import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Linking, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Icon, Input, Label } from 'native-base';
+import { Icon } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
+
+import useDebounce from 'hooks/useDebounce.js';
 
 // TODO: refactor unused styles
 import { styles } from './CommunicationChannelField.styles';
 
 // TODO: LINKING PHONE DIALER, EMAIL, etc...
-const CommunicationChannelField = ({ name, value, editing, onChange }) => {
+const CommunicationChannelField = ({ field, value, editing, onChange }) => {
   console.log('*** COMMUNICATIONCHANNEL FIELD RENDER ***');
   console.log(`*** VALUE: ${JSON.stringify(value)} ***`);
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+
+  const valueRef = useRef(value);
+
+  /*
+  const debouncedValue = useDebounce(zzvalue, 1000);
+
+  useEffect(() => {
+    if (debouncedValue) {
+      console.log(`debouncedValue: ${ JSON.stringify(debouncedValue)}`)
+    }
+  }, [debouncedValue]);
+  */
+
+  const timerRef = useRef(null);
+
+  const changeDelay = () => {
+    if (timerRef.current !== null) {
+      const timer = timerRef.current;
+      clearTimeout(timer);
+      timerRef.current = null;
+    }
+    timerRef.current = setTimeout(() => {
+      onChange(valueRef.current);
+    }, 3000);
+  };
+
+  const onEndEditing = () => onChange(valueRef.current);
 
   const onAddCommunicationField = () => {
     onChange([
@@ -25,23 +54,32 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
   };
 
   //const onCommunicationFieldChange = (key, value, index, dbIndex, component) => {
-  //const onCommunicationFieldChange = (newValue, idx) => {
-  const onCommunicationFieldChange = (newValue) => {
-    // TODO: does not work yet bc TabView component rerenders on TextInput
+  const onCommunicationFieldChange = (newValue, idx, key) => {
     console.log(`*** COMM FIELD CHANGE: ${JSON.stringify(newValue)}, idx: ${idx} ***`);
-    //if (value[idx] !== newValue)
+    if (newValue !== value[idx]) {
+      const updatedValue = [...value];
+      if (key) {
+        updatedValue[idx] = { key, value: newValue };
+      } else {
+        updatedValue[idx] = { value: newValue };
+      }
+      valueRef.current = updatedValue;
+      //onChange(updatedValue);
+    }
   };
 
-  const onRemoveCommunicationField = (idx) => {
-    const cloned = [...value];
+  const onRemoveCommunicationField = (idx, key) => {
+    const newValue = [...value];
     // splice occurs in-place, returns removed (unhandled)
-    cloned.splice(idx, 1);
-    onChange(cloned);
+    newValue.splice(idx, 1);
+    // ref: https://developers.disciple.tools/theme-core/api-posts/post-types-fields-format#communication_channel
+    const apiValue = [{ key, delete: true }];
+    onChange(newValue, apiValue);
   };
 
   const getKeyboardType = () => {
-    if (name.includes('phone')) return 'phone-pad';
-    if (name.includes('email')) return 'email-address';
+    if (field?.name?.includes('phone')) return 'phone-pad';
+    if (field?.name?.includes('email')) return 'email-address';
     return 'default';
   };
 
@@ -56,7 +94,7 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
               ios="ios-add"
               style={[styles.addRemoveIcons, styles.addIcons]}
               onPress={() => {
-                onAddCommunicationField(name);
+                onAddCommunicationField();
               }}
             />
           </Col>
@@ -64,9 +102,14 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
         {value.map((communicationChannel, idx) => (
           <Row style={{ marginBottom: 10 }}>
             <Col>
-              <Input
-                value={communicationChannel.value}
-                onChangeText={onCommunicationFieldChange}
+              <TextInput
+                defaultValue={communicationChannel.value}
+                onChangeText={(newValue) => {
+                  changeDelay();
+                  onCommunicationFieldChange(newValue, idx, communicationChannel?.key);
+                }}
+                //onBlur={onEndEditing}
+                onEndEditing={onEndEditing}
                 style={styles.contactTextField}
                 keyboardType={keyboardType}
               />
@@ -76,7 +119,7 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
                 android="md-remove"
                 ios="ios-remove"
                 style={[styles.formIcon, styles.addRemoveIcons, styles.removeIcons]}
-                onPress={() => onRemoveCommunicationField(idx)}
+                onPress={() => onRemoveCommunicationField(idx, communicationChannel?.key)}
               />
             </Col>
           </Row>
@@ -86,7 +129,7 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
   };
 
   const CommunicationChannelFieldView = () => {
-    if (name.includes('phone')) {
+    if (field?.name?.includes('phone')) {
       return value.map((communicationChannel, index) => (
         <TouchableOpacity
           key={index.toString()}
@@ -104,7 +147,7 @@ const CommunicationChannelField = ({ name, value, editing, onChange }) => {
           </Text>
         </TouchableOpacity>
       ));
-    } else if (name.includes('email')) {
+    } else if (field?.name?.includes('email')) {
       return value.map((communicationChannel, index) => (
         <TouchableOpacity
           key={index.toString()}

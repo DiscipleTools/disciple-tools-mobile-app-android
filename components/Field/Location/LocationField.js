@@ -15,14 +15,16 @@ import { styles } from './LocationField.styles';
 
 const LocationField = ({ value, editing, onChange }) => {
   // All available Locations in D.T instance
-  const instanceLocations = useLocations();
+  const items = useLocations();
 
   // Locations relevant to this particular Post
-  const locations = value.values;
+  const selectedItems = value?.values ?? null;
 
+  /*
   const [state, setState] = useState({
     locations,
   });
+  */
 
   const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
@@ -34,8 +36,8 @@ const LocationField = ({ value, editing, onChange }) => {
 
   const LocationFieldEdit = () => (
     <MultiSelect
-      items={instanceLocations}
-      selectedItems={state.locations}
+      items={items}
+      selectedItems={selectedItems}
       onChange={onChange}
       placeholder={i18n.t('global.selectLocations')}
     />
@@ -43,7 +45,7 @@ const LocationField = ({ value, editing, onChange }) => {
 
   const LocationFieldView = () => {
     //return state.locations.map((location) => {
-    return value.values.map((location) => {
+    return selectedItems.map((location) => {
       const isIOS = true;
       let mapURL = isIOS
         ? `http://maps.apple.com/?q=${location.name}`

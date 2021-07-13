@@ -17,7 +17,7 @@ const KeySelectField = ({ field, value, editing, onChange }) => {
   };
 
   const isStatusField = () => {
-    if (field.name === 'overall_status' || field.name === 'group_status') return true;
+    if (field?.name === 'overall_status' || field?.name === 'group_status') return true;
     return false;
   };
 
@@ -26,7 +26,7 @@ const KeySelectField = ({ field, value, editing, onChange }) => {
     <View
       style={[
         styles.statusFieldContainer,
-        isStatusField(field.name) ? { backgroundColor } : null,
+        isStatusField(field?.name) ? { backgroundColor } : null,
         //Platform.select({
         //android: {
         //transparent?: state.overallStatusBackgroundColor,

@@ -5,7 +5,14 @@ import { Chip, Selectize } from 'react-native-material-selectize';
 
 import { styles } from './MultiSelect.styles';
 
-const MultiSelect = ({ items, selectedItems, onChange }) => {
+const MultiSelect = ({
+  items,
+  selectedItems,
+  onChange,
+  placeholder,
+  customAddSelection,
+  customRemoveSelection,
+}) => {
   console.log(`items: ${JSON.stringify(items)}`);
   console.log(`selectedItems: ${JSON.stringify(selectedItems)}`);
 
@@ -27,9 +34,21 @@ const MultiSelect = ({ items, selectedItems, onChange }) => {
   const mappedItems = mapItems(items);
   const mappedSelectedItems = mapItems(selectedItems);
 
+  // TODO: connections
+  // TODO: milestones, sources
+  //{"people_groups":{"values":[{"value":"23","name":"Arab Egyptian"},{"ID":33,"name":"Arab, Iraqi","label":"Arab, Iraqi"}]}}}
+  // works:
+  // -- locations,
+  // -- tags
   const addSelection = (newValue) => {
-    // TODO: peopleGroup format:
-    //{"ID":30,"name":"Algerian, Arabic-speaking","label":"Algerian, Arabic-speaking","id":30}
+    // no longer need the 'id' (return original format)
+    delete newValue['id'];
+    /*
+    if (customAddSelection) {
+      customAddSelection(newValue);
+      return;
+    }
+    */
     const exists = selectedItems.find((value) => value?.value === newValue?.value);
     if (!exists)
       onChange({
@@ -37,13 +56,25 @@ const MultiSelect = ({ items, selectedItems, onChange }) => {
       });
   };
 
+  // TODO: milestones, sources
+  // works:
+  // -- connections,
+  // -- locations,
+  // -- tags
   const removeSelection = (deletedValue) => {
+    /*
+    if (customRemoveSelection) {
+      customRemoveSelection(deletedValue);
+      return;
+    }
+    */
     const idx = selectedItems.findIndex((value) => value?.value === deletedValue?.value);
     if (idx > -1) {
-      const copied = [...selectedItems];
-      const removed = copied.splice(idx, 1);
+      const newValues = [...selectedItems];
+      const removed = newValues.splice(idx, 1);
       onChange({
-        values: copied,
+        values: newValues,
+        force_values: true,
       });
     }
   };
@@ -54,9 +85,8 @@ const MultiSelect = ({ items, selectedItems, onChange }) => {
       items={mappedItems}
       selectedItems={mappedSelectedItems}
       textInputProps={{
-        onSubmitEditing: addSelection,
-        // TODO:
-        placeholder: '',
+        onSubmitEditing: (text) => addSelection({ value: text }),
+        placeholder,
       }}
       renderRow={(id, onPress, item) => (
         <TouchableOpacity
@@ -79,7 +109,7 @@ const MultiSelect = ({ items, selectedItems, onChange }) => {
                 fontSize: 14,
                 lineHeight: 21,
               }}>
-              {item?.name || item?.label}
+              {item?.label || item?.name || item?.value}
             </Text>
             <Text
               style={{
@@ -99,7 +129,7 @@ const MultiSelect = ({ items, selectedItems, onChange }) => {
           key={id}
           iconStyle={iconStyle}
           onClose={() => removeSelection(item)}
-          text={item?.name || item?.label}
+          text={item?.label || item?.name || item?.value}
           style={style}
         />
       )}
