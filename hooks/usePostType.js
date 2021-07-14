@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import { Html5Entities } from 'html-entities';
 
 // TODO: use constants
 const usePostType = (postType) => {

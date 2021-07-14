@@ -1,34 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 
-// Custom Hooks
+import useI18N from 'hooks/useI18N';
 import useLocations from 'hooks/useLocations';
-
-import i18n from 'languages';
-//import utils from 'utils';
 
 import MultiSelect from 'components/MultiSelect';
 
 import { styles } from './LocationField.styles';
 
 const LocationField = ({ value, editing, onChange }) => {
+  const { i18n, isRTL } = useI18N();
   // All available Locations in D.T instance
   const items = useLocations();
 
   // Locations relevant to this particular Post
   const selectedItems = value?.values ?? null;
 
-  /*
-  const [state, setState] = useState({
-    locations,
-  });
-  */
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-
-  /*
+  /* TODO: enable search
   const searchLocationsDelayed = utils.debounce((queryText) => {
     console.log(`**** SEARCH LOCATIONS DELAYED/DEBOUNCE: ${queryText} ****`);
   }, 750);

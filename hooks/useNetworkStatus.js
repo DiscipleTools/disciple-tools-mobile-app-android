@@ -1,4 +1,4 @@
-import { useNetInfo } from '@react-native-community/netinfo';
+//import { useNetInfo } from '@react-native-community/netinfo';
 import { useSelector } from 'react-redux';
 
 const useNetworkStatus = () => {

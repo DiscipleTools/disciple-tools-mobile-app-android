@@ -1,12 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Icon, Picker } from 'native-base';
+
+import useI18N from 'hooks/useI18N';
 
 import { styles } from 'components/Field/Field.styles';
 
 const SingleSelect = ({ items, selectedItem, onChange }) => {
-  // TODO:
-  //const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   const handleChange = (newValue) => {
     // this is how we enable the user to de-select a value

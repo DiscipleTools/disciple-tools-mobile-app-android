@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // Component Library (Native Base)
@@ -16,12 +15,9 @@ import OfflineBar from 'components/OfflineBar';
 
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
+import useI18N from 'hooks/useI18N';
 import useNotifications from 'hooks/useNotifications.js';
 import useMyUser from 'hooks/useMyUser.js';
-
-// Helpers
-import i18n from 'languages';
-import moment from 'languages/moment';
 
 // Styles, Constants, Icons, Assets, etc...
 import { styles } from './NotificationsScreen.styles';
@@ -32,6 +28,7 @@ const NotificationsScreen = ({ navigation }) => {
   const DEFAULT_LIMIT = 10;
 
   const isConnected = useNetworkStatus();
+  const { i18n, isRTL, moment } = useI18N();
   const {
     notifications,
     error: notificationsError,
@@ -40,8 +37,6 @@ const NotificationsScreen = ({ navigation }) => {
     mutate,
   } = useNotifications();
   const { userData, error: userError } = useMyUser();
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const unreadNotifications = notifications?.filter((notification) => {
     if (notification.is_new === '1') return notification;

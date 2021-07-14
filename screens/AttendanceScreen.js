@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   BackHandler,
@@ -28,9 +27,11 @@ import {
 } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
+// TODO: move to StyleSheet
 import Colors from 'constants/Colors';
-import { isIOS, showToast } from 'helpers';
-import i18n from 'languages';
+
+import useI18N from '../hooks/useI18N';
+
 //import { saveComment as saveGroupComment } from 'store/actions/groups.actions';
 //import { saveComment as saveContactComment } from 'store/actions/contacts.actions';
 
@@ -45,7 +46,9 @@ import { styles } from './AttendanceScreen.styles';
 const Attendance = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  //const dispatch = useDispatch();
+
+  const { i18n, isRTL } = useI18N();
+
   const q_id = route.params?.q_id ?? null;
   const userData = route.params?.userData ?? null;
   const groupData = route.params?.group ?? null;
@@ -55,7 +58,6 @@ const Attendance = () => {
   const group_id = groupData?.ID ?? null;
   const group_name = groupData?.title ?? null;
 
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
   const [groupComment, setGroupComment] = useState('');
   const [attendees, setAttendees] = useState(
     groupData.members.values.map((member, idx) => {

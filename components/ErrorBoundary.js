@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { showToast } from 'helpers';
+//import useToast from 'hooks/useToast';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
     //logErrorToMyService(error, errorInfo);
-    showToast(error, true);
+    // TODO: showToast(error, true);
     console.error(error, errorInfo);
   }
 

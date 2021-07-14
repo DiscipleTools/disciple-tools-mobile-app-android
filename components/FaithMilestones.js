@@ -1,18 +1,19 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Label, Input, Icon, Picker, DatePicker, Textarea, Button } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
-import i18n from 'languages';
+import useI18N from 'hooks/useI18N';
+import useSettings from 'hooks/useSettings';
+
 import { defaultFaithMilestones } from 'constants';
 
 // TODO: refactor styles
 import { styles } from './FaithMilestones.styles';
 
 const FaithMilestones = ({ state, custom }) => {
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  const contactSettings = useSelector((state) => state.contactsReducer.settings);
+  const { i18n, isRTL } = useI18N();
+  const { settings: contactSettings } = useSettings();
 
   const renderCustomFaithMilestones = () => {
     const milestoneList = Object.keys(contactSettings.fields.milestones.values);

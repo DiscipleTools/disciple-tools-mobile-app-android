@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from '../languages/moment';
+import moment from 'languages/moment';
 
 const diff = (obj1, obj2) => {
   // Make sure an object to compare is provided
@@ -159,48 +159,6 @@ const isNumeric = (string) => {
     !isNaN(string) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
     !isNaN(parseFloat(string))
   ); // ...and ensure strings of whitespace fail
-};
-
-// TODO: remove bc it is now in DateField
-const formatDateToBackEnd = (dateString) => {
-  const dateObject = new Date(dateString);
-  const year = dateObject.getFullYear();
-  const month =
-    dateObject.getMonth() + 1 < 10 ? `0${dateObject.getMonth() + 1}` : dateObject.getMonth() + 1;
-  const day = dateObject.getDate() < 10 ? `0${dateObject.getDate()}` : dateObject.getDate();
-  const newDate = `${year}-${month}-${day}`;
-  return newDate;
-};
-
-// TODO: remove bc it is now in DateField
-const formatDateToView = (date) => {
-  return moment(new Date(date)).utc().format('LL');
-};
-
-// TODO: remove bc it is now in DateField
-const formatDateToDatePicker = (timestamp = null) => {
-  let date = timestamp ? new Date(timestamp) : new Date();
-  // Keep date value to current timezone
-  date = new Date(
-    date.getTime() + date.getTimezoneOffset() * 60 * 1000 * Math.sign(date.getTimezoneOffset()),
-  );
-  return date;
-};
-
-const getSelectorColor = (status) => {
-  let newColor;
-  if (status === 'new' || status === 'unassigned' || status === 'inactive') {
-    newColor = '#d9534f';
-  } else if (status === 'unassignable' || status === 'assigned' || status === 'paused') {
-    newColor = '#f0ad4e';
-  } else if (status === 'active') {
-    newColor = '#5cb85c';
-  } else if (status === 'from_facebook') {
-    newColor = '#366184';
-  } else if (status === 'closed') {
-    newColor = '#000';
-  }
-  return newColor;
 };
 
 const debounce = (fn, time) => {
@@ -609,22 +567,14 @@ const mergeGroupList = (mappedGroups, persistedGroups) => {
 
 export default {
   diff,
-  formatDateToBackEnd,
-  getSelectorColor,
   debounce,
-  commentFieldMinHeight,
-  commentFieldMinContainerHeight,
   onlyExecuteLastCall,
-  mentionPattern,
   renderMention,
   groupCommentsActivities,
   filterExistInEntity,
   contactsByFilter,
   groupsByFilter,
-  paginationLimit: 100,
   getSelectizeValuesToSave,
-  formatDateToView,
-  formatDateToDatePicker,
   mergeContactList,
   mergeGroupList,
   isNumeric,

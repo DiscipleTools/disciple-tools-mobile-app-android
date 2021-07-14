@@ -1,28 +1,17 @@
-import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { Text } from 'react-native';
 import { Icon, Label } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
+
+import useI18N from 'hooks/useI18N';
 
 import MultiSelect from 'components/MultiSelect';
 
 import { styles } from './MultiSelectField.styles';
 
 const MultiSelectField = ({ value, options, editing, onChange }) => {
-  console.log('*** MULTISELECT FIELD RENDER ***');
-
-  // - state.sources
-  // - state.nonExistingSources
-  /*
-  const [state, setState] = useState({
-    selectedItems,
-    items,
-    sources: [],
-  });
-  */
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   const onMilestoneChange = (milestoneName, customProp = null) => {
     /* TODO: record?
@@ -113,8 +102,6 @@ const MultiSelectField = ({ value, options, editing, onChange }) => {
 
   /*
   const selectedItems = value?.values?.map(selectedItem => { 
-    //console.log(`selectedItem: ${ JSON.stringify(selectedItem) }`)
-    //return selectedItem;
     return {
       value: selectedItem?.value[0]?.toUpperCase() + selectedItem?.value?.substring(1)
     };
@@ -127,15 +114,12 @@ const MultiSelectField = ({ value, options, editing, onChange }) => {
   value?.values.forEach((selectedItem) => {
     items.find((option) => {
       if (option?.key === selectedItem?.value) {
-        console.log(`...push item: ${JSON.stringify(option)}...`);
         selectedItems.push(option);
       }
     });
   });
   const MultiSelectFieldEdit = () => {
     const addSelection = (newValue) => {
-      //console.log(`........ADD SELECTION: ${ JSON.stringify(newValue) }`)
-      //console.log(`........selectedItems: ${ JSON.stringify(selectedItems) }`)
       const exists = selectedItems.find((selectedItem) => selectedItem?.key === newValue?.key);
       if (!exists) onChange([...selectedItems, newValue]);
     };

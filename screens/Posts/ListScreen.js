@@ -1,46 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Pressable, Text } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Container, Icon } from 'native-base';
 import PropTypes from 'prop-types';
 
-// Expo
-import * as Contacts from 'expo-contacts';
-
-// Helpers
-import Colors from 'constants/Colors';
-import i18n from 'languages';
-import { isIOS, showToast } from 'helpers';
-
-// Utils
-import utils from 'utils';
-
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
+import useI18N from 'hooks/useI18N';
 import usePostType from 'hooks/usePostType.js';
 import useList from 'hooks/useList.js';
+import useTheme from 'hooks/useTheme';
+import useToast from 'hooks/useToast';
 
 // Custom Components
 import FAB from 'components/FAB';
 import FilterList from 'components/FilterList';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
-
 import Subtitles from 'components/Subtitles';
-
-// TODO: use Native Base?
-import ActionButton from 'react-native-action-button';
 
 import { styles } from './ListScreen.styles';
 
 import Constants from 'constants';
+// TODO: move to StyleSheet
+import Colors from 'constants/Colors';
 
 const ListScreen = ({ navigation, route }) => {
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  // TODO: move to Constants?
+  const TOTAL_POSTS = 20;
+  const PAGINATION_LIMIT = 100;
 
   const isConnected = useNetworkStatus();
-
+  const { i18n, isRTL } = useI18N();
   const { isContact, isGroup, postType } = usePostType();
+  const { getSelectorColor } = useTheme();
+  const toast = useToast();
 
   const defaultFilter = {
     text: '',
@@ -55,18 +48,12 @@ const ListScreen = ({ navigation, route }) => {
   };
   */
 
-  //const userData = useSelector((state) => state.userReducer.userData);
   //const questionnaires = useSelector((state) => state.questionnaireReducer.questionnaires);
-
-  // TODO: useFilters() in FiltersPanel
-  //let filters = useSelector((state) => state.usersReducer.contactFilters);
-  let totalPosts = 20;
-  let filteredPosts = null;
 
   // default to contacts type
   const [state, setState] = useState({
     offset: 0,
-    limit: utils.paginationLimit,
+    limit: PAGINATION_LIMIT,
     sort: '-last_modified',
     filtered: false,
     filterOption: null,
@@ -90,7 +77,7 @@ const ListScreen = ({ navigation, route }) => {
 
   // get posts
   const { posts, error: listError, isLoading, isValidating, mutate } = useList(filter);
-  if (listError) showToast(listError.message, true);
+  if (listError) toast(listError.message, true);
   /*
   return(
     <Text style={{ fontWeight: 'bold', color: 'blue' }}>{ JSON.stringify(posts) }</Text>
@@ -100,7 +87,7 @@ const ListScreen = ({ navigation, route }) => {
   const renderFooter = () => {
     return (
       <View style={styles.loadMoreFooterText}>
-        {isConnected && state.offset + state.limit < totalPosts && (
+        {isConnected && state.offset + state.limit < TOTAL_POSTS && (
           <Pressable
             onPress={() => {
               onRefresh(true);
@@ -245,7 +232,7 @@ const ListScreen = ({ navigation, route }) => {
                 width: Constants.STATUS_CIRCLE_SIZE,
                 height: Constants.STATUS_CIRCLE_SIZE,
                 borderRadius: Constants.STATUS_CIRCLE_SIZE / 2,
-                backgroundColor: utils.getSelectorColor(statusValue),
+                backgroundColor: getSelectorColor(statusValue),
                 marginTop: 'auto',
                 marginBottom: 'auto',
               }}></View>
@@ -275,7 +262,7 @@ const ListScreen = ({ navigation, route }) => {
           style={[styles.backBtn, styles.backBtn2, btn2Style, { width: Constants.SWIPE_BTN_WIDTH }]}
           onPress={() => {
             console.log('*** BUTTON 2 CLICKED ***');
-            console.log(JSON.stringify(questionnaires));
+            //console.log(JSON.stringify(questionnaires));
           }}>
           <Icon type="MaterialCommunityIcons" name="calendar-check" style={styles.backBtnIcon} />
           <Text style={styles.backBtnText}>Meeting Complete</Text>
@@ -344,33 +331,6 @@ const ListScreen = ({ navigation, route }) => {
       },
     );
   };
-
-  // TODO: filters
-  const filterByText = utils.debounce((queryText) => {
-    if (queryText.length > 0) {
-      setState(
-        {
-          filtered: true,
-          filterText: queryText,
-          filterOption: null,
-        },
-        () => {
-          onRefresh(false);
-        },
-      );
-    } else {
-      setState(
-        {
-          filtered: false,
-          filterText: null,
-          filterOption: null,
-        },
-        () => {
-          onRefresh();
-        },
-      );
-    }
-  }, 750);
 
   const importContactsRender = () => {
     // NOTE: Contacts are already indexed by most recently modified, so we only need to reverse the array. If ever changes, then just sort by idx (id)

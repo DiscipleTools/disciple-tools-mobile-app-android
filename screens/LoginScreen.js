@@ -8,7 +8,7 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
+  //TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -18,41 +18,37 @@ import { Button, Icon } from 'native-base';
 // expo
 import Constants from 'expo-constants';
 import * as Localization from 'expo-localization';
-// redux
-import { useSelector } from 'react-redux';
-// actions
-//import { login } from 'store/actions/user.actions';
-// helpers/utils
+// TODO: move to StyleSheet
 import Colors from 'constants/Colors';
-import i18n from 'languages';
-import { renderLanguagePickerItems, showToast } from 'helpers';
+
 // custom hooks
-import useMyUser from 'hooks/useMyUser.js';
+import useI18N from 'hooks/useI18N';
+import useMyUser from 'hooks/useMyUser';
+import useToast from 'hooks/useToast';
+
 // custom components
 import Locale from 'components/Locale';
-import TextField from 'components/Field/Text/TextField';
+import LabeledTextInput from 'components/LabeledTextInput';
 // third-party components
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // styles/assets
 import { styles } from './LoginScreen.styles';
 
 const LoginScreen = ({ navigation, route }) => {
+  const { i18n, isRTL, locale, LanguagePickerItems } = useI18N();
   const { userData, login } = useMyUser();
-
-  //const userData = useSelector((state) => state.userReducer.userData);
-  const locale = useSelector((state) => state.i18nReducer.locale);
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const toast = useToast();
 
   const [state, setState] = useState({
     loading: false,
-    domain: userData.domain || '', // use Redux (if present)
-    username: userData.username || '', // use Redux (if present)
+    domain: userData?.domain || '',
+    username: userData?.username || '',
     password: '',
     hidePassword: true,
     domainValidation: null,
     userValidation: null,
     passwordValidation: null,
-    locale, // use Redux
+    locale,
   });
 
   useEffect(() => {
@@ -113,7 +109,7 @@ const LoginScreen = ({ navigation, route }) => {
     if (state.domain !== '') {
       Linking.openURL(`https://${state.domain}/wp-login.php?action=lostpassword`);
     } else {
-      showToast(i18n.t('loginScreen.domain.errorForgotPass', { locale }), true);
+      toast(i18n.t('loginScreen.domain.errorForgotPass', { locale }), true);
     }
   };
 
@@ -207,7 +203,7 @@ const LoginScreen = ({ navigation, route }) => {
               locale: value,
             });
           }}>
-          {renderLanguagePickerItems}
+          <LanguagePickerItems />
         </Picker>
       </View>
     );
@@ -233,7 +229,7 @@ const LoginScreen = ({ navigation, route }) => {
         <Header />
         <View style={styles.formContainer}>
           {state.mobileAppRequired && <MobileAppPluginRequired />}
-          <TextField
+          <LabeledTextInput
             accessibilityLabel={i18n.t('loginScreen.domain.label', { locale })}
             label={i18n.t('loginScreen.domain.label', { locale })}
             containerStyle={domainStyle}
@@ -255,7 +251,7 @@ const LoginScreen = ({ navigation, route }) => {
             placeholder={i18n.t('loginScreen.domain.placeholder', { locale })}
           />
           {domainErrorMessage}
-          <TextField
+          <LabeledTextInput
             accessibilityLabel={i18n.t('loginScreen.username.label', { locale })}
             label={i18n.t('loginScreen.username.label', { locale })}
             containerStyle={userStyle}
@@ -287,7 +283,7 @@ const LoginScreen = ({ navigation, route }) => {
                   name="md-key"
                   style={{ marginBottom: 'auto', marginTop: 'auto' }}
                 />
-                <TextInput
+                <LabeledTextInput
                   value={state.password} // TODO: remove
                   accessibilityLabel={i18n.t('loginScreen.password.label', { locale })}
                   underlineColorAndroid="transparent"

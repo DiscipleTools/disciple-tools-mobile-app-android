@@ -1,33 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Linking, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Icon } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 
-import useDebounce from 'hooks/useDebounce.js';
+import useI18N from 'hooks/useI18N';
 
 // TODO: refactor unused styles
 import { styles } from './CommunicationChannelField.styles';
 
 // TODO: LINKING PHONE DIALER, EMAIL, etc...
 const CommunicationChannelField = ({ field, value, editing, onChange }) => {
-  console.log('*** COMMUNICATIONCHANNEL FIELD RENDER ***');
-  console.log(`*** VALUE: ${JSON.stringify(value)} ***`);
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   const valueRef = useRef(value);
-
-  /*
-  const debouncedValue = useDebounce(zzvalue, 1000);
-
-  useEffect(() => {
-    if (debouncedValue) {
-      console.log(`debouncedValue: ${ JSON.stringify(debouncedValue)}`)
-    }
-  }, [debouncedValue]);
-  */
 
   const timerRef = useRef(null);
 
@@ -55,7 +41,6 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
 
   //const onCommunicationFieldChange = (key, value, index, dbIndex, component) => {
   const onCommunicationFieldChange = (newValue, idx, key) => {
-    console.log(`*** COMM FIELD CHANGE: ${JSON.stringify(newValue)}, idx: ${idx} ***`);
     if (newValue !== value[idx]) {
       const updatedValue = [...value];
       if (key) {
@@ -64,7 +49,6 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
         updatedValue[idx] = { value: newValue };
       }
       valueRef.current = updatedValue;
-      //onChange(updatedValue);
     }
   };
 
@@ -128,6 +112,7 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
     );
   };
 
+  // TODO: TouchableOpacity -> Pressable
   const CommunicationChannelFieldView = () => {
     if (field?.name?.includes('phone')) {
       return value.map((communicationChannel, index) => (
@@ -178,7 +163,6 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
     }
   };
 
-  //return(<CommunicationChannelFieldEdit/>);
   return <>{editing ? <CommunicationChannelFieldEdit /> : <CommunicationChannelFieldView />}</>;
 };
 export default CommunicationChannelField;

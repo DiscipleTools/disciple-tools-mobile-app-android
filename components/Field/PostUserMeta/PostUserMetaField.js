@@ -1,7 +1,9 @@
 import React from 'react';
 
+import useI18N from 'hooks/useI18N';
+
 const PostUserMetaField = ({ value, editing, onChange }) => {
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   // TODO: implement
   const PostUserMetaFieldEdit = () => {

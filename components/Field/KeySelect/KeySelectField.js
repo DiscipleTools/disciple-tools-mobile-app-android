@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Icon, Picker } from 'native-base';
 
-// Custom Components
+import useI18N from 'hooks/useI18N';
+
+// TODO: reuse SingleSelect component
 import SingleSelect from 'components/SingleSelect';
 
 import { styles } from './KeySelectField.styles';
 
 const KeySelectField = ({ field, value, editing, onChange }) => {
-  // TODO: support RTL
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   const handleChange = (newValue) => {
     if (newValue !== value) onChange(newValue);
@@ -42,8 +42,7 @@ const KeySelectField = ({ field, value, editing, onChange }) => {
         selectedValue={value}
         onValueChange={handleChange}
         textStyle={isStatusField() ? { color: '#FFF' } : null}
-        //placeholder="Select"
-      >
+        placeholder="">
         {Object.keys(field?.default).map((key) => {
           const optionData = field.default[key];
           if (optionData) return <Picker.Item key={key} label={optionData?.label} value={key} />;

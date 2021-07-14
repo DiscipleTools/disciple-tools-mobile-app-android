@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Icon, Label } from 'native-base';
 import { Grid, Row, Col } from 'react-native-easy-grid';
 
-// Custom Components
 import FieldIcon from 'components/Field/FieldIcon';
 import BooleanField from 'components/Field/Boolean/BooleanField';
 import CommunicationChannelField from 'components/Field/CommunicationChannel/CommunicationChannelField';
@@ -18,17 +16,12 @@ import TagsField from 'components/Field/Tags/TagsField';
 import TextField from 'components/Field/Text/TextField';
 import UserSelectField from 'components/Field/UserSelect/UserSelectField';
 
-import i18n from 'languages';
-
 import { styles } from './Field.styles';
 
 const Field = ({ post, field, save }) => {
   //console.log(`FIELD: ${JSON.stringify(field)}`);
 
   //const ref = useRef(null);
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  const locale = useSelector((state) => state.i18nReducer.locale);
 
   // validate to confirm that post has the field name and value(s)
   if (!post.hasOwnProperty(field?.name)) return null;
@@ -101,8 +94,6 @@ const Field = ({ post, field, save }) => {
     then we'll use that (populated in 'onChange')
     */
     if (state.apiValue !== null) {
-      console.log('_______________API SAVE _________');
-      console.log(`state.apiValue: ${state.apiValue}`);
       save(field.name, state.apiValue);
       return;
     }
@@ -142,8 +133,6 @@ const Field = ({ post, field, save }) => {
   );
 
   // TODO
-  //console.log(`state.value: ${ JSON.stringify(state.value) }`)
-  //console.log(`value: ${ JSON.stringify(value) }`)
   const EditControls = () => (
     <Col style={{ marginRight: 15 }}>
       <Row>
@@ -187,7 +176,6 @@ const Field = ({ post, field, save }) => {
         );
       case 'connection':
         // TODO: RTL, style, (*)lists
-        console.log(`..................FIELD: ${JSON.stringify(field)}`);
         return (
           <ConnectionField
             field={field}

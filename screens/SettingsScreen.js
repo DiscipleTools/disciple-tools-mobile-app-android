@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { toggleAutoLogin, toggleRememberLoginDetails } from 'store/actions/auth.actions';
+// TODO: move to useNetworkStatus
 import { toggleNetworkConnectivity } from 'store/actions/networkConnectivity.actions';
 
 // Component Library (Native Base)
@@ -26,53 +25,37 @@ import * as MailComposer from 'expo-mail-composer';
 
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
-import useMyUser from 'hooks/useMyUser.js';
+import useI18N from 'hooks/useI18N';
+import useAuth from 'hooks/useAuth';
+import useMyUser from 'hooks/useMyUser';
+import useDevice from 'hooks/useDevice';
+import useToast from 'hooks/useToast';
 
 // Custom Components
 import OfflineBar from 'components/OfflineBar';
 import Locale from 'components/Locale';
-
-// Helpers
-import i18n from 'languages';
-import { isIOS, renderLanguagePickerItems, showToast, withPropsValidation } from 'helpers';
 
 // Styles, Constants, Icons, Assets, etc...
 import { styles } from './SettingsScreen.styles';
 import gravatar from 'assets/images/gravatar-default.png';
 
 const SettingsScreen = ({ navigation, route }) => {
-  console.log('******** SETTINGS SCREEN ?? ________');
   const dispatch = useDispatch();
 
   const isConnected = useNetworkStatus();
-  const { userData, error: userError, logout } = useMyUser();
+  const { i18n, isRTL, locale, LanguagePickerItems } = useI18N();
+  const { hasPIN, isAutoLogin, rememberLoginDetails, toggleAutoLogin, toggleRememberLoginDetails } =
+    useAuth();
 
-  // TODO: implement PropType validation on selectors? e.g.:
-  /*
-  const userData = withPropsValidation(
-    { userData: PropTypes.object.isRequired },
-    useSelector((state) => state.userReducer.userData),
-  );
-  */
-  const locale = useSelector((state) => state.i18nReducer.locale);
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
-  const isAutoLogin = useSelector((state) => state.authReducer.isAutoLogin);
-  const hasPIN = useSelector((state) => state.authReducer.hasPIN);
-  const rememberLoginDetails = useSelector((state) => state.authReducer.rememberLoginDetails);
+  const { isIOS } = useDevice();
+  const toast = useToast();
+
+  const { userData, error: userError, logout } = useMyUser();
+  if (!userData) return null;
 
   const [state, setState] = useState({
     locale,
   });
-
-  /* TODO
-  // update local state any time 'userData' changes globally
-  useEffect(() => {
-    setState({
-      ...state,
-      locale: userData.locale,
-    });
-  }, [userData]);
-  */
 
   // update local state any time 'hasPIN' changes globally
   useEffect(() => {
@@ -86,7 +69,7 @@ const SettingsScreen = ({ navigation, route }) => {
   // display error toast on global 'userReducerError'
   useEffect(() => {
     if (userReducerError !== null && userReducerError.length() > 0) {
-      showToast(userReducerError, true);
+      toast(userReducerError, true);
     }
   }, [userReducerError]);
 
@@ -157,7 +140,8 @@ const SettingsScreen = ({ navigation, route }) => {
       const toastMsg = isConnected
         ? i18n.t('settingsScreen.networkUnavailable')
         : i18n.t('settingsScreen.networkAvailable');
-      showToast(toastMsg, isConnected);
+      toast(toastMsg, isConnected);
+      // TODO: move to useNetworkStatus hook
       dispatch(toggleNetworkConnectivity());
     };
     return (
@@ -211,7 +195,7 @@ const SettingsScreen = ({ navigation, route }) => {
                 locale: value,
               });
             }}>
-            {renderLanguagePickerItems}
+            <LanguagePickerItems />
           </Picker>
         </Right>
       </ListItem>
@@ -239,7 +223,7 @@ const SettingsScreen = ({ navigation, route }) => {
           <Switch
             value={isAutoLogin}
             onChange={() => {
-              dispatch(toggleAutoLogin());
+              toggleAuthLogin();
             }}
           />
         </Right>
@@ -269,7 +253,7 @@ const SettingsScreen = ({ navigation, route }) => {
           <Switch
             value={rememberLoginDetails}
             onChange={() => {
-              dispatch(toggleRememberLoginDetails(!rememberLoginDetails));
+              toggleRememberLoginDetails();
             }}
           />
         </Right>
@@ -321,7 +305,7 @@ const SettingsScreen = ({ navigation, route }) => {
         body: '',
       }).catch((onrejected) => {
         const message = onrejected.toString();
-        showToast(message, true);
+        toast(message, true);
       });
     };
     return (

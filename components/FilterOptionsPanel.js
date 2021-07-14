@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, Text, useWindowDimensions, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 // component library (native base)
 import { Accordion, Icon, Input, Item } from 'native-base';
-import { useSelector } from 'react-redux';
 
-// helpers/utils
+// TODO: migrate to StyleSheet
 import Colors from 'constants/Colors';
-import i18n from 'languages';
 import utils from 'utils';
 
 // custom components
-//import useSettings from 'hooks/useSettings.js';
+import useI18N from 'hooks/useI18N';
 import useNetworkStatus from 'hooks/useNetworkStatus';
-import useFilters from 'hooks/useFilters.js';
+import useMyUser from 'hooks/useMyUser';
+//import useSettings from 'hooks/useSettings';
+import useFilters from 'hooks/useFilters';
+import useToast from 'hooks/useToast';
 
 // third-party components
 // NOTE: this is used to pass a custom component/icon as checkbox to preserve a standard look-and-feel across platform (which is not currently supported by native base)
@@ -26,13 +27,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const FilterOptionsPanel = ({ setFilter }) => {
   const isConnected = useNetworkStatus();
+  const { i18n, isRTL } = useI18N();
+
+  const { userData } = useMyUser();
 
   //const { settings, error: settingsError } = useSettings();
   const { customFilters, error: customFiltersError } = useFilters();
-  //if (customFiltersError) showToast(customFiltersError.message, true);
-
-  // TODO: use hook
-  const userData = useSelector((state) => state.userReducer.userData);
+  //if (customFiltersError) toast(customFiltersError.message, true);
 
   const initialState = {
     filter: {

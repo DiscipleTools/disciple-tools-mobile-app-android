@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
 import { Icon } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-import Colors from 'constants/Colors';
-import i18n from 'languages';
+import { Row } from 'react-native-easy-grid';
 
-const HeaderLeft = ({ label, onPress }) => {
+import useI18N from 'hooks/useI18N';
+
+//TODO: move to StyleSheet
+import Colors from 'constants/Colors';
+
+const HeaderLeft = ({ label, editing, onPress }) => {
   const route = useRoute();
-  const editing = useSelector((state) => state.appReducer.editing);
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, locale, isRTL, moment } = useI18N();
   if (editing) {
     return (
       <Row onPress={onPress}>

@@ -4,13 +4,15 @@ import { Icon } from 'native-base';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 
 import usePIN from 'hooks/usePIN';
-import i18n from 'languages';
-import { showToast } from 'helpers';
+import useI18N from 'hooks/useI18N';
+import useToast from 'hooks/useToast';
 
 import { styles } from './PINScreen.styles';
 
 const PINScreen = ({ navigation, route }) => {
   const { getPIN, setPIN, deletePIN, setCNonce } = usePIN();
+  const { i18n } = useI18N();
+  const toast = useToast();
 
   const [state, setState] = useState({
     code: '',
@@ -59,7 +61,7 @@ const PINScreen = ({ navigation, route }) => {
       // TODO: Support for DISTRESS PIN (also solves for when "pinCode" is unavailable)
       getPIN().then((secretCode) => {
         if (secretCode === null) {
-          showToast(
+          toast(
             'Error: Unable to retrieve existing PIN. Please contact your Disciple Tools Administrator for assistance',
             true,
           );
@@ -77,7 +79,7 @@ const PINScreen = ({ navigation, route }) => {
           deletePIN();
           setState({ ...state, code: '' });
           navigation.goBack();
-          showToast(i18n.t('settingsScreen.removedPinCode'));
+          toast(i18n.t('settingsScreen.removedPinCode'));
         } else {
           pinInput.current.shake().then(() =>
             setState({
@@ -105,7 +107,7 @@ const PINScreen = ({ navigation, route }) => {
           }),
         );
         // TODO: translate
-        showToast(
+        toast(
           'Error: Repeating (i.e., 444444) or Sequential (i.e., 234567) values are not permitted',
           true,
         );
@@ -123,7 +125,7 @@ const PINScreen = ({ navigation, route }) => {
         setPIN(code);
         navigation.goBack();
         setState({ code: '', tmpCode: null });
-        showToast(i18n.t('settingsScreen.savedPinCode'));
+        toast(i18n.t('settingsScreen.savedPinCode'));
       } else {
         pinInput.current.shake().then(() =>
           setState({

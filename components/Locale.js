@@ -1,26 +1,23 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Text, View } from 'react-native';
 import { Button } from 'native-base';
 import { Row } from 'react-native-easy-grid';
 
+import useI18N from 'hooks/useI18N';
 import ActionModal from 'components/ActionModal';
 
+// TODO: move to StyleSheet
 import Colors from 'constants/Colors';
-import i18n from 'languages';
-import { setLocale } from 'store/actions/i18n.actions';
 
 import { styles } from './Locale.styles';
 
 const Locale = ({ state, setState }) => {
   const dispatch = useDispatch();
+  const { i18n, isRTL: isRTLPrev, locale: localePrev, setLocale } = useI18N();
 
   const localeNew = state.locale;
   const localeObjNew = i18n.getLocaleObj(localeNew);
   const isRTLNew = localeObjNew.rtl;
-
-  const localePrev = useSelector((state) => state.i18nReducer.locale);
-  const isRTLPrev = useSelector((state) => state.i18nReducer.isRTL);
 
   const isRestartRequired =
     isRTLNew === isRTLPrev || isRTLNew === null || isRTLPrev === null ? false : true;
@@ -33,7 +30,8 @@ const Locale = ({ state, setState }) => {
   };
 
   const onConfirm = () => {
-    dispatch(setLocale(localeNew));
+    // TODO: useSetLocale
+    //dispatch(setLocale(localeNew));
   };
 
   const renderAppRestartModal = (

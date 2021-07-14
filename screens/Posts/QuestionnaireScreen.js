@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   BackHandler,
   RefreshControl,
@@ -25,8 +25,9 @@ import {
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import PropTypes from 'prop-types';
 import Colors from 'constants/Colors';
-import { isIOS, showToast } from 'helpers';
-import i18n from 'languages';
+
+import useI18N from '../../hooks/useI18N';
+
 /*
 import {
   getQuestionnaireById,
@@ -44,140 +45,8 @@ const propTypes = {
 
 import { styles } from './QuestionnaireScreen.styles';
 
-const QuestionHeader = ({ question }) => {
-  return (
-    <Text>
-      <Text style={{ fontWeight: 'bold' }}>{question.title + ' '}</Text>
-      {question.required && question.required == true ? (
-        <Text style={{ marginLeft: 10, color: Colors.grayDark }}>(required)</Text>
-      ) : (
-        <Text style={{ color: Colors.grayDark }}>
-          {question.type && question.type == 'radio' ? '(optional)' : '(optional, 0 or more)'}
-        </Text>
-      )}
-    </Text>
-  );
-};
-
-const Question = ({ question }) => {
-  //const dispatch = useDispatch();
-  const options = question.options;
-  const isMutuallyExclusive = question && question.type == 'radio' ? true : false;
-  const handleOptionSelect = (option) => {
-    const options_p = options.map((existing_option) => {
-      if (existing_option === option) {
-        const updatedOption = {
-          ...option,
-          selected: isMutuallyExclusive ? true : !option.selected,
-        };
-        return updatedOption;
-      } else {
-        const updatedOption = {
-          ...existing_option,
-          selected: isMutuallyExclusive ? false : existing_option.selected,
-        };
-        return updatedOption;
-      }
-      return existing_option;
-    });
-    /*
-    dispatch(
-      setQuestion({
-        ...question,
-        options: options_p,
-      }),
-    );
-    */
-  };
-  return (
-    <React.Fragment>
-      <QuestionHeader question={question} />
-      {question.type && question.type == 'input' ? (
-        <Input
-          value={question.value}
-          onChangeText={(value) => {
-            /*
-            dispatch(
-              setQuestion({
-                ...question,
-                value,
-              }),
-            );
-            */
-          }}
-          style={styles.contactTextField}
-        />
-      ) : (
-        options &&
-        options.map((option, idx) => (
-          <View key={idx}>
-            <ListItem
-              onPress={() => {
-                handleOptionSelect(option);
-              }}>
-              <Checkbox
-                option={option}
-                handleOptionSelect={handleOptionSelect}
-                isMutuallyExclusive={isMutuallyExclusive}
-              />
-            </ListItem>
-            {option.questions &&
-              option.selected &&
-              option.questions.map((subquestion, subidx) => (
-                <View key={subidx} style={{ marginTop: 20, marginBottom: 20, marginLeft: 40 }}>
-                  <Question question={subquestion} />
-                </View>
-              ))}
-          </View>
-        ))
-      )}
-    </React.Fragment>
-  );
-};
-
-const Checkbox = ({ option, handleOptionSelect, isMutuallyExclusive }) => {
-  return (
-    <React.Fragment>
-      {isMutuallyExclusive ? (
-        <Radio
-          onPress={() => {
-            handleOptionSelect(option);
-          }}
-          selectedColor={Colors.tintColor}
-          selected={option.selected}
-        />
-      ) : (
-        <CheckBox
-          onPress={() => {
-            handleOptionSelect(option);
-          }}
-          color={Colors.tintColor}
-          checked={option.selected}
-        />
-      )}
-      <Text style={{ marginLeft: 10 }}>{option.title}</Text>
-    </React.Fragment>
-  );
-};
-
-const NextButton = ({ currIdx, lastIdx, swipeRight, onSubmit }) => {
-  return (
-    <View style={styles.bottomView}>
-      {currIdx == lastIdx ? (
-        <Button style={styles.nextButton} onPress={onSubmit} block>
-          <Text style={styles.nextButtonText}>Submit {/*i18n.t('loginScreen.logIn')*/}</Text>
-        </Button>
-      ) : (
-        <Button style={styles.nextButton} onPress={swipeRight} block>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </Button>
-      )}
-    </View>
-  );
-};
-
 const Questionnaire = ({ navigation }) => {
-  //const dispatch = useDispatch();
+  const { i18n } = useI18N();
   const q_id = navigation.getParam('q_id');
   const userData = navigation.getParam('userData');
   const domain = userData.domain;
@@ -185,6 +54,7 @@ const Questionnaire = ({ navigation }) => {
   const user_id = userData.id;
   const contact_id = navigation.getParam('contact').ID;
 
+  // TODO: useDetails(id, "questionnaire"/postType);
   const questionnaireState = useSelector((state) => state.questionnaireReducer);
   const questionnaire = questionnaireState.questionnaire;
   const save = questionnaireState.save;
@@ -259,6 +129,138 @@ const Questionnaire = ({ navigation }) => {
     />
   );
 */
+
+  const QuestionHeader = ({ question }) => {
+    return (
+      <Text>
+        <Text style={{ fontWeight: 'bold' }}>{question.title + ' '}</Text>
+        {question.required && question.required == true ? (
+          <Text style={{ marginLeft: 10, color: Colors.grayDark }}>(required)</Text>
+        ) : (
+          <Text style={{ color: Colors.grayDark }}>
+            {question.type && question.type == 'radio' ? '(optional)' : '(optional, 0 or more)'}
+          </Text>
+        )}
+      </Text>
+    );
+  };
+
+  const Question = ({ question }) => {
+    //const dispatch = useDispatch();
+    const options = question.options;
+    const isMutuallyExclusive = question && question.type == 'radio' ? true : false;
+    const handleOptionSelect = (option) => {
+      const options_p = options.map((existing_option) => {
+        if (existing_option === option) {
+          const updatedOption = {
+            ...option,
+            selected: isMutuallyExclusive ? true : !option.selected,
+          };
+          return updatedOption;
+        } else {
+          const updatedOption = {
+            ...existing_option,
+            selected: isMutuallyExclusive ? false : existing_option.selected,
+          };
+          return updatedOption;
+        }
+        return existing_option;
+      });
+      /*
+    dispatch(
+      setQuestion({
+        ...question,
+        options: options_p,
+      }),
+    );
+    */
+    };
+    return (
+      <React.Fragment>
+        <QuestionHeader question={question} />
+        {question.type && question.type == 'input' ? (
+          <Input
+            value={question.value}
+            onChangeText={(value) => {
+              /*
+            dispatch(
+              setQuestion({
+                ...question,
+                value,
+              }),
+            );
+            */
+            }}
+            style={styles.contactTextField}
+          />
+        ) : (
+          options &&
+          options.map((option, idx) => (
+            <View key={idx}>
+              <ListItem
+                onPress={() => {
+                  handleOptionSelect(option);
+                }}>
+                <Checkbox
+                  option={option}
+                  handleOptionSelect={handleOptionSelect}
+                  isMutuallyExclusive={isMutuallyExclusive}
+                />
+              </ListItem>
+              {option.questions &&
+                option.selected &&
+                option.questions.map((subquestion, subidx) => (
+                  <View key={subidx} style={{ marginTop: 20, marginBottom: 20, marginLeft: 40 }}>
+                    <Question question={subquestion} />
+                  </View>
+                ))}
+            </View>
+          ))
+        )}
+      </React.Fragment>
+    );
+  };
+
+  const Checkbox = ({ option, handleOptionSelect, isMutuallyExclusive }) => {
+    return (
+      <React.Fragment>
+        {isMutuallyExclusive ? (
+          <Radio
+            onPress={() => {
+              handleOptionSelect(option);
+            }}
+            selectedColor={Colors.tintColor}
+            selected={option.selected}
+          />
+        ) : (
+          <CheckBox
+            onPress={() => {
+              handleOptionSelect(option);
+            }}
+            color={Colors.tintColor}
+            checked={option.selected}
+          />
+        )}
+        <Text style={{ marginLeft: 10 }}>{option.title}</Text>
+      </React.Fragment>
+    );
+  };
+
+  const NextButton = ({ currIdx, lastIdx, swipeRight, onSubmit }) => {
+    return (
+      <View style={styles.bottomView}>
+        {currIdx == lastIdx ? (
+          <Button style={styles.nextButton} onPress={onSubmit} block>
+            <Text style={styles.nextButtonText}>Submit {/*i18n.t('loginScreen.logIn')*/}</Text>
+          </Button>
+        ) : (
+          <Button style={styles.nextButton} onPress={swipeRight} block>
+            <Text style={styles.nextButtonText}>Next</Text>
+          </Button>
+        )}
+      </View>
+    );
+  };
 
   const onSubmit = () => {
     // TODO: confirm required fields are selected, or give error feedback

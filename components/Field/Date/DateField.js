@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { Icon, DatePicker } from 'native-base';
 import { Row } from 'react-native-easy-grid';
+//import PropTypes from 'prop-types';
 
 import useI18N from 'hooks/useI18N';
 
@@ -16,10 +17,14 @@ const DateField = ({ value, editing, onChange }) => {
     let parsedValue = null;
     if (newValue) parsedValue = Date.parse(newValue) / 1000;
     if (parsedValue !== null && parsedValue !== value) {
+      /*
       const day = moment(newValue).date();
       const month = moment(newValue).month();
       const year = moment(newValue).year();
       console.log(`yyyy-mm-dd: ${year}-${month}-${day}`);
+      const apiValue = `${year}-${month}-${day}`;
+      onChange(parsedValue, apiValue);
+      */
       onChange(parsedValue);
     }
   };

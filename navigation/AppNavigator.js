@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,6 +8,8 @@ import jwt_decode from 'jwt-decode';
 import * as SplashScreen from 'expo-splash-screen';
 
 import axios, { getBaseUrl } from 'services/axios';
+
+import useAuth from 'hooks/useAuth';
 
 import PINScreen from 'screens/PINScreen';
 import LoginScreen from 'screens/LoginScreen';
@@ -19,11 +20,7 @@ const AppNavigator = () => {
   console.log('$$$$$          APP NAVIGATOR                  $$$$$');
   console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
-  const hasPIN = useSelector((state) => state.authReducer.hasPIN);
-  const isAutoLogin = useSelector((state) => state.authReducer.isAutoLogin);
-  const cnoncePIN = useSelector((state) => state.authReducer.cnoncePIN);
-  const cnonceLogin = useSelector((state) => state.authReducer.cnonceLogin);
-  //const cnonceLogin = useSelector(state => state.userReducer.cnonceLogin);
+  const { hasPIN, isAutoLogin, cnoncePIN, cnonceLogin } = useAuth();
 
   // NOTE: this 'hasPIN' differs from 'state.userReducer.hasPIN' which is used only to toggle the Switch on the Settings Screen. This is set if an existing PIN is found in SecureStore (to compare user confirm/entry against)
   const [state, setState] = useState({
@@ -217,7 +214,7 @@ const AppNavigator = () => {
       console.log('*** AUTH 1 - Main ***');
       // valid Token/Domain
       if (state.hasValidAuthToken && state.hasDomain) {
-        // TODO: blank screen?
+        // TODO: blank screen? not truly a valid auth token?
         return <MainTabNavigator />;
       } else {
         return <LoginStack />;

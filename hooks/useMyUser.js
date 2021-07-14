@@ -8,10 +8,13 @@ import { setCNonceLogin } from 'store/actions/auth.actions';
 import useRequest from 'hooks/useRequest';
 import axios, { getBaseUrl } from 'services/axios';
 
-import { isIOS, showToast } from 'helpers';
+import useDevice from 'hooks/useDevice';
+import useToast from 'hooks/useToast';
 
 const useMyUser = () => {
   const dispatch = useDispatch();
+  const toast = useToast();
+  const { isIOS } = useDevice();
 
   /*
   const [state, setState] = useState({
@@ -59,7 +62,7 @@ const useMyUser = () => {
         // TODO: translate custom error? use generic?
         const err = 'ERROR: Unable to retrieve a valid JWT Token. Do you have plugin installed?';
         console.log(err);
-        showToast(err, true);
+        toast(err, true);
       }
       // TODO: we could parse JWT and pull user id if we want
       /*
@@ -99,7 +102,7 @@ const useMyUser = () => {
       dispatch(setCNonceLogin(cnonceLogin));
     } catch (err) {
       console.log(err);
-      showToast(err, true);
+      toast(err, true);
     }
   };
 

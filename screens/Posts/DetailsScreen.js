@@ -1,27 +1,20 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import {
-  TextInput,
   ScrollView,
   Text,
   Keyboard,
   View,
   TouchableOpacity,
   Image,
-  Dimensions,
   FlatList,
   RefreshControl,
   Platform,
-  TouchableHighlight,
   Linking,
   BackHandler,
   ActivityIndicator,
-  KeyboardAvoidingView,
   useWindowDimensions,
 } from 'react-native';
 import PropTypes from 'prop-types';
-
-// Redux
-import { useSelector } from 'react-redux';
 
 // Component Library (Native Base)
 import {
@@ -56,11 +49,14 @@ import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 
 // Custom Hooks
 import useNetworkStatus from 'hooks/useNetworkStatus';
-import usePostType from 'hooks/usePostType.js';
-import useId from 'hooks/useId.js';
-import useDetails from 'hooks/useDetails.js';
-import useSettings from 'hooks/useSettings.js';
-import useMyUser from 'hooks/useMyUser.js';
+import useI18N from 'hooks/useI18N';
+import usePostType from 'hooks/usePostType';
+import useId from 'hooks/useId';
+import useDetails from 'hooks/useDetails';
+import useSettings from 'hooks/useSettings';
+import useMyUser from 'hooks/useMyUser';
+import useDevice from 'hooks/useDevice';
+import useToast from 'hooks/useToast';
 
 // Custom Components
 import FAB from 'components/FAB';
@@ -68,16 +64,12 @@ import Tile from 'components/Tile';
 import ActionModal from 'components/ActionModal';
 import OfflineBar from 'components/OfflineBar';
 import HeaderLeft from 'components/HeaderLeft';
-//import HeaderRight from 'components/HeaderRight';
 import KebabMenu from 'components/KebabMenu';
 import FieldSkeleton from 'components/Field/FieldSkeleton';
 
-//import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab-view';
-
-import i18n from 'languages';
-import { isIOS, renderCreationFields, showToast } from 'helpers';
 import utils from 'utils';
 
+// TODO: move to StyleSheet
 import Colors from 'constants/Colors';
 import { dtIcon } from 'constants/Icons';
 
@@ -162,10 +154,6 @@ const initialState = {
 };
 
 const DetailsScreen = ({ navigation, route }) => {
-  console.log('*** DETAILS ***');
-
-  console.log(JSON.stringify(route));
-
   const layout = useWindowDimensions();
   const windowWidth = layout.width;
   const milestonesGridSize = windowWidth + 5;
@@ -173,10 +161,14 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const isConnected = useNetworkStatus();
 
+  const { i18n, isRTL } = useI18N();
+
+  const toast = useToast();
+  const { isIOS } = useDevice();
+
   const { isContact, isGroup, postType } = usePostType();
 
   const id = useId();
-  console.log(`^^^^^^^^^^^^ ID: ${id} ^^^^^^^^^^^^^^`);
   const { post, error: postError, isLoading, isValidating, mutate, save } = useDetails(id);
   const { settings, error: settingsError } = useSettings();
   const { userData, error: userError } = useMyUser();
@@ -199,8 +191,6 @@ const DetailsScreen = ({ navigation, route }) => {
 
   const [index, setIndex] = useState(0);
   const routes = mapTabRoutes();
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   // TODO: replace with hooks
   //const userData = useSelector((state) => state.userReducer.userData);
@@ -437,7 +427,6 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   };
 
-  // OK, move to helpers?
   const keyboardDidShow = (event) => {
     setState({
       ...state,
@@ -445,7 +434,6 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   };
 
-  // OK, move to helpers?
   const keyboardDidHide = (event) => {
     setState({
       ...state,
@@ -453,7 +441,6 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   };
 
-  // TODO: merge with Group and move to helpers
   const backButtonTap = () => {
     let { params } = navigation.state;
     if (params.hideTabBar) {
@@ -475,7 +462,6 @@ const DetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // TODO: specific to Contact or merge with Group and move to helpers?
   const afterBack = () => {
     let newPreviousContacts = [...previousContacts];
     newPreviousContacts.pop();
@@ -537,7 +523,6 @@ const DetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // TODO: move to helpers (GroupDetails needs it also)
   const getLists = async () => {
     let newState = {};
     const users = await ExpoFileSystemStorage.getItem('usersList');
@@ -619,13 +604,11 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   };
 
-  // TODO: move to helpers?
   const onRefreshCommentsActivities = (contactId, resetPagination = false) => {
     getContactComments(contactId, resetPagination);
     getContactActivities(contactId, resetPagination);
   };
 
-  // TODO: move to helpers?
   const getContactComments = (contactId, resetPagination = false) => {
     if (isConnected) {
       if (resetPagination) {
@@ -649,7 +632,6 @@ const DetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // TODO: move to helpers?
   const getContactActivities = (contactId, resetPagination = false) => {
     if (isConnected) {
       if (resetPagination) {
@@ -673,7 +655,6 @@ const DetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // TODO: merge with 'setGroupStatus'? and move to helpers? bc Field and FieldValue
   const setContactStatus = (value) => {
     let contactHaveReason = Object.prototype.hasOwnProperty.call(
       contactSettings.fields,
@@ -803,7 +784,6 @@ const DetailsScreen = ({ navigation, route }) => {
     return comment;
   };
 
-  // TODO: move to helpers
   const setComment = (value) => {
     setState({
       ...state,
@@ -811,7 +791,6 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   };
 
-  // TODO: move to helpers?
   const onSaveComment = () => {
     const { comment } = state;
     if (!state.loadComments) {
@@ -822,7 +801,6 @@ const DetailsScreen = ({ navigation, route }) => {
     }
   };
 
-  // TODO: move to utils (or helpers bc of above)?
   const getCommentsAndActivities = () => {
     const { comments, activities, filtersSettings } = state;
     let list = [];
@@ -852,7 +830,6 @@ const DetailsScreen = ({ navigation, route }) => {
     return items;
   };
 
-  // TODO: move to helpers? currently only in Contacts, but some other future Module?
   const linkingPhoneDialer = (phoneNumber) => {
     let number = '';
     if (isIOS) {
@@ -863,7 +840,6 @@ const DetailsScreen = ({ navigation, route }) => {
     Linking.openURL(number);
   };
 
-  // TODO: move to helpers?
   const goToDetailsScreen = (id, name) => {
     if (isContact) {
       goToContactDetailScreen(id, name);
@@ -904,7 +880,6 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   // TODO: filter
-  // move to helpers?
   const toggleFilterView = () => {
     setState({
       ...state,
@@ -1610,7 +1585,6 @@ const DetailsScreen = ({ navigation, route }) => {
     });
   };
 
-  // TODO: how to share in helpers when using styles?
   const renderCommentDialog = () => {
     return (
       <View style={styles.dialogBox}>
@@ -1748,7 +1722,11 @@ const DetailsScreen = ({ navigation, route }) => {
   };
 
   const Post = () => (
-    <Tabs renderTabBar={() => <ScrollableTab />} tabBarUnderlineStyle={styles.tabBarUnderline}>
+    <Tabs
+      renderTabBar={() => <ScrollableTab />}
+      tabBarUnderlineStyle={styles.tabBarUnderline}
+      // TODO: remove
+      initialPage={1}>
       {settings.tiles.map((tile) => {
         return (
           <Tab

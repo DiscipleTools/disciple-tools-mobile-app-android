@@ -1,16 +1,17 @@
 import React from 'react';
 import { Icon } from 'native-base';
+//import PropTypes from 'prop-types';
 
-// Custom Components
+import useI18N from 'hooks/useI18N';
+import useUsers from 'hooks/useUsers';
+
 import SingleSelect from 'components/SingleSelect';
 import PostLink from 'components/PostLink';
-
-// Custom Hooks
-import useUsers from 'hooks/useUsers';
 
 import { styles } from 'components/Field/Field.styles';
 
 const UserSelectField = ({ value, editing, onChange }) => {
+  const { i18n, isRTL } = useI18N();
   const { users } = useUsers();
 
   if (!value?.key || !value?.label || !users) return null;

@@ -2,19 +2,17 @@ import React from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { Label } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
 import MultiSelect from 'components/MultiSelect';
 import PostLink from 'components/PostLink';
 
 // Custom Hooks
+import useI18N from 'hooks/useI18N';
 import usePostType from 'hooks/usePostType';
 import useUsersContacts from 'hooks/useUsersContacts';
 import useList from 'hooks/useList';
 import usePeopleGroups from 'hooks/usePeopleGroups';
-
-import i18n from 'languages';
 
 import {
   groupCircleIcon,
@@ -28,9 +26,8 @@ import {
 import { styles } from './ConnectionField.styles';
 
 const ConnectionField = ({ field, value, editing, onChange }) => {
+  const { i18n, isRTL } = useI18N();
   const { isContact, isGroup, postType } = usePostType();
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const selectedItems = value?.values;
 

@@ -8,13 +8,8 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 
 // Expo
 
-// Redux
-import { useSelector } from 'react-redux';
-
-// Helpers/Utils
-import i18n from 'languages';
-
 // Custom Hooks
+import useI18N from 'hooks/useI18N';
 import usePostType from 'hooks/usePostType.js';
 import useSettings from 'hooks/useSettings.js';
 
@@ -45,11 +40,10 @@ const FilterList = ({
   onRowDidClose,
   footer,
 }) => {
+  const { i18n, isRTL } = useI18N();
   const windowWidth = useWindowDimensions().width;
 
   const [showSearchBar, setShowSearchBar] = useState(true);
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const [refreshing, setRefreshing] = useState(false);
 

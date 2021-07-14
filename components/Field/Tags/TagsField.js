@@ -1,14 +1,15 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { useSelector } from 'react-redux';
 //import PropTypes from 'prop-types';
+
+import useI18N from 'hooks/useI18N';
 
 import MultiSelect from 'components/MultiSelect';
 
 //import { styles } from './TagsField.styles';
 
 const TagsField = ({ value, options, editing, onChange }) => {
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   const selectedItems = value?.values;
 

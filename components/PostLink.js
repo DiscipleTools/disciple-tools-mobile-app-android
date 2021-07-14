@@ -1,14 +1,14 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+
+import useI18N from 'hooks/useI18N';
 
 import { styles } from './PostLink.styles';
 
 const PostLink = ({ id, title, type }) => {
   const navigation = useNavigation();
-
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   // TODO: move inline styles to PostLink.styles
   return (

@@ -1,21 +1,21 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import { showToast } from 'helpers';
-
-import usePostType from 'hooks/usePostType.js';
-import useSettings from 'hooks/useSettings.js';
+import usePostType from 'hooks/usePostType';
+import useSettings from 'hooks/useSettings';
+import useToast from 'hooks/useToast';
 
 import { styles } from './Subtitles.styles';
 
 const Subtitles = ({ record }) => {
+  const toast = useToast();
   const { isContact, isGroup } = usePostType();
 
   const { settings, error: settingsError } = useSettings();
   // TODO: can these checks be done within hooks instead?
   if (!settings) return null;
   if (settingsError) {
-    showToast(settingsError.message, true);
+    toast(settingsError.message, true);
     return null;
   }
 

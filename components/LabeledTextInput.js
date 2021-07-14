@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, Text, TextInput, ViewPropTypes } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Icon } from 'native-base';
 //import PropTypes from 'prop-types';
 //import * as Icon from '@expo/vector-icons';
 
-import i18n from 'languages';
+import useI18N from 'hooks/useI18N';
 
 import { styles } from './LabeledTextInput.styles';
 
@@ -19,9 +18,10 @@ const LabeledTextInput = (props) => {
     iconName,
     label,
     value,
+    editing,
   } = props;
 
-  console.log('*** TEXT FIELD RENDER ***');
+  const { i18n, isRTL } = useI18N();
 
   /*
   const inputRef = useRef(null);
@@ -48,10 +48,6 @@ const LabeledTextInput = (props) => {
     )
   };
   */
-
-  const editing = useSelector((state) => state.appReducer.editing);
-  //const editing = true;
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
 
   const icon = iconName ? (
     <Icon

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Text, TextInput } from 'react-native';
-import { useSelector } from 'react-redux';
 //import PropTypes from 'prop-types';
+
+import useI18N from 'hooks/useI18N';
 
 import { styles } from './TextField.styles';
 
 const TextField = ({ value, editing, onChange }) => {
-  const isRTL = useSelector((state) => state.i18nReducer.isRTL);
+  const { i18n, isRTL } = useI18N();
 
   const handleChange = (newValue) => {
     if (newValue !== value) onChange(newValue);
