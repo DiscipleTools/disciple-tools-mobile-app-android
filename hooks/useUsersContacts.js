@@ -6,13 +6,15 @@ const useUsersContacts = () => {
   const { posts: contacts } = useList(null, 'contacts');
   if (!users || !contacts) return null;
   const mergedUsersContacts = [...users];
+  const mergedIndicies = [];
   contacts.forEach((contact) => {
     users.forEach((user) => {
-      if (user?.name !== contact?.title) mergedUsersContacts.push(contacts);
+      if (user?.contact_id !== contact?.ID && mergedIndicies.indexOf(contact?.ID) === -1) {
+        mergedUsersContacts.push(contact);
+        mergedIndicies.push(contact.ID);
+      }
     });
   });
-  return {
-    mergedUsersContacts,
-  };
+  return mergedUsersContacts;
 };
 export default useUsersContacts;

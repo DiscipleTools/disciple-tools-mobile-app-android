@@ -1,23 +1,22 @@
 import useId from 'hooks/useId';
 import usePostType from 'hooks/usePostType';
 import useResource from 'hooks/useResource';
-import helpers from 'helpers';
-import { showToast } from 'helpers';
+import useToast from 'hooks/useToast';
 
 const useDetails = () => {
   const id = useId();
-  const { isContact, isGroup, postType } = usePostType();
+  const { isContact, isGroup, postType, mapContact, mapGroup } = usePostType();
 
-  // TODO: merge mapContact and mapGroup?
+  const toast = useToast();
+
   const mapPost = (post) => {
     if (isContact) {
-      return helpers.mapContact(post);
+      return mapContact(post);
     } else {
-      return helpers.mapGroup(post);
+      return mapGroup(post);
     }
   };
 
-  // save
   // getById
   // saveComment
 
@@ -52,16 +51,16 @@ const useDetails = () => {
       if (res) {
         if (res?.status === 200) {
           // TODO: translation
-          showToast('Saved successfully');
+          toast('Saved successfully');
         } else {
           // TODO: translation
-          showToast('Unable to save', true);
+          toast('Unable to save', true);
         }
       }
     } catch (err) {
       console.log(`err: ${JSON.stringify(err)}`);
       // TODO: translation
-      showToast('GENERIC ERROR GOES HERE', true);
+      toast('GENERIC ERROR GOES HERE', true);
     }
   };
 

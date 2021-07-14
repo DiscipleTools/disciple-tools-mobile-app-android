@@ -1,14 +1,12 @@
 import usePostType from 'hooks/usePostType.js';
 import useResource from 'hooks/useResource';
 
-import helpers from 'helpers';
-
 const useList = (filter, type) => {
-  const { isContact, isGroup, postType } = usePostType(type);
+  const { isContact, isGroup, postType, mapContacts, mapGroups } = usePostType(type);
 
   const mapPosts = (posts) => {
-    if (isContact) return helpers.mapContacts(posts);
-    if (isGroup) return helpers.mapGroups(posts);
+    if (isContact) return mapContacts(posts);
+    if (isGroup) return mapGroups(posts);
     return null;
   };
 

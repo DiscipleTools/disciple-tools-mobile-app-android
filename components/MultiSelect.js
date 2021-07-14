@@ -5,17 +5,7 @@ import { Chip, Selectize } from 'react-native-material-selectize';
 
 import { styles } from './MultiSelect.styles';
 
-const MultiSelect = ({
-  items,
-  selectedItems,
-  onChange,
-  placeholder,
-  customAddSelection,
-  customRemoveSelection,
-}) => {
-  console.log(`items: ${JSON.stringify(items)}`);
-  console.log(`selectedItems: ${JSON.stringify(selectedItems)}`);
-
+const MultiSelect = ({ items, selectedItems, onChange, placeholder, customAdd, customRemove }) => {
   /*
   Selectize component requires a consistent identifier,
   so we map any input to 'id' property
@@ -34,21 +24,20 @@ const MultiSelect = ({
   const mappedItems = mapItems(items);
   const mappedSelectedItems = mapItems(selectedItems);
 
-  // TODO: connections
   // TODO: milestones, sources
   //{"people_groups":{"values":[{"value":"23","name":"Arab Egyptian"},{"ID":33,"name":"Arab, Iraqi","label":"Arab, Iraqi"}]}}}
   // works:
+  // -- connections,
   // -- locations,
   // -- tags
-  const addSelection = (newValue) => {
+  const add = (newValue) => {
+    console.log(`+++ addSelection: ${JSON.stringify(newValue)}`);
     // no longer need the 'id' (return original format)
     delete newValue['id'];
-    /*
-    if (customAddSelection) {
-      customAddSelection(newValue);
+    if (customAdd) {
+      customAdd(newValue);
       return;
     }
-    */
     const exists = selectedItems.find((value) => value?.value === newValue?.value);
     if (!exists)
       onChange({
@@ -61,10 +50,11 @@ const MultiSelect = ({
   // -- connections,
   // -- locations,
   // -- tags
-  const removeSelection = (deletedValue) => {
+  const remove = (deletedValue) => {
+    console.log(`--- removeSelection: ${JSON.stringify(deletedValue)}`);
     /*
-    if (customRemoveSelection) {
-      customRemoveSelection(deletedValue);
+    if (customRemove) {
+      customRemove(deletedValue);
       return;
     }
     */
@@ -85,14 +75,14 @@ const MultiSelect = ({
       items={mappedItems}
       selectedItems={mappedSelectedItems}
       textInputProps={{
-        onSubmitEditing: (text) => addSelection({ value: text }),
+        onSubmitEditing: (text) => add({ value: text }),
         placeholder,
       }}
       renderRow={(id, onPress, item) => (
         <TouchableOpacity
           activeOpacity={0.6}
           key={id}
-          onPress={() => addSelection(item)}
+          onPress={() => add(item)}
           style={{
             paddingVertical: 8,
             paddingHorizontal: 10,
@@ -128,7 +118,7 @@ const MultiSelect = ({
         <Chip
           key={id}
           iconStyle={iconStyle}
-          onClose={() => removeSelection(item)}
+          onClose={() => remove(item)}
           text={item?.label || item?.name || item?.value}
           style={style}
         />
