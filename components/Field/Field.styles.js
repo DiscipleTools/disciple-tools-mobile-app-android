@@ -67,6 +67,7 @@ export const styles = StyleSheet.create({
   formParentLabel: {
     width: 'auto',
     maxWidth: 100,
+    marginBottom: 'auto',
   },
   formLabel: {
     color: Colors.tintColor,

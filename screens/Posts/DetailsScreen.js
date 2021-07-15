@@ -264,7 +264,7 @@ const DetailsScreen = ({ navigation, route }) => {
         if (domain && id) {
           Linking.openURL(`https://${domain}/${postType}/${id}/`);
         } else {
-          showToast(i18n.t('global.error.recordData'), true);
+          toast(i18n.t('global.error.recordData'), true);
         }
       },
     },
@@ -1796,10 +1796,7 @@ const DetailsScreen = ({ navigation, route }) => {
   );
 
   if (postError || settingsError || userError || !id)
-    showToast(
-      postError?.message || settingsError?.message || userError?.message || 'ZZError',
-      true,
-    );
+    toast(postError?.message || settingsError?.message || userError?.message || 'ZZError', true);
   //if (!post || !settings || !userData) return null;
 
   // TODO: why relying on position rather than name or type?

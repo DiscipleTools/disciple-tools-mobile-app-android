@@ -24,12 +24,6 @@ const MultiSelect = ({ items, selectedItems, onChange, placeholder, customAdd, c
   const mappedItems = mapItems(items);
   const mappedSelectedItems = mapItems(selectedItems);
 
-  // TODO: milestones, sources
-  //{"people_groups":{"values":[{"value":"23","name":"Arab Egyptian"},{"ID":33,"name":"Arab, Iraqi","label":"Arab, Iraqi"}]}}}
-  // works:
-  // -- connections,
-  // -- locations,
-  // -- tags
   const add = (newValue) => {
     console.log(`+++ addSelection: ${JSON.stringify(newValue)}`);
     // no longer need the 'id' (return original format)
@@ -45,19 +39,12 @@ const MultiSelect = ({ items, selectedItems, onChange, placeholder, customAdd, c
       });
   };
 
-  // TODO: milestones, sources
-  // works:
-  // -- connections,
-  // -- locations,
-  // -- tags
   const remove = (deletedValue) => {
     console.log(`--- removeSelection: ${JSON.stringify(deletedValue)}`);
-    /*
     if (customRemove) {
       customRemove(deletedValue);
       return;
     }
-    */
     const idx = selectedItems.findIndex((value) => value?.value === deletedValue?.value);
     if (idx > -1) {
       const newValues = [...selectedItems];
@@ -123,10 +110,6 @@ const MultiSelect = ({ items, selectedItems, onChange, placeholder, customAdd, c
           style={style}
         />
       )}
-      //keyboardShouldPersistTaps="handled"
-      //filterOnKey="key"
-      //onChangeSelectedItems={(selectedItems) => onSelectizeValueChange(field.name, selectedItems)}
-      //inputContainerStyle={styles.selectizeField}
     />
   );
 };

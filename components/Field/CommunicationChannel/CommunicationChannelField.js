@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Linking, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useRef } from 'react';
+import { Linking, Pressable, Text, TextInput } from 'react-native';
 import { Icon } from 'native-base';
 import { Col, Row } from 'react-native-easy-grid';
 //import PropTypes from 'prop-types';
@@ -9,7 +9,6 @@ import useI18N from 'hooks/useI18N';
 // TODO: refactor unused styles
 import { styles } from './CommunicationChannelField.styles';
 
-// TODO: LINKING PHONE DIALER, EMAIL, etc...
 const CommunicationChannelField = ({ field, value, editing, onChange }) => {
   const { i18n, isRTL } = useI18N();
 
@@ -25,7 +24,7 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
     }
     timerRef.current = setTimeout(() => {
       onChange(valueRef.current);
-    }, 3000);
+    }, 2000);
   };
 
   const onEndEditing = () => onChange(valueRef.current);
@@ -39,7 +38,6 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
     ]);
   };
 
-  //const onCommunicationFieldChange = (key, value, index, dbIndex, component) => {
   const onCommunicationFieldChange = (newValue, idx, key) => {
     if (newValue !== value[idx]) {
       const updatedValue = [...value];
@@ -112,55 +110,91 @@ const CommunicationChannelField = ({ field, value, editing, onChange }) => {
     );
   };
 
-  // TODO: TouchableOpacity -> Pressable
+  const CommunicationLink = ({ key, url, value }) => (
+    <Pressable key={key} onPress={() => Linking.openURL(url)}>
+      <Text
+        style={[
+          styles.linkingText,
+          { marginTop: 'auto', marginBottom: 'auto' },
+          isRTL ? { textAlign: 'left', flex: 1 } : {},
+        ]}>
+        {value}
+      </Text>
+    </Pressable>
+  );
+
+  const isValidHttp = (communicationChannelValue) => {
+    return communicationChannelValue?.toLowerCase()?.includes('http');
+  };
+
+  const isValidTLD = (communicationChannelValue) => {
+    const lowercaseValue = communicationChannelValue?.toLowerCase();
+    return (
+      lowercaseValue.includes('.com') ||
+      lowercaseValue.includes('.net') ||
+      lowercaseValue.includes('.org') ||
+      lowercaseValue.includes('.me')
+    );
+  };
+
+  const isValidPhone = (communicationChannelValue) => {
+    // TODO: phone regex
+    return field?.name?.includes('phone');
+  };
+
+  const isValidEmail = (communicationChannelValue) => {
+    // TODO: email regex
+    return field?.name?.includes('email');
+  };
+
+  const isValidURL = (communicationChannelValue) => {
+    // TODO: URL regex
+    return isValidHttp(communicationChannelValue) || isValidTLD(communicationChannelValue);
+  };
+
   const CommunicationChannelFieldView = () => {
-    if (field?.name?.includes('phone')) {
-      return value.map((communicationChannel, index) => (
-        <TouchableOpacity
-          key={index.toString()}
-          activeOpacity={0.5}
-          onPress={() => {
-            Linking.openURL('tel:' + communicationChannel.value);
-          }}>
+    console.log(`communication value: ${JSON.stringify(value)}`);
+    return value.map((communicationChannel) => {
+      const communicationChannelValue = communicationChannel.value;
+      if (isValidPhone(communicationChannelValue)) {
+        return (
+          <CommunicationLink
+            key={communicationChannel.key}
+            url={'tel:' + communicationChannelValue}
+            value={communicationChannelValue}
+          />
+        );
+      } else if (isValidEmail(communicationChannelValue)) {
+        return (
+          <CommunicationLink
+            key={communicationChannel.key}
+            url={'mailto:' + communicationChannelValue}
+            value={communicationChannelValue}
+          />
+        );
+      } else if (isValidURL(communicationChannelValue)) {
+        const url = isValidHttp(communicationChannelValue)
+          ? communicationChannelValue
+          : `https://${communicationChannelValue}`;
+        return (
+          <CommunicationLink
+            key={communicationChannel.key}
+            url={url}
+            value={communicationChannelValue}
+          />
+        );
+      } else {
+        return (
           <Text
             style={[
-              styles.linkingText,
               { marginTop: 'auto', marginBottom: 'auto' },
               isRTL ? { textAlign: 'left', flex: 1 } : {},
             ]}>
-            {communicationChannel.value}
+            {communicationChannelValue}
           </Text>
-        </TouchableOpacity>
-      ));
-    } else if (field?.name?.includes('email')) {
-      return value.map((communicationChannel, index) => (
-        <TouchableOpacity
-          key={index.toString()}
-          activeOpacity={0.5}
-          onPress={() => {
-            Linking.openURL('mailto:' + communicationChannel.value);
-          }}>
-          <Text
-            style={[
-              styles.linkingText,
-              { marginTop: 'auto', marginBottom: 'auto' },
-              isRTL ? { textAlign: 'left', flex: 1 } : {},
-            ]}>
-            {communicationChannel.value}
-          </Text>
-        </TouchableOpacity>
-      ));
-    } else {
-      return (
-        <Text
-          style={[
-            { marginTop: 'auto', marginBottom: 'auto' },
-            isRTL ? { textAlign: 'left', flex: 1 } : {},
-          ]}>
-          {value.map((communicationChannel) => communicationChannel.value).join(', ')}
-        </Text>
-      );
-    }
+        );
+      }
+    });
   };
 
   return <>{editing ? <CommunicationChannelFieldEdit /> : <CommunicationChannelFieldView />}</>;

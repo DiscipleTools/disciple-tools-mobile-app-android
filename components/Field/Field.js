@@ -19,7 +19,7 @@ import UserSelectField from 'components/Field/UserSelect/UserSelectField';
 import { styles } from './Field.styles';
 
 const Field = ({ post, field, save }) => {
-  //console.log(`FIELD: ${JSON.stringify(field)}`);
+  console.log(`FIELD: ${JSON.stringify(field)}`);
 
   //const ref = useRef(null);
 
@@ -73,15 +73,8 @@ const Field = ({ post, field, save }) => {
 
   const isUndecoratedField = () => {
     const name = field?.name;
-    const type = field?.type;
-    return (
-      name === 'milestones' ||
-      name === 'health_metrics' ||
-      name === 'parent_groups' ||
-      name === 'peer_groups' ||
-      name === 'child_groups' //||
-      //name == 'members' // ||
-    );
+    //const type = field?.type;
+    return name === 'parent_groups' || name === 'peer_groups' || name === 'child_groups';
   };
 
   const onSave = () => {
@@ -113,11 +106,16 @@ const Field = ({ post, field, save }) => {
     console.log('$$$$$$ ON CHANGE $$$$$$');
     console.log(`newValue: ${JSON.stringify(newValue)}`);
     console.log(`apiValue: ${JSON.stringify(apiValue)}`);
+    console.log(`existingValue: ${JSON.stringify(value)}`);
     setState({
       ...state,
       value: newValue,
       apiValue,
     });
+  };
+
+  const isMilestones = () => {
+    return field?.name === 'milestones';
   };
 
   const DefaultControls = () => (
@@ -165,6 +163,7 @@ const Field = ({ post, field, save }) => {
       // TODO: implement (as read-only Switch?)
       //return <BooleanField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'communication_channel':
+        // TODO: better implementation (timer not intuitive)
         // TODO: RTL, styles
         return (
           <CommunicationChannelField
@@ -175,7 +174,7 @@ const Field = ({ post, field, save }) => {
           />
         );
       case 'connection':
-        // TODO: RTL, style, (*)lists
+        // TODO: RTL, style, (*)lists, (*)milestones
         return (
           <ConnectionField
             field={field}
@@ -202,11 +201,11 @@ const Field = ({ post, field, save }) => {
         // TODO: RTL, style
         return <LocationField value={state.value} editing={state.editing} onChange={onChange} />;
       case 'multi_select':
-        // TODO: RTL, style, (*)save, (*)"defaults"/lists
+        // TODO: RTL, style
         return (
           <MultiSelectField
+            field={field}
             value={state.value}
-            options={field?.default}
             editing={state.editing}
             onChange={onChange}
           />
@@ -236,6 +235,7 @@ const Field = ({ post, field, save }) => {
     }
   };
 
+  //if (isUndecoratedField() && (!state.editing || isMilestones()))
   if (isUndecoratedField() && !state.editing)
     return (
       <Grid>
@@ -255,7 +255,7 @@ const Field = ({ post, field, save }) => {
   return (
     <Grid>
       <Row style={[state.editing ? styles.raisedBox : null, styles.formRow]}>
-        <Col size={1} style={styles.formIconLabel}>
+        <Col size={1} style={[{ marginBottom: 'auto' }, styles.formIconLabel]}>
           <FieldIcon field={field} />
         </Col>
         <Col size={2} style={styles.formParentLabel}>
