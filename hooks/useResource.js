@@ -3,9 +3,11 @@ import useSWR, { cache } from 'swr';
 import axios from 'services/axios';
 
 import useNetworkStatus from 'hooks/useNetworkStatus';
+import useRequestQueue from 'hooks/useRequestQueue';
 
 const useResource = (request, { initialData, ...config } = {}) => {
   const isConnected = useNetworkStatus();
+  const { pendingRequests, queueRequest } = useRequestQueue();
 
   // TODO: is the [request, id] correct?
 
@@ -23,31 +25,42 @@ const useResource = (request, { initialData, ...config } = {}) => {
     },
   );
 
-  /*
-  if (!isConnected) {
-    // TODO: useSelector
-    if (cache.has(JSON.stringify(request))) {
-      console.log("**** USING CACHED DATA ****");
-      data = cache.get(JSON.stringify(request));
-      error = null;
-    }
+  // TODO: move this to useNetworkStatus where we can immediately detect when back online?
+  if (!isConnected && pendingRequests.length > 0) {
+    pendingRequests.forEach((pendingRequest) => {
+      write(pendingRequest);
+    });
   }
-  */
 
+  const write = async (request) => {
+    console.log(`^^^^ WRITE! ${JSON.stringify(request)}`);
+    if (!isConnected) {
+      queueRequest(request);
+    } else {
+      return axios(request);
+    }
+  };
+
+  /*
   const create = async (request) => {
     console.log(`^^^^ CREATE! ${JSON.stringify(request)}`);
-    //if (!isConnected) dispatch(request);
-    return axios(request);
+    if (!isConnected) {
+      queueRequest(request, "create");
+    } else {
+      return axios(request);
+    };
   };
 
   const update = async (request) => {
     console.log(`^^^^ UPDATE! ${JSON.stringify(request)}`);
     //axios.put?
-    //if (!isConnected) dispatch(request);
-    return axios(request);
+    if (!isConnected) {
+      queueRequest(request, "update");
+    } else {
+      return axios(request);
+    };
   };
 
-  /*
   const delet = async(request) => {
     //if (!isConnected) dispatch(request);
     return axios.delete(request);
@@ -60,8 +73,9 @@ const useResource = (request, { initialData, ...config } = {}) => {
     isLoading,
     isValidating,
     mutate,
-    create,
-    update,
+    write,
+    //create,
+    //update,
     //delet,
   };
 };

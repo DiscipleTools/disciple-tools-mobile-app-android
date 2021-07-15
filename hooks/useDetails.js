@@ -24,7 +24,7 @@ const useDetails = () => {
   const url = `${baseUrl}/${id}`;
   // TODO: useSelect for initialData?
   //const initialData = null;
-  const { data, error, isLoading, isValidating, mutate, create, update } = useResource(url);
+  const { data, error, isLoading, isValidating, mutate, write } = useResource(url);
 
   const save = async (field, value) => {
     console.log(`*** SAVE!  id: ${id},  field: ${JSON.stringify({ field, value })} ***`);
@@ -33,13 +33,15 @@ const useDetails = () => {
     try {
       let res = null;
       if (!id) {
-        res = await create({
+        //res = await create({
+        res = await write({
           url: baseUrl,
           method: 'POST',
           data,
         });
       } else {
-        res = await update({
+        //res = await update({
+        res = await write({
           url,
           //method: "PUT",
           method: 'POST',

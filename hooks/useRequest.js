@@ -4,6 +4,7 @@ import axios from 'services/axios';
 
 import useNetworkStatus from 'hooks/useNetworkStatus';
 
+// NOTE: useRequest is read-only (only useResource performs writes: create, update)
 const useRequest = (request, { initialData, ...config } = {}) => {
   const isConnected = useNetworkStatus();
 
